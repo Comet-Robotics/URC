@@ -1,0 +1,24 @@
+[3.462s] Invoking command in '/home/urc/URC/rover/src/depth_image_viewer': PYTHONPATH=/home/urc/URC/rover/build/depth_image_viewer/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/depth_image_viewer build --build-base /home/urc/URC/rover/build/depth_image_viewer/build install --record /home/urc/URC/rover/build/depth_image_viewer/install.log --single-version-externally-managed install_data
+[4.734s] running egg_info
+[4.737s] writing ../../build/depth_image_viewer/depth_image_viewer.egg-info/PKG-INFO
+[4.738s] writing dependency_links to ../../build/depth_image_viewer/depth_image_viewer.egg-info/dependency_links.txt
+[4.739s] writing entry points to ../../build/depth_image_viewer/depth_image_viewer.egg-info/entry_points.txt
+[4.740s] writing requirements to ../../build/depth_image_viewer/depth_image_viewer.egg-info/requires.txt
+[4.741s] writing top-level names to ../../build/depth_image_viewer/depth_image_viewer.egg-info/top_level.txt
+[4.752s] reading manifest file '../../build/depth_image_viewer/depth_image_viewer.egg-info/SOURCES.txt'
+[4.757s] writing manifest file '../../build/depth_image_viewer/depth_image_viewer.egg-info/SOURCES.txt'
+[4.758s] running build
+[4.758s] running build_py
+[4.759s] copying depth_image_viewer/depth_image_node.py -> /home/urc/URC/rover/build/depth_image_viewer/build/lib/depth_image_viewer
+[4.761s] running install
+[4.763s] running install_lib
+[4.766s] copying /home/urc/URC/rover/build/depth_image_viewer/build/lib/depth_image_viewer/depth_image_node.py -> /home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer
+[4.769s] byte-compiling /home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer/depth_image_node.py to depth_image_node.cpython-310.pyc
+[4.772s] running install_data
+[4.773s] running install_egg_info
+[4.781s] removing '/home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer-0.0.0-py3.10.egg-info' (and everything under it)
+[4.785s] Copying ../../build/depth_image_viewer/depth_image_viewer.egg-info to /home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer-0.0.0-py3.10.egg-info
+[4.791s] running install_scripts
+[4.886s] Installing depth_image_node script to /home/urc/URC/rover/install/depth_image_viewer/lib/depth_image_viewer
+[4.888s] writing list of installed files to '/home/urc/URC/rover/build/depth_image_viewer/install.log'
+[5.014s] Invoked command in '/home/urc/URC/rover/src/depth_image_viewer' returned '0': PYTHONPATH=/home/urc/URC/rover/build/depth_image_viewer/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/depth_image_viewer build --build-base /home/urc/URC/rover/build/depth_image_viewer/build install --record /home/urc/URC/rover/build/depth_image_viewer/install.log --single-version-externally-managed install_data

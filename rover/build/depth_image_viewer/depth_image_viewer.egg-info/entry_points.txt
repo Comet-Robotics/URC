@@ -1,0 +1,3 @@
+[console_scripts]
+depth_image_node = depth_image_viewer.depth_image_node:main
+

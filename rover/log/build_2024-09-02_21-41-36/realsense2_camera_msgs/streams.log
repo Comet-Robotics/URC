@@ -1,0 +1,21 @@
+[0.050s] Invoking command in '/home/urc/URC/rover/build/realsense2_camera_msgs': /usr/bin/cmake /home/urc/URC/rover/src/realsense-ros/realsense2_camera_msgs -DCMAKE_INSTALL_PREFIX=/home/urc/URC/rover/install/realsense2_camera_msgs
+[0.262s] [31mCMake Error at CMakeLists.txt:27 (find_package):
+[0.262s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[0.263s]   has asked CMake to find a package configuration file provided by
+[0.263s]   "ament_cmake", but CMake did not find one.
+[0.264s] 
+[0.264s]   Could not find a package configuration file provided by "ament_cmake" with
+[0.265s]   any of the following names:
+[0.266s] 
+[0.266s]     ament_cmakeConfig.cmake
+[0.267s]     ament_cmake-config.cmake
+[0.268s] 
+[0.268s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[0.269s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[0.269s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[0.269s]   has been installed.
+[0.270s] 
+[0.270s] [0m
+[0.271s] -- Configuring incomplete, errors occurred!
+[0.271s] See also "/home/urc/URC/rover/build/realsense2_camera_msgs/CMakeFiles/CMakeOutput.log".
+[1.188s] Invoked command in '/home/urc/URC/rover/build/realsense2_camera_msgs' returned '1': /usr/bin/cmake /home/urc/URC/rover/src/realsense-ros/realsense2_camera_msgs -DCMAKE_INSTALL_PREFIX=/home/urc/URC/rover/install/realsense2_camera_msgs

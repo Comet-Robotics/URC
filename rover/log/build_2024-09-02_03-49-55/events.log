@@ -1,0 +1,81 @@
+[0.000000] (-) TimerEvent: {}
+[0.002863] (depth_image_viewer) JobQueued: {'identifier': 'depth_image_viewer', 'dependencies': OrderedDict()}
+[0.003122] (depth_image_viewer) JobStarted: {'identifier': 'depth_image_viewer'}
+[0.098343] (-) TimerEvent: {}
+[0.199216] (-) TimerEvent: {}
+[0.299985] (-) TimerEvent: {}
+[0.400800] (-) TimerEvent: {}
+[0.501582] (-) TimerEvent: {}
+[0.602296] (-) TimerEvent: {}
+[0.703029] (-) TimerEvent: {}
+[0.803725] (-) TimerEvent: {}
+[0.904461] (-) TimerEvent: {}
+[1.005174] (-) TimerEvent: {}
+[1.105918] (-) TimerEvent: {}
+[1.206684] (-) TimerEvent: {}
+[1.307396] (-) TimerEvent: {}
+[1.408192] (-) TimerEvent: {}
+[1.508964] (-) TimerEvent: {}
+[1.610056] (-) TimerEvent: {}
+[1.710933] (-) TimerEvent: {}
+[1.811690] (-) TimerEvent: {}
+[1.912557] (-) TimerEvent: {}
+[2.013386] (-) TimerEvent: {}
+[2.114297] (-) TimerEvent: {}
+[2.215399] (-) TimerEvent: {}
+[2.316212] (-) TimerEvent: {}
+[2.417135] (-) TimerEvent: {}
+[2.517905] (-) TimerEvent: {}
+[2.619202] (-) TimerEvent: {}
+[2.720812] (-) TimerEvent: {}
+[2.821574] (-) TimerEvent: {}
+[2.922318] (-) TimerEvent: {}
+[3.023095] (-) TimerEvent: {}
+[3.124135] (-) TimerEvent: {}
+[3.224916] (-) TimerEvent: {}
+[3.325660] (-) TimerEvent: {}
+[3.426595] (-) TimerEvent: {}
+[3.528630] (-) TimerEvent: {}
+[3.602624] (depth_image_viewer) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/depth_image_viewer', 'build', '--build-base', '/home/urc/URC/rover/build/depth_image_viewer/build', 'install', '--record', '/home/urc/URC/rover/build/depth_image_viewer/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/urc/URC/rover/src/depth_image_viewer', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'urc', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/home/urc', 'OLDPWD': '/home/urc/URC', 'ROS_PYTHON_VERSION': '3', 'GTK_MODULES': 'gail:atk-bridge', 'NIX_PROFILES': '/nix/var/nix/profiles/default /home/urc/.nix-profile', 'SYSTEMD_EXEC_PID': '1884', 'XRDP_PULSE_SOURCE_SOCKET': 'xrdp_chansrv_audio_in_socket_10', 'XRDP_PULSE_SINK_SOCKET': 'xrdp_chansrv_audio_out_socket_10', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'PULSE_SCRIPT': '/etc/xrdp/pulse/default.pa', 'COLCON_PREFIX_PATH': '/home/urc/URC/rover/install', 'ROS_DISTRO': 'humble', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'urc', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/humble/bin:/home/urc/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/urc/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/urc/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'SESSION_MANAGER': 'local/urc:@/tmp/.ICE-unix/1866,unix/urc:/tmp/.ICE-unix/1866', 'XDG_MENU_PREFIX': 'gnome-', 'XRDP_SOCKET_PATH': '/run/xrdp/sockdir', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/e85ba31f_f814_4f36_9b5b_251d1596723a', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':10.0', 'LANG': 'C.UTF-8', 'XDG_CURRENT_DESKTOP': 'GNOME', 'XMODIFIERS': '@im=ibus', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'GNOME_TERMINAL_SERVICE': ':1.111', 'SSH_AGENT_LAUNCHER': 'gnome-keyring', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/urc/URC/rover/install/depth_image_viewer:/opt/ros/humble', 'UID': '1000', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'LOCALE_ARCHIVE_2_27': '/nix/store/i3k15ismm5cnf7pwjn9ynznkm66sii2i-glibc-locales-2.39-52/lib/locale/locale-archive', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'XRDP_SESSION': '1', 'NIX_SSL_CERT_FILE': '/etc/ssl/certs/ca-certificates.crt', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/urc/URC/rover/build/depth_image_viewer', 'CLUTTER_IM_MODULE': 'ibus', 'XDG_DATA_DIRS': '/usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop:/home/urc/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/urc/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/urc/.nix-profile/share:/nix/var/nix/profiles/default/share', 'PYTHONPATH': '/home/urc/URC/rover/build/depth_image_viewer/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages:/home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1', 'VTE_VERSION': '6800'}, 'shell': False}
+[3.628822] (-) TimerEvent: {}
+[3.729714] (-) TimerEvent: {}
+[3.830534] (-) TimerEvent: {}
+[3.931797] (-) TimerEvent: {}
+[4.032549] (-) TimerEvent: {}
+[4.133560] (-) TimerEvent: {}
+[4.234265] (-) TimerEvent: {}
+[4.335015] (-) TimerEvent: {}
+[4.435768] (-) TimerEvent: {}
+[4.536508] (-) TimerEvent: {}
+[4.637218] (-) TimerEvent: {}
+[4.738346] (-) TimerEvent: {}
+[4.839032] (-) TimerEvent: {}
+[4.939958] (-) TimerEvent: {}
+[4.962272] (depth_image_viewer) StdoutLine: {'line': b'running egg_info\n'}
+[4.966047] (depth_image_viewer) StdoutLine: {'line': b'writing ../../build/depth_image_viewer/depth_image_viewer.egg-info/PKG-INFO\n'}
+[4.967012] (depth_image_viewer) StdoutLine: {'line': b'writing dependency_links to ../../build/depth_image_viewer/depth_image_viewer.egg-info/dependency_links.txt\n'}
+[4.968157] (depth_image_viewer) StdoutLine: {'line': b'writing entry points to ../../build/depth_image_viewer/depth_image_viewer.egg-info/entry_points.txt\n'}
+[4.969658] (depth_image_viewer) StdoutLine: {'line': b'writing requirements to ../../build/depth_image_viewer/depth_image_viewer.egg-info/requires.txt\n'}
+[4.970908] (depth_image_viewer) StdoutLine: {'line': b'writing top-level names to ../../build/depth_image_viewer/depth_image_viewer.egg-info/top_level.txt\n'}
+[4.984711] (depth_image_viewer) StdoutLine: {'line': b"reading manifest file '../../build/depth_image_viewer/depth_image_viewer.egg-info/SOURCES.txt'\n"}
+[4.990625] (depth_image_viewer) StdoutLine: {'line': b"writing manifest file '../../build/depth_image_viewer/depth_image_viewer.egg-info/SOURCES.txt'\n"}
+[4.991633] (depth_image_viewer) StdoutLine: {'line': b'running build\n'}
+[4.992295] (depth_image_viewer) StdoutLine: {'line': b'running build_py\n'}
+[4.993072] (depth_image_viewer) StdoutLine: {'line': b'copying depth_image_viewer/depth_image_node.py -> /home/urc/URC/rover/build/depth_image_viewer/build/lib/depth_image_viewer\n'}
+[4.994303] (depth_image_viewer) StdoutLine: {'line': b'running install\n'}
+[4.995756] (depth_image_viewer) StdoutLine: {'line': b'running install_lib\n'}
+[5.000607] (depth_image_viewer) StdoutLine: {'line': b'copying /home/urc/URC/rover/build/depth_image_viewer/build/lib/depth_image_viewer/depth_image_node.py -> /home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer\n'}
+[5.006313] (depth_image_viewer) StdoutLine: {'line': b'byte-compiling /home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer/depth_image_node.py to depth_image_node.cpython-310.pyc\n'}
+[5.009663] (depth_image_viewer) StdoutLine: {'line': b'running install_data\n'}
+[5.010471] (depth_image_viewer) StdoutLine: {'line': b'running install_egg_info\n'}
+[5.018672] (depth_image_viewer) StdoutLine: {'line': b"removing '/home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer-0.0.0-py3.10.egg-info' (and everything under it)\n"}
+[5.022278] (depth_image_viewer) StdoutLine: {'line': b'Copying ../../build/depth_image_viewer/depth_image_viewer.egg-info to /home/urc/URC/rover/install/depth_image_viewer/lib/python3.10/site-packages/depth_image_viewer-0.0.0-py3.10.egg-info\n'}
+[5.028463] (depth_image_viewer) StdoutLine: {'line': b'running install_scripts\n'}
+[5.040128] (-) TimerEvent: {}
+[5.129406] (depth_image_viewer) StdoutLine: {'line': b'Installing depth_image_node script to /home/urc/URC/rover/install/depth_image_viewer/lib/depth_image_viewer\n'}
+[5.131362] (depth_image_viewer) StdoutLine: {'line': b"writing list of installed files to '/home/urc/URC/rover/build/depth_image_viewer/install.log'\n"}
+[5.140438] (-) TimerEvent: {}
+[5.241589] (-) TimerEvent: {}
+[5.266184] (depth_image_viewer) CommandEnded: {'returncode': 0}
+[5.331741] (depth_image_viewer) JobEnded: {'identifier': 'depth_image_viewer', 'rc': 0}
+[5.334890] (-) EventReactorShutdown: {}
