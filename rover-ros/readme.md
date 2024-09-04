@@ -2,10 +2,14 @@
 This is where we will store all the ROS specific nodes to run on the main computer of the rover currently it is pretty empty.
 
 
+src/ is where all nodes are kept seperated into directories.
+
+
 ### Depth Image Viewer
 Test node to try and pull video data and display on a window to test the realsense.
 Take a look at it to see how it works
-the only notable source code is a python file called depth-image-viewer.py or sum sh
+the only notable source code is in a python file called 
+depth-image-viewer/depth-image-node.py 
 
 
 
