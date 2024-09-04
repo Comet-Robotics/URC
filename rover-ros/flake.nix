@@ -16,6 +16,7 @@
           packages = [
             pkgs.colcon
             # ... other non-ROS packages
+	    pkgs.librealsense
             (with pkgs.rosPackages.humble; buildEnv {
                 paths = [
                     ros-core
