@@ -1,2 +1,0 @@
-Invoking command in '/home/urc/URC/rover/build/realsense2_camera_msgs': /usr/bin/cmake /home/urc/URC/rover/src/realsense-ros/realsense2_camera_msgs -DCMAKE_INSTALL_PREFIX=/home/urc/URC/rover/install/realsense2_camera_msgs
-Invoked command in '/home/urc/URC/rover/build/realsense2_camera_msgs' returned '1': /usr/bin/cmake /home/urc/URC/rover/src/realsense-ros/realsense2_camera_msgs -DCMAKE_INSTALL_PREFIX=/home/urc/URC/rover/install/realsense2_camera_msgs
