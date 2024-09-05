@@ -15,3 +15,46 @@ depth-image-viewer/depth-image-node.py
 
 ### Realsense-ros
 This is a ros node made by intel that we will use to pull the video feeds from the camera.
+
+
+
+### Setup/Dev Enviorement
+
+OS: Ubuntu 22.04
+
+**First Time Setup ONLY**
+Install Nix
+`curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install`
+
+**Load ROS Enviornment**
+
+in the URC/rover-ros directory run 
+`nix develop` *may take a while first time
+
+**First Time w/realsense**
+
+`chmod +x scripts/setup_udev_rules.sh`
+`./scripts/setup_udev_rules.sh`
+
+**Building Nodes**
+
+URC/rover-ros> `colcon build`
+URC/rover-ros> `. ./install/local_setup.sh`
+
+
+**Running Nodes**
+
+**Realsense**
+`ros2 run realsense2_camera realsense2_camera_node`
+
+**Launch Script**
+`ros2 launch launch/rover.py`
+
+
+
+
+
+
+
+
+
