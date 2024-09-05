@@ -7,12 +7,12 @@
 //creates pwm instance
 Teensy_PWM* PWM_Instance;
 
-float frequency = 500.0f;
+float frequency = 50.0f;
 
 float dutyCycle = 7.5f;
 
 
-float setSpeed(float speed, bool reverse)
+float setSpeed(int pin,float speed, bool reverse)
 {
   if (reverse)
   {
@@ -24,7 +24,7 @@ float setSpeed(float speed, bool reverse)
   }
 
 
-  PWM_Instance->setPWM(pinToUse, frequency, dutyCycle);
+  PWM_Instance->setPWM(pin, frequency, dutyCycle);
   return dutyCycle;
 }
 
@@ -67,7 +67,7 @@ void loop()
   delay(5000);
   for (int i = 0; i <= 20; i++)
   {
-    setSpeed((1.0f/20.0f)*i, false);
+    setSpeed(pinToUse,(1.0f/20.0f)*i, false);
     delay(500 );
   }
 
@@ -76,7 +76,7 @@ void loop()
 
   for (int i = 0; i <= 20; i++)
   {
-    setSpeed((1.0f/20.0f)*i, true);
+    setSpeed(pinToUse,(1.0f/20.0f)*i, true);
     delay(500 );
   }
   PWM_Instance->setPWM(pinToUse, 0, 0);

@@ -22,3 +22,10 @@ Assuming you take the frequency 50hz
 full throttle would be 10%
 0% throttle would be 7.5%
 full reverse would be 5.0%
+
+
+
+### Protocal
+
+ L    R
+-100 +100
