@@ -15,7 +15,7 @@ And finally, follow the Quickstart installation guide and try to run the first C
 
 The outcome should look like this: 
 
-<img src="image-2.png" width= 250>
+<img src="outcomes/bus.jpg" width= 250>
 
 ## Stage 2:
 
@@ -33,7 +33,7 @@ just coded.
 
 Outcome looks like this its displaying the bounding box, class, and confidence number:
 
-<img src="signal-2024-09-05-222830_002-1.jpeg" width=400>
+<img src="outcomes/signal-2024-09-05-222830_002.jpeg" width=400>
 
 
 
