@@ -15,5 +15,6 @@ def generate_launch_description():
             name='image_viewer',
             output='screen',
         ),
+  
         # Add more nodes as needed
     ])

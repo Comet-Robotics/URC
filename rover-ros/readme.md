@@ -23,13 +23,15 @@ This is a ros node made by intel that we will use to pull the video feeds from t
 OS: Ubuntu 22.04
 
 **First Time Setup ONLY**
-Install Nix
-`curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install`
+install ros2 by running
+`scripts/install_ros2.sh`
+Install realsense
+`sudo apt install ros-humble-librealsense2*`
+Setup Realsense-ros deps
+`rosdep install -i --from-path src --rosdistro humble --skip-keys=librealsense2 -y`
 
-**Load ROS Enviornment**
 
-in the URC/rover-ros directory run 
-`nix develop` *may take a while first time
+
 
 **First Time w/realsense**
 
@@ -46,6 +48,7 @@ URC/rover-ros> `. ./install/local_setup.sh`
 
 **Realsense**
 `ros2 run realsense2_camera realsense2_camera_node`
+`ros2 run depth_image_viewer depth_image_node`
 
 **Launch Script**
 `ros2 launch launch/rover.py`
