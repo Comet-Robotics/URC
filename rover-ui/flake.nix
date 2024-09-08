@@ -26,14 +26,13 @@
         localRust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
         # Other utilities commonly used in Rust projects (but not in this example project)
-        others = with pkgs; [ openssl pkg-config ];
+        others = with pkgs; [ openssl pkg-config opencv ];
       in {
         devShells = {
           default = pkgs.mkShell {
             # Packages included in the environment
             buildInputs = [ 
 	    localRust
-	    pkgs.opencv
 	    ] ++ others;
 
             # Run when the shell is started up
