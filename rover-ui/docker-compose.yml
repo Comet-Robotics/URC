@@ -1,0 +1,10 @@
+version: '3'
+services:
+  ros2:
+    image: osrf/ros:humble-desktop
+    container_name: ros2_container
+    network_mode: "host"
+    volumes:
+      - ./rover-ros:/root/my_ros2_ws
+    stdin_open: true
+    tty: true
