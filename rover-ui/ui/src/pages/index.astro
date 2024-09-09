@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
+import HLSVideo from '../components/HLSVideo';
+
 ---
 
 <Layout title="Welcome to Astro.">
@@ -38,14 +40,7 @@ import Card from '../components/Card.astro';
 			To get started, open the directory <code>src/pages</code> in your project.<br />
 			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
 		</p>
-		<video
-			controls
-			autoplay
-			loop
-			muted
-			playsinline
-			src="/video_feed"
-			style="width: 100%; border-radius: 8px;"/>
+		<HLSVideo  videoSrc="/video-data/rgb-data.m3u8" client:load />
 		<ul role="list" class="link-card-grid">
 			<Card
 				href="https://docs.astro.build/"
