@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import HLSVideo from '../components/HLSVideo';
+import WebSocketVideo from "../components/WebSocketVideo";
 
 ---
 
@@ -40,7 +41,12 @@ import HLSVideo from '../components/HLSVideo';
 			To get started, open the directory <code>src/pages</code> in your project.<br />
 			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
 		</p>
-		<HLSVideo  videoSrc="/video-data/rgb-data.m3u8" client:load />
+		<div class="flex flex-row ">
+			<WebSocketVideo wsUrl="/depth_feed" client:load/>
+
+			<WebSocketVideo wsUrl="/rgb_feed" client:load/>
+		</div>
+
 		<ul role="list" class="link-card-grid">
 			<Card
 				href="https://docs.astro.build/"
