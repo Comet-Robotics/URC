@@ -8,7 +8,7 @@ Motor::Motor(int pin, int frequncey) {
 
 float Motor::set_speed(Teensy_PWM* PWM_Instance,float speed){
     this->speed = speed;
-    float dutyCycle = 5.0f + speed*2.5f;
+    float dutyCycle = 7.5f + speed*2.5f;
 
     PWM_Instance->setPWM(this->pinToUse, this->frequency, dutyCycle);
 }
