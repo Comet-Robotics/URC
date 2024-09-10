@@ -44,7 +44,10 @@ fn handle_video_stream(mut recv: Receiver<Bytes>,req: HttpRequest, stream: web::
             };
             
             
-            session.binary(frame.clone()).await.unwrap()
+            if let Err(e) = session.binary(frame.clone()).await{
+                tracing::debug!("Closing Stream");
+                break;
+            }
             
         }
 
@@ -180,12 +183,13 @@ mod real_data {
             node.spin_once(std::time::Duration::from_millis(100));
         });
 
-
+        
         loop {
             
 
             select! {   
                 Some(frame) = rgb_sub.next() => {
+                    tracing::debug!("New Frame");
                 
                     if (rgb_send.receiver_count() ==0){
                         continue;

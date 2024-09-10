@@ -45,7 +45,7 @@ const WebSocketVideo = ({ wsUrl = "/ws", width = 640, height = 480 }) => {
 
     return (
         <div>
-            <h2>WebSocket Video Stream</h2>
+
             {isConnected ? (
                 <img src={frameSrc!} width={width} height={height} alt="Video Stream" />
             ) : (
