@@ -1,57 +1,49 @@
 import { useEffect, useState, useRef } from "react";
+import {Card} from "@/components/ui/card.tsx";
+import JMuxer from "jmuxer"
 
 const WebSocketVideo = ({ wsUrl = "/ws", width = 640, height = 480 }) => {
-    const [isConnected, setIsConnected] = useState(false);
-    const [frameSrc, setFrameSrc] = useState<string |null>(null); // Holds the image URL for the current frame
-    const wsRef = useRef<WebSocket|null>(null); // Reference to the WebSocket instance
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  
     useEffect(() => {
-        // Create WebSocket connection.
-        const ws = new WebSocket(wsUrl);
-        wsRef.current = ws;
 
-        ws.onopen = () => {
-            console.log("WebSocket connection established");
-            setIsConnected(true);
-        };
-
-        ws.onclose = () => {
-            console.log("WebSocket connection closed");
-            setIsConnected(false);
-        };
-
-        ws.onerror = (error) => {
-            console.error("WebSocket error", error);
-            setIsConnected(false);
-        };
-
-        ws.onmessage = (event) => {
-            // Create a Blob URL from the received binary data (assuming JPEG frames)
-            const blob = new Blob([event.data], { type: "image/jpeg" });
-            const imageUrl = URL.createObjectURL(blob);
-            setFrameSrc(imageUrl);
-
-            // Free up the memory for the previous frame
-            if (frameSrc) {
-                URL.revokeObjectURL(frameSrc);
+        let jmuxer = new JMuxer({
+            node: videoRef.current!,
+            mode: 'video',
+            flushingTime: 1000,
+            fps: 30,
+            debug: true,
+            onError: function(data) {
+                if (/Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)) {
+                    jmuxer.reset();
+                }
             }
-        };
+        });
 
-        // Cleanup WebSocket when the component unmounts
-        return () => {
-            ws.close();
-        };
-    }, [wsUrl]);
+
+      // WebSocket connection
+      const ws = new WebSocket(wsUrl);
+      ws.binaryType = 'arraybuffer';
+
+      ws.onmessage = (event) => {
+        const data = new Uint8Array(event.data);
+      jmuxer.feed({
+          video: data
+      });
+      };
+
+      return () => {
+        ws.close();
+      };
+    }, [videoRef]);
+  
 
     return (
-        <div>
-
-            {isConnected ? (
-                <img src={frameSrc!} width={width} height={height} alt="Video Stream" />
-            ) : (
-                <p>Connecting to video stream...</p>
-            )}
-        </div>
+      <div>
+        <h1>H.264 Stream Player</h1>
+          <video ref={videoRef} width={480} height={640}></video>
+      </div>
     );
 };
 

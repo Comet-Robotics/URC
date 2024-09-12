@@ -4,9 +4,11 @@ class Motor {
         float speed;       
         int pinToUse;
         float frequency;
+        Teensy_PWM* instance;
+        Motor();
 
         Motor(int pin, int frequncey);
 
-        float set_speed (Teensy_PWM* PWM_Instance,float speed);
+        float set_speed (float speed);
 
 };

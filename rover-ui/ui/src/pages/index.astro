@@ -7,9 +7,9 @@ import WebSocketVideo from "../components/WebSocketVideo";
 ---
 
 <Layout title="Welcome to Astro.">
-	<div class="flex flex-row w-full justify-center">
+	<div class="flex flex-row w-full justify-center p-5 gap-5">
 		<WebSocketVideo wsUrl="/rgb_feed" client:load />
-		<WebSocketVideo wsUrl="/depth_feed" client:load />
+		<!-- <WebSocketVideo wsUrl="/depth_feed" client:load /> -->
 
 	</div>
 </Layout>
