@@ -4,7 +4,6 @@ from rclpy.node import Node
 import serial
 from action_drivetrain_interface.action import Forward # type: ignore
 from action_drivetrain_interface.action import Turn # type: ignore
-import time
 
 class FibonacciActionServer(Node):
 
@@ -25,13 +24,23 @@ class FibonacciActionServer(Node):
             baudrate=115200,        # Baud rate
             timeout=1             # Timeout for read operations
         )
-   
+        self.alive_timer = self.create_timer(1.0 , self.send_alive_message)
 
+
+    def send_alive_message(self):
+        self.ser.write(b'ALIVE\n')
+        self.get_logger().info('Sent Alive Message via Serial')
 
     def forward_execute_callback(self, goal_handle):
         self.get_logger().info('Starting path...')
         feedback_msg = Forward.Feedback()
         feedback_msg.traveled = 0
+
+        # The loop below is just a prototype to apply gradual speed ramping for the wheels, to try and prevent jerky movements
+        for i in range(0, 25, 5):
+            self.ser.write(f'{i}:{i}\n'.encode())
+            rclpy.sleep(1)
+
         self.ser.write(b'20:20\n')
 
         for i in range(1, goal_handle.request.distance):
@@ -39,7 +48,7 @@ class FibonacciActionServer(Node):
             
             self.get_logger().info('Feedback: {0}'.format(i))
             goal_handle.publish_feedback(feedback_msg)
-            time.sleep(1)
+            rclpy.sleep(1)
         self.ser.write(b'0:0\n')
         goal_handle.succeed()
 
@@ -65,7 +74,7 @@ class FibonacciActionServer(Node):
                 
                 self.get_logger().info('Feedback: {0}'.format(i))
                 goal_handle.publish_feedback(feedback_msg)
-                time.sleep(0.025)
+                rclpy.sleep(0.025)
             self.ser.write(b'0:0\n')
             goal_handle.succeed()
 
