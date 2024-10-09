@@ -1,0 +1,8 @@
+source;share/sim_package/hook/cmake_prefix_path.ps1
+source;share/sim_package/hook/cmake_prefix_path.dsv
+source;share/sim_package/hook/cmake_prefix_path.sh
+source;share/sim_package/local_setup.bash
+source;share/sim_package/local_setup.dsv
+source;share/sim_package/local_setup.ps1
+source;share/sim_package/local_setup.sh
+source;share/sim_package/local_setup.zsh

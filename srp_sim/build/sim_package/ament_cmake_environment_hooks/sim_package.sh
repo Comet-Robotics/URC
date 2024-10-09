@@ -1,0 +1,2 @@
+ament_prepend_unique_value IGN_GAZEBO_RESOURCE_PATH "$AMENT_CURRENT_PREFIX/share/sim_package/models"
+
