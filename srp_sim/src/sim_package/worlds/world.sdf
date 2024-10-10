@@ -22,36 +22,43 @@
         </include>
         <include>
             <uri>model://falling_rock1</uri>
+<static>true</static>
             <name>falling_rock1</name>
             <pose>5 0 -0.75 0 -0 0</pose>
         </include>
         <include>
             <uri>model://falling_rock1</uri>
+<static>true</static>
             <name>falling_rock1_1</name>
             <pose>0 5 -1 0 -0 0</pose>
         </include>
         <include>
         <uri>model://falling_rock1</uri>
+<static>true</static>
         <name>falling_rock1_2</name>
         <pose>2.51809 -2.78007 -0.75 0 -0 0</pose>
         </include>
         <include>
         <uri>model://falling_rock1</uri>
+<static>true</static>
         <name>falling_rock1_1_1</name>
         <pose>2.19445 1.39676 -1 0 -0 0</pose>
         </include>
         <include>
         <uri>model://falling_rock1</uri>
+<static>true</static>
         <name>falling_rock1_1_2</name>
         <pose>-2.47811 1.62366 -1 0 -0 0</pose>
         </include>
         <include>
         <uri>model://falling_rock1</uri>
+<static>true</static>
         <name>falling_rock1_1_3</name>
         <pose>6.82 3.61 0 0 -0 0</pose>
         </include>
         <include>
         <uri>model://falling_rock1</uri>
+<static>true</static>
         <name>falling_rock1_1_3_1</name>
         <pose>10.6949 -1.65326 0 0 -0 0</pose>
         </include>
@@ -138,6 +145,14 @@
         <plugin filename="libignition-gazebo-imu-system.so"
                 name="ignition::gazebo::systems::Imu">
         </plugin>
+        <spherical_coordinates>
+    <surface_model>EARTH_WGS84</surface_model>
+        <world_frame_orientation>ENU</world_frame_orientation>
+        <latitude_deg>-22.986687</latitude_deg>
+        <longitude_deg>-43.202501</longitude_deg>
+        <elevation>0</elevation>
+        <heading_deg>0</heading_deg>
+    </spherical_coordinates>
 
  
     </world>

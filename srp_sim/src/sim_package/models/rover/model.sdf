@@ -9,6 +9,11 @@
         <pose>0 0 0.063494 0 0 0</pose>
         <enable_wind>1</enable_wind>
         <link name="base_link">
+            <sensor name="navsat" type="navsat">
+                <always_on>1</always_on>
+                <update_rate>1</update_rate>
+                <topic>navsat</topic>
+            </sensor>
             <inertial>
                 <pose>0.011999 0.002 0.066996 0 -0 0</pose>
                 <mass>16.524</mass>
