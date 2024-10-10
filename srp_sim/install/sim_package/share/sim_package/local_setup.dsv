@@ -1,4 +1,0 @@
-source;share/sim_package/environment/ament_prefix_path.sh
-source;share/sim_package/environment/path.sh
-source;share/sim_package/environment/sim_package.sh
-source;share/sim_package/environment/sim_package.dsv

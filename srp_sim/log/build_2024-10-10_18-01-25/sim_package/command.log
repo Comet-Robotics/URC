@@ -1,4 +1,0 @@
-Invoking command in '/home/therion/dev/school/URC/srp_sim/build/sim_package': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/therion/dev/school/URC/srp_sim/build/sim_package -- -j10 -l10
-Invoked command in '/home/therion/dev/school/URC/srp_sim/build/sim_package' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/therion/dev/school/URC/srp_sim/build/sim_package -- -j10 -l10
-Invoking command in '/home/therion/dev/school/URC/srp_sim/build/sim_package': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/therion/dev/school/URC/srp_sim/build/sim_package
-Invoked command in '/home/therion/dev/school/URC/srp_sim/build/sim_package' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/therion/dev/school/URC/srp_sim/build/sim_package

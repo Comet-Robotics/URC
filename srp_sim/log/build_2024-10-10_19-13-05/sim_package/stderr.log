@@ -1,4 +1,0 @@
-[01m[K/home/therion/dev/school/URC/srp_sim/src/sim_package/src/BasicSystem.cc:[m[K In member function ‘[01m[Kvirtual void sim_package::BasicSystem::PostUpdate(const ignition::gazebo::v6::UpdateInfo&, const ignition::gazebo::v6::EntityComponentManager&)[m[K’:
-[01m[K/home/therion/dev/school/URC/srp_sim/src/sim_package/src/BasicSystem.cc:41:69:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[K_ecm[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
-   41 |                              [01;35m[Kconst gz::sim::EntityComponentManager &_ecm[m[K)
-      |                              [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~[m[K
