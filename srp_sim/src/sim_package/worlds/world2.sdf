@@ -1,0 +1,110 @@
+<sdf version='1.9'>
+  <world name='world1'>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <sky/>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+    <physics name='1ms' type='ignored'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <plugin name='ignition::gazebo::systems::Physics' filename='libignition-gazebo-physics-system.so'/>
+    <plugin name='ignition::gazebo::systems::UserCommands' filename='libignition-gazebo-user-commands-system.so'/>
+    <plugin name='ignition::gazebo::systems::SceneBroadcaster' filename='libignition-gazebo-scene-broadcaster-system.so'/>
+    <plugin name='ignition::gazebo::systems::TriggeredPublisher' filename='libignition-gazebo-triggered-publisher-system.so'>
+      <input type='ignition.msgs.Int32' topic='/keyboard/keypress'>
+        <match field='data'>16777235</match>
+      </input>
+      <output type='ignition.msgs.Twist' topic='/cmd_vel'>linear: {x: 0.5}, angular: {z: 0.0}</output>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::TriggeredPublisher' filename='libignition-gazebo-triggered-publisher-system.so'>
+      <input type='ignition.msgs.Int32' topic='/keyboard/keypress'>
+        <match field='data'>16777237</match>
+      </input>
+      <output type='ignition.msgs.Twist' topic='/cmd_vel'>linear: {x: -0.5}, angular: {z: 0.0}</output>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::TriggeredPublisher' filename='libignition-gazebo-triggered-publisher-system.so'>
+      <input type='ignition.msgs.Int32' topic='/keyboard/keypress'>
+        <match field='data'>16777234</match>
+      </input>
+      <output type='ignition.msgs.Twist' topic='/cmd_vel'>linear: {x: 0.0}, angular: {z: 0.5}</output>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::TriggeredPublisher' filename='libignition-gazebo-triggered-publisher-system.so'>
+      <input type='ignition.msgs.Int32' topic='/keyboard/keypress'>
+        <match field='data'>16777236</match>
+      </input>
+      <output type='ignition.msgs.Twist' topic='/cmd_vel'>linear: {x: 0.0}, angular: {z: -0.5}</output>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::Imu' filename='libignition-gazebo-imu-system.so'/>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars</uri>
+      <name>mars</name>
+      <pose>0 0 0 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/rover</uri>
+      <name>ROBOTIKA_X2</name>
+      <pose>0 0 0.063494 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/falling_rock1</uri>
+      <name>falling_rock1</name>
+      <pose>5 0 -0.75 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/falling_rock1</uri>
+      <name>falling_rock1_1</name>
+      <pose>0 5 -1 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/falling_rock1</uri>
+      <name>falling_rock1_2</name>
+      <pose>2.51809 -2.78007 -0.75 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/falling_rock1</uri>
+      <name>falling_rock1_1_1</name>
+      <pose>2.19445 1.39676 -1 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/falling_rock1</uri>
+      <name>falling_rock1_1_2</name>
+      <pose>-2.47811 1.62366 -1 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/falling_rock1</uri>
+      <name>falling_rock1_1_3</name>
+      <pose>6.82 3.61 0 0 -0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/falling_rock1</uri>
+      <name>falling_rock1_1_3_1</name>
+      <pose>10.6949 -1.65326 0 0 -0 0</pose>
+    </include>
+    <light name='sun' type='directional'>
+      <pose>0 0 10 0 -0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>-0.5 0.1 -0.9</direction>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <linear>0.01</linear>
+        <constant>0.90000000000000002</constant>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
+    </light>
+  </world>
+</sdf>
