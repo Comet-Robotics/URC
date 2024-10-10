@@ -14,6 +14,10 @@ class DrivetrainActionClient(Node):
             self, 
             Forward, 
             'forward')
+        self.turn_action_client=ActionClient(
+            self, 
+            Turn, 
+            'turn')
         stdscr.nodelay(True)
         self.stdscr=stdscr
         self.keypress_timer=self.create_timer(
@@ -28,14 +32,37 @@ class DrivetrainActionClient(Node):
         self.action_client.wait_for_server()
         self.action_client.send_goal_async(
             goal_msg, 
-            feedback_callback=self.feedback_callback)
+            feedback_callback=self.feedback_callback
+            )
+
+    def send_turn(self,turn):
+        self.get_logger().info('Sending turn: %d' % turn) 
+        goal_msg = Turn.Goal()
+        goal_msg.degree = turn
+
+        self.turn_action_client.wait_for_server()
+        self.turn_action_client.send_goal_async(
+            goal_msg, 
+            feedback_callback=self.feedback_callback2,
+            # result_callback=self.result_callback2
+            )
+
 
     def feedback_callback(self, feedback):
-        self.get_logger().info('Feedback: %d' % feedback.feedback.progress)
+        self.stdscr.addstr('Feedback: %d' % feedback.feedback.traveled)
 
-    def result_callback(self, future):
+    
+    def feedback_callback2(self, feedback):
+        self.stdscr.addstr('Feedback: %d' % feedback.feedback.degrees_moved)
+
+    # def result_callback(self, future):
+    #     result = future.result().result
+    #     self.stdscr.addstr('Result: %d' % result.total_distance)
+
+    
+    def result_callback2(self, future):
         result = future.result().result
-        self.get_logger().info('Result: %d' % result.sum)
+        self.stdscr.addstr('Result: %d' % result.total_degrees)
 
     def detect_keypresses(self):
         a = self.stdscr.getch()
@@ -43,6 +70,18 @@ class DrivetrainActionClient(Node):
         if a != -1:
             self.stdscr.addstr(f'You pressed: {chr(a)}')
             self.stdscr.refresh()
+            if (chr(a) == 'w'):
+                self.send_goal(2)
+            elif (chr(a) == 's'):
+                self.send_goal(-2)
+            elif (chr(a) == 'a'):
+                self.send_turn(2)
+            elif (chr(a) == 'd'):
+                self.send_turn(-2)
+            else:
+                self.send_turn(0)
+                self.send_goal(0)
+        
 
      
 def start(stdscr):
