@@ -1,0 +1,384 @@
+[0.000000] (-) TimerEvent: {}
+[0.000287] (sim_package) JobQueued: {'identifier': 'sim_package', 'dependencies': OrderedDict()}
+[0.000364] (sim_package) JobStarted: {'identifier': 'sim_package'}
+[0.008550] (sim_package) JobProgress: {'identifier': 'sim_package', 'progress': 'cmake'}
+[0.008822] (sim_package) Command: {'cmd': ['/usr/bin/cmake', '/home/therion/dev/school/URC/srp_sim/src/sim_package', '-DCMAKE_INSTALL_PREFIX=/home/therion/dev/school/URC/srp_sim/install/sim_package'], 'cwd': '/home/therion/dev/school/URC/srp_sim/build/sim_package', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('TMUX', '/tmp/tmux-1000/default,6635,1'), ('USER', 'therion'), ('XDG_SESSION_TYPE', 'x11'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('SHLVL', '2'), ('HOME', '/home/therion'), ('LESS', '-R'), ('OLDPWD', '/home/therion/dev/school/URC/srp_sim'), ('DESKTOP_SESSION', 'ubuntu'), ('TERM_PROGRAM_VERSION', '3.2a'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/Alacritty.desktop'), ('LSCOLORS', 'Gxfxcxdxbxegedabagacad'), ('ZSH', '/home/therion/.oh-my-zsh'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('PAGER', 'less'), ('ROS_PYTHON_VERSION', '3'), ('NIX_PROFILES', '/nix/var/nix/profiles/default /home/therion/.nix-profile'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:abstract=/tmp/dbus-xzgeh5hlH5,guid=9aa7dd926497d7546247cce467081542'), ('P9K_TTY', 'old'), ('COLORTERM', 'truecolor'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '3678'), ('COLCON_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install'), ('ROS_DISTRO', 'humble'), ('ALACRITTY_SOCKET', '/run/user/1000/Alacritty-:1-3678.sock'), ('LOGNAME', 'therion'), ('WINDOWID', '27262979'), ('_', '/usr/bin/colcon'), ('_P9K_SSH_TTY', '/dev/pts/5'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('ALACRITTY_LOG', '/tmp/Alacritty-3678.log'), ('TERM', 'screen'), ('USERNAME', 'therion'), ('GAZEBO_MODEL_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/usr/local/cuda/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/therion/.cargo/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/therion/.fzf/bin'), ('SESSION_MANAGER', 'local/bigtherion:@/tmp/.ICE-unix/2134,unix/bigtherion:/tmp/.ICE-unix/2134'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':1'), ('LANG', 'en_US.UTF-8'), ('LD_PRELOAD', '/usr/NX/lib/libnxegl.so'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('TERM_PROGRAM', 'tmux'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('AMENT_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package:/opt/ros/humble'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('SHELL', '/usr/bin/zsh'), ('GDMSESSION', 'ubuntu'), ('QT_ACCESSIBILITY', '1'), ('IGN_GAZEBO_RESOURCE_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package/share'), ('NIX_SSL_CERT_FILE', '/etc/ssl/certs/ca-certificates.crt'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('P9K_SSH', '0'), ('ALACRITTY_WINDOW_ID', '27262979'), ('PWD', '/home/therion/dev/school/URC/srp_sim/build/sim_package'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share'), ('_P9K_TTY', '/dev/pts/5'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('TMUX_PANE', '%3'), ('CMAKE_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package:/opt/ros/humble')]), 'shell': False}
+[0.063957] (sim_package) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[0.099862] (-) TimerEvent: {}
+[0.107764] (sim_package) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[0.114094] (sim_package) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.177227] (sim_package) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.182480] (sim_package) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.182620] (sim_package) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.182879] (sim_package) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.184559] (sim_package) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.199940] (-) TimerEvent: {}
+[0.255564] (sim_package) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.260067] (sim_package) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.260231] (sim_package) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.260469] (sim_package) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.262147] (sim_package) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.10 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.300014] (-) TimerEvent: {}
+[0.357857] (sim_package) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[0.400103] (-) TimerEvent: {}
+[0.409893] (sim_package) StdoutLine: {'line': b'-- Found rclpy: 3.3.14 (/opt/ros/humble/share/rclpy/cmake)\n'}
+[0.410736] (sim_package) StdoutLine: {'line': b'-- Found rclcpp: 16.0.10 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[0.435271] (sim_package) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[0.438097] (sim_package) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.444195] (sim_package) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[0.450074] (sim_package) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.458663] (sim_package) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.483888] (sim_package) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[0.485454] (sim_package) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.500179] (-) TimerEvent: {}
+[0.577529] (sim_package) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  \n'}
+[0.596698] (sim_package) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/humble/include  \n'}
+[0.600252] (-) TimerEvent: {}
+[0.626376] (sim_package) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.632537] (sim_package) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[0.700343] (-) TimerEvent: {}
+[0.700499] (sim_package) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[0.700652] (sim_package) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[0.769880] (sim_package) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n'}
+[0.770549] (sim_package) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[0.800416] (-) TimerEvent: {}
+[0.804250] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[0.804463] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1\n'}
+[0.804687] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-plugin1> component [register]\n'}
+[0.806329] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1-register -- found version 1.4.0\n'}
+[0.806565] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1-register\n'}
+[0.808519] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[0.808744] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4\n'}
+[0.808881] (sim_package) StdoutLine: {'line': b'-- Looking for dlfcn.h - found\n'}
+[0.809584] (sim_package) StdoutLine: {'line': b'-- Looking for libdl - found\n'}
+[0.810420] (sim_package) StdoutLine: {'line': b'-- Found DL: TRUE  \n'}
+[0.815536] (sim_package) StdoutLine: {'line': b"-- Checking for module 'uuid'\n"}
+[0.831498] (sim_package) StdoutLine: {'line': b'--   Found uuid, version 2.37.2\n'}
+[0.876106] (sim_package) StdoutLine: {'line': b'-- Found UUID: TRUE  \n'}
+[0.876451] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [profiler]\n'}
+[0.878620] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4-profiler -- found version 4.7.0\n'}
+[0.878869] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-profiler\n'}
+[0.881077] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-gazebo6 -- found version 6.16.0\n'}
+[0.881309] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-gazebo6\n'}
+[0.883032] (sim_package) StdoutLine: {'line': b'-- Looking for sdformat12 -- found version 12.8.0\n'}
+[0.883273] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of sdformat12\n'}
+[0.888109] (sim_package) StdoutLine: {'line': b"-- Checking for module 'tinyxml2'\n"}
+[0.900492] (-) TimerEvent: {}
+[0.904889] (sim_package) StdoutLine: {'line': b'--   Found tinyxml2, version 9.0.0\n'}
+[0.951399] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[0.951716] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-math6\n'}
+[0.953773] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[0.954068] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-utils1\n'}
+[0.954862] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[0.955190] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1\n'}
+[0.955314] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-plugin1> component [loader]\n'}
+[0.956981] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1-loader -- found version 1.4.0\n'}
+[0.957284] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1-loader\n'}
+[0.957578] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-plugin1> component [register]\n'}
+[0.959611] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-transport11 -- found version 11.4.1\n'}
+[0.959897] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-transport11\n'}
+[0.977527] (sim_package) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so (found version "3.12.4") \n'}
+[0.985420] (sim_package) StdoutLine: {'line': b'-- Config-file not installed for ZeroMQ -- checking for pkg-config\n'}
+[0.991161] (sim_package) StdoutLine: {'line': b"-- Checking for module 'libzmq >= 4'\n"}
+[1.000559] (-) TimerEvent: {}
+[1.007897] (sim_package) StdoutLine: {'line': b'--   Found libzmq , version 4.3.4\n'}
+[1.057150] (sim_package) StdoutLine: {'line': b'-- Found ZeroMQ: TRUE (Required is at least version "4") \n'}
+[1.064102] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[1.064406] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-utils1\n'}
+[1.064524] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-utils1> component [cli]\n'}
+[1.066216] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-utils1-cli -- found version 1.5.1\n'}
+[1.066520] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-utils1-cli\n'}
+[1.068430] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.068701] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-msgs8\n'}
+[1.081911] (sim_package) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so (found suitable version "3.12.4", minimum required is "3") \n'}
+[1.082863] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.088885] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-transport11> component [log]\n'}
+[1.090610] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-transport11-log -- found version 11.4.1\n'}
+[1.090948] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-transport11-log\n'}
+[1.091289] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-transport11> component [parameters]\n'}
+[1.092951] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-transport11-parameters -- found version 11.4.1\n'}
+[1.093215] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-transport11-parameters\n'}
+[1.093702] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.093930] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.094163] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4\n'}
+[1.094244] (sim_package) StdoutLine: {'line': b'-- Looking for dlfcn.h - found\n'}
+[1.094301] (sim_package) StdoutLine: {'line': b'-- Looking for libdl - found\n'}
+[1.100634] (-) TimerEvent: {}
+[1.101695] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [profiler]\n'}
+[1.101945] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [events]\n'}
+[1.103745] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4-events -- found version 4.7.0\n'}
+[1.103999] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-events\n'}
+[1.104234] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.104487] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [av]\n'}
+[1.106147] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4-av -- found version 4.7.0\n'}
+[1.106394] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-av\n'}
+[1.112139] (sim_package) StdoutLine: {'line': b"-- Checking for module 'libswscale'\n"}
+[1.130033] (sim_package) StdoutLine: {'line': b'--   Found libswscale, version 5.9.100\n'}
+[1.177263] (sim_package) StdoutLine: {'line': b'-- Found SWSCALE: TRUE  \n'}
+[1.182309] (sim_package) StdoutLine: {'line': b"-- Checking for module 'libavdevice >= 56.4.100'\n"}
+[1.198197] (sim_package) StdoutLine: {'line': b'--   Found libavdevice , version 58.13.100\n'}
+[1.200704] (-) TimerEvent: {}
+[1.248000] (sim_package) StdoutLine: {'line': b'-- Found AVDEVICE: TRUE (Required is at least version "56.4.100") \n'}
+[1.253431] (sim_package) StdoutLine: {'line': b"-- Checking for module 'libavformat'\n"}
+[1.268983] (sim_package) StdoutLine: {'line': b'--   Found libavformat, version 58.76.100\n'}
+[1.300775] (-) TimerEvent: {}
+[1.315470] (sim_package) StdoutLine: {'line': b'-- Found AVFORMAT: TRUE  \n'}
+[1.320202] (sim_package) StdoutLine: {'line': b"-- Checking for module 'libavcodec'\n"}
+[1.338023] (sim_package) StdoutLine: {'line': b'--   Found libavcodec, version 58.134.100\n'}
+[1.385991] (sim_package) StdoutLine: {'line': b'-- Found AVCODEC: TRUE  \n'}
+[1.391927] (sim_package) StdoutLine: {'line': b"-- Checking for module 'libavutil'\n"}
+[1.400858] (-) TimerEvent: {}
+[1.408119] (sim_package) StdoutLine: {'line': b'--   Found libavutil, version 56.70.100\n'}
+[1.455416] (sim_package) StdoutLine: {'line': b'-- Found AVUTIL: TRUE  \n'}
+[1.458107] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-fuel_tools7 -- found version 7.3.1\n'}
+[1.458412] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-fuel_tools7\n'}
+[1.500935] (-) TimerEvent: {}
+[1.546006] (sim_package) StdoutLine: {'line': b'-- Found CURL: /usr/lib/x86_64-linux-gnu/libcurl.so (found version "7.81.0")  \n'}
+[1.554016] (sim_package) StdoutLine: {'line': b"-- Checking for module 'jsoncpp'\n"}
+[1.570987] (sim_package) StdoutLine: {'line': b'--   Found jsoncpp, version 1.9.5\n'}
+[1.601021] (-) TimerEvent: {}
+[1.617090] (sim_package) StdoutLine: {'line': b'-- Found JSONCPP: TRUE  \n'}
+[1.622421] (sim_package) StdoutLine: {'line': b"-- Checking for module 'libzip'\n"}
+[1.639640] (sim_package) StdoutLine: {'line': b'--   Found libzip, version 1.7.3\n'}
+[1.685730] (sim_package) StdoutLine: {'line': b'-- Found ZIP: TRUE  \n'}
+[1.686054] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.686338] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.686668] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.688869] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-gui6 -- found version 6.8.0\n'}
+[1.689180] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-gui6\n'}
+[1.701097] (-) TimerEvent: {}
+[1.712599] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.712868] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.713176] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.713465] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-transport11 -- found version 11.4.1\n'}
+[1.715296] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-rendering6 -- found version 6.6.3\n'}
+[1.715613] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-rendering6\n'}
+[1.715864] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.716173] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-math6\n'}
+[1.716266] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-math6> component [eigen3]\n'}
+[1.718024] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6-eigen3 -- found version 6.15.1\n'}
+[1.718350] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-math6-eigen3\n'}
+[1.723424] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.723708] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4\n'}
+[1.723803] (sim_package) StdoutLine: {'line': b'-- Looking for dlfcn.h - found\n'}
+[1.723860] (sim_package) StdoutLine: {'line': b'-- Looking for libdl - found\n'}
+[1.732395] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [graphics]\n'}
+[1.734132] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4-graphics -- found version 4.7.0\n'}
+[1.734467] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-common4-graphics\n'}
+[1.734719] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.735073] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[1.735420] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-common4> component [events]\n'}
+[1.736072] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.736456] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-plugin1\n'}
+[1.736564] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-plugin1> component [all]\n'}
+[1.738194] (sim_package) StdoutLine: {'line': b'-- Looking for all libraries of ignition-plugin1 -- found version 1.4.0\n'}
+[1.738535] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.739765] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.751863] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-physics5 -- found version 5.3.2\n'}
+[1.752184] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5\n'}
+[1.752427] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.752718] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-plugin1 -- found version 1.4.0\n'}
+[1.753002] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[1.753638] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-physics5> component [heightmap]\n'}
+[1.755418] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-physics5-heightmap -- found version 5.3.2\n'}
+[1.755727] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5-heightmap\n'}
+[1.756007] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.756308] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-physics5> component [mesh]\n'}
+[1.758035] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-physics5-mesh -- found version 5.3.2\n'}
+[1.758360] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5-mesh\n'}
+[1.758623] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.758944] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-physics5> component [sdf]\n'}
+[1.760701] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-physics5-sdf -- found version 5.3.2\n'}
+[1.760992] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-physics5-sdf\n'}
+[1.761264] (sim_package) StdoutLine: {'line': b'-- Looking for sdformat12 -- found version 12.8.0\n'}
+[1.763335] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.763638] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6\n'}
+[1.778180] (sim_package) StdoutLine: {'line': b'-- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so (found version "3.12.4") \n'}
+[1.779037] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.779501] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-common4 -- found version 4.7.0\n'}
+[1.779751] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-transport11 -- found version 11.4.1\n'}
+[1.780000] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-rendering6 -- found version 6.6.3\n'}
+[1.780245] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-msgs8 -- found version 8.7.0\n'}
+[1.780478] (sim_package) StdoutLine: {'line': b'-- Looking for sdformat12 -- found version 12.8.0\n'}
+[1.780790] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [air_pressure]\n'}
+[1.782538] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-air_pressure -- found version 6.8.0\n'}
+[1.782849] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-air_pressure\n'}
+[1.783174] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [altimeter]\n'}
+[1.784843] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-altimeter -- found version 6.8.0\n'}
+[1.785107] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-altimeter\n'}
+[1.785360] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [imu]\n'}
+[1.787033] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-imu -- found version 6.8.0\n'}
+[1.787514] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-imu\n'}
+[1.787762] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [force_torque]\n'}
+[1.789421] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-force_torque -- found version 6.8.0\n'}
+[1.789664] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-force_torque\n'}
+[1.789905] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [logical_camera]\n'}
+[1.791625] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-logical_camera -- found version 6.8.0\n'}
+[1.791862] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-logical_camera\n'}
+[1.792154] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [magnetometer]\n'}
+[1.793797] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-magnetometer -- found version 6.8.0\n'}
+[1.794037] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-magnetometer\n'}
+[1.794282] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [navsat]\n'}
+[1.795962] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-navsat -- found version 6.8.0\n'}
+[1.796214] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-navsat\n'}
+[1.796459] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [rendering]\n'}
+[1.798096] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-rendering -- found version 6.8.0\n'}
+[1.798347] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-rendering\n'}
+[1.798586] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [lidar]\n'}
+[1.800259] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-lidar -- found version 6.8.0\n'}
+[1.800513] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-lidar\n'}
+[1.800720] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.800998] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [gpu_lidar]\n'}
+[1.801160] (-) TimerEvent: {}
+[1.802702] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-gpu_lidar -- found version 6.8.0\n'}
+[1.802967] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-gpu_lidar\n'}
+[1.803187] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.803454] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [camera]\n'}
+[1.805104] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-camera -- found version 6.8.0\n'}
+[1.805357] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-camera\n'}
+[1.805564] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.805912] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [boundingbox_camera]\n'}
+[1.807612] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-boundingbox_camera -- found version 6.8.0\n'}
+[1.807853] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-boundingbox_camera\n'}
+[1.808105] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [segmentation_camera]\n'}
+[1.809828] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-segmentation_camera -- found version 6.8.0\n'}
+[1.810117] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-segmentation_camera\n'}
+[1.810369] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [depth_camera]\n'}
+[1.812054] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-depth_camera -- found version 6.8.0\n'}
+[1.812313] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-depth_camera\n'}
+[1.812537] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.812815] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [rgbd_camera]\n'}
+[1.814461] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-rgbd_camera -- found version 6.8.0\n'}
+[1.814725] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-rgbd_camera\n'}
+[1.814936] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.815224] (sim_package) StdoutLine: {'line': b'-- Searching for <ignition-sensors6> component [thermal_camera]\n'}
+[1.816878] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6-thermal_camera -- found version 6.8.0\n'}
+[1.817122] (sim_package) StdoutLine: {'line': b'-- Searching for dependencies of ignition-sensors6-thermal_camera\n'}
+[1.817332] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-sensors6 -- found version 6.8.0\n'}
+[1.817845] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-rendering6 -- found version 6.6.3\n'}
+[1.818071] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-math6 -- found version 6.15.1\n'}
+[1.819910] (sim_package) StdoutLine: {'line': b'-- Looking for ignition-utils1 -- found version 1.5.1\n'}
+[1.837079] (sim_package) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[1.883800] (sim_package) StdoutLine: {'line': b"-- Added test 'cppcheck' to perform static code analysis on C / C++ code\n"}
+[1.883961] (sim_package) StdoutLine: {'line': b'-- Configured cppcheck include dirs: /home/therion/dev/school/URC/srp_sim/src/sim_package/include\n'}
+[1.884033] (sim_package) StdoutLine: {'line': b'-- Configured cppcheck exclude dirs and/or files: \n'}
+[1.884438] (sim_package) StdoutLine: {'line': b"-- Added test 'flake8' to check Python code syntax and style conventions\n"}
+[1.885282] (sim_package) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[1.885800] (sim_package) StdoutLine: {'line': b"-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257\n"}
+[1.888432] (sim_package) StdoutLine: {'line': b"-- Added test 'uncrustify' to check C / C++ code style\n"}
+[1.888523] (sim_package) StdoutLine: {'line': b'-- Configured uncrustify additional arguments: \n'}
+[1.888949] (sim_package) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[1.889696] (sim_package) StdoutLine: {'line': b'-- Configuring done\n'}
+[1.897439] (sim_package) StdoutLine: {'line': b'-- Generating done\n'}
+[1.898710] (sim_package) StdoutLine: {'line': b'-- Build files have been written to: /home/therion/dev/school/URC/srp_sim/build/sim_package\n'}
+[1.901229] (-) TimerEvent: {}
+[1.906407] (sim_package) CommandEnded: {'returncode': 0}
+[1.907937] (sim_package) JobProgress: {'identifier': 'sim_package', 'progress': 'build'}
+[1.907965] (sim_package) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/therion/dev/school/URC/srp_sim/build/sim_package', '--', '-j10', '-l10'], 'cwd': '/home/therion/dev/school/URC/srp_sim/build/sim_package', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('TMUX', '/tmp/tmux-1000/default,6635,1'), ('USER', 'therion'), ('XDG_SESSION_TYPE', 'x11'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('SHLVL', '2'), ('HOME', '/home/therion'), ('LESS', '-R'), ('OLDPWD', '/home/therion/dev/school/URC/srp_sim'), ('DESKTOP_SESSION', 'ubuntu'), ('TERM_PROGRAM_VERSION', '3.2a'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/Alacritty.desktop'), ('LSCOLORS', 'Gxfxcxdxbxegedabagacad'), ('ZSH', '/home/therion/.oh-my-zsh'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('PAGER', 'less'), ('ROS_PYTHON_VERSION', '3'), ('NIX_PROFILES', '/nix/var/nix/profiles/default /home/therion/.nix-profile'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:abstract=/tmp/dbus-xzgeh5hlH5,guid=9aa7dd926497d7546247cce467081542'), ('P9K_TTY', 'old'), ('COLORTERM', 'truecolor'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '3678'), ('COLCON_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install'), ('ROS_DISTRO', 'humble'), ('ALACRITTY_SOCKET', '/run/user/1000/Alacritty-:1-3678.sock'), ('LOGNAME', 'therion'), ('WINDOWID', '27262979'), ('_', '/usr/bin/colcon'), ('_P9K_SSH_TTY', '/dev/pts/5'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('ALACRITTY_LOG', '/tmp/Alacritty-3678.log'), ('TERM', 'screen'), ('USERNAME', 'therion'), ('GAZEBO_MODEL_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/usr/local/cuda/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/therion/.cargo/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/therion/.fzf/bin'), ('SESSION_MANAGER', 'local/bigtherion:@/tmp/.ICE-unix/2134,unix/bigtherion:/tmp/.ICE-unix/2134'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':1'), ('LANG', 'en_US.UTF-8'), ('LD_PRELOAD', '/usr/NX/lib/libnxegl.so'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('TERM_PROGRAM', 'tmux'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('AMENT_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package:/opt/ros/humble'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('SHELL', '/usr/bin/zsh'), ('GDMSESSION', 'ubuntu'), ('QT_ACCESSIBILITY', '1'), ('IGN_GAZEBO_RESOURCE_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package/share'), ('NIX_SSL_CERT_FILE', '/etc/ssl/certs/ca-certificates.crt'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('P9K_SSH', '0'), ('ALACRITTY_WINDOW_ID', '27262979'), ('PWD', '/home/therion/dev/school/URC/srp_sim/build/sim_package'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share'), ('_P9K_TTY', '/dev/pts/5'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('TMUX_PANE', '%3'), ('CMAKE_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package:/opt/ros/humble')]), 'shell': False}
+[1.956578] (sim_package) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/BasicSystem.dir/src/BasicSystem.cc.o\x1b[0m\n'}
+[2.001345] (-) TimerEvent: {}
+[2.101538] (-) TimerEvent: {}
+[2.201737] (-) TimerEvent: {}
+[2.301956] (-) TimerEvent: {}
+[2.402188] (-) TimerEvent: {}
+[2.502460] (-) TimerEvent: {}
+[2.602749] (-) TimerEvent: {}
+[2.703018] (-) TimerEvent: {}
+[2.803273] (-) TimerEvent: {}
+[2.903540] (-) TimerEvent: {}
+[2.930625] (sim_package) StderrLine: {'line': b'\x1b[01m\x1b[K/home/therion/dev/school/URC/srp_sim/src/sim_package/src/BasicSystem.cc:\x1b[m\x1b[K In member function \xe2\x80\x98\x1b[01m\x1b[Kvirtual void sim_package::BasicSystem::PostUpdate(const ignition::gazebo::v6::UpdateInfo&, const ignition::gazebo::v6::EntityComponentManager&)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[2.930798] (sim_package) StderrLine: {'line': b'\x1b[01m\x1b[K/home/therion/dev/school/URC/srp_sim/src/sim_package/src/BasicSystem.cc:41:69:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused parameter \xe2\x80\x98\x1b[01m\x1b[K_ecm\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter\x07-Wunused-parameter\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[2.930900] (sim_package) StderrLine: {'line': b'   41 |                              \x1b[01;35m\x1b[Kconst gz::sim::EntityComponentManager &_ecm\x1b[m\x1b[K)\n'}
+[2.930960] (sim_package) StderrLine: {'line': b'      |                              \x1b[01;35m\x1b[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~\x1b[m\x1b[K\n'}
+[3.003621] (-) TimerEvent: {}
+[3.103906] (-) TimerEvent: {}
+[3.204178] (-) TimerEvent: {}
+[3.304445] (-) TimerEvent: {}
+[3.404705] (-) TimerEvent: {}
+[3.504968] (-) TimerEvent: {}
+[3.605227] (-) TimerEvent: {}
+[3.705454] (-) TimerEvent: {}
+[3.805663] (-) TimerEvent: {}
+[3.892362] (sim_package) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX shared library libBasicSystem.so\x1b[0m\n'}
+[3.905726] (-) TimerEvent: {}
+[4.005924] (-) TimerEvent: {}
+[4.022666] (sim_package) StdoutLine: {'line': b'[100%] Built target BasicSystem\n'}
+[4.033248] (sim_package) CommandEnded: {'returncode': 0}
+[4.077707] (sim_package) JobProgress: {'identifier': 'sim_package', 'progress': 'install'}
+[4.084930] (sim_package) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/therion/dev/school/URC/srp_sim/build/sim_package'], 'cwd': '/home/therion/dev/school/URC/srp_sim/build/sim_package', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('TMUX', '/tmp/tmux-1000/default,6635,1'), ('USER', 'therion'), ('XDG_SESSION_TYPE', 'x11'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('SHLVL', '2'), ('HOME', '/home/therion'), ('LESS', '-R'), ('OLDPWD', '/home/therion/dev/school/URC/srp_sim'), ('DESKTOP_SESSION', 'ubuntu'), ('TERM_PROGRAM_VERSION', '3.2a'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/Alacritty.desktop'), ('LSCOLORS', 'Gxfxcxdxbxegedabagacad'), ('ZSH', '/home/therion/.oh-my-zsh'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('PAGER', 'less'), ('ROS_PYTHON_VERSION', '3'), ('NIX_PROFILES', '/nix/var/nix/profiles/default /home/therion/.nix-profile'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:abstract=/tmp/dbus-xzgeh5hlH5,guid=9aa7dd926497d7546247cce467081542'), ('P9K_TTY', 'old'), ('COLORTERM', 'truecolor'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '3678'), ('COLCON_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install'), ('ROS_DISTRO', 'humble'), ('ALACRITTY_SOCKET', '/run/user/1000/Alacritty-:1-3678.sock'), ('LOGNAME', 'therion'), ('WINDOWID', '27262979'), ('_', '/usr/bin/colcon'), ('_P9K_SSH_TTY', '/dev/pts/5'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('ALACRITTY_LOG', '/tmp/Alacritty-3678.log'), ('TERM', 'screen'), ('USERNAME', 'therion'), ('GAZEBO_MODEL_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/usr/local/cuda/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/therion/.cargo/bin:/home/therion/.local/bin:/home/therion/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/therion/.fzf/bin'), ('SESSION_MANAGER', 'local/bigtherion:@/tmp/.ICE-unix/2134,unix/bigtherion:/tmp/.ICE-unix/2134'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':1'), ('LANG', 'en_US.UTF-8'), ('LD_PRELOAD', '/usr/NX/lib/libnxegl.so'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('TERM_PROGRAM', 'tmux'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('AMENT_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package:/opt/ros/humble'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('SHELL', '/usr/bin/zsh'), ('GDMSESSION', 'ubuntu'), ('QT_ACCESSIBILITY', '1'), ('IGN_GAZEBO_RESOURCE_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package/share'), ('NIX_SSL_CERT_FILE', '/etc/ssl/certs/ca-certificates.crt'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('P9K_SSH', '0'), ('ALACRITTY_WINDOW_ID', '27262979'), ('PWD', '/home/therion/dev/school/URC/srp_sim/build/sim_package'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share:/home/therion/.nix-profile/share:/nix/var/nix/profiles/default/share'), ('_P9K_TTY', '/dev/pts/5'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('TMUX_PANE', '%3'), ('CMAKE_PREFIX_PATH', '/home/therion/dev/school/URC/srp_sim/install/sim_package:/opt/ros/humble')]), 'shell': False}
+[4.091121] (sim_package) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[4.091227] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models\n'}
+[4.091363] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars\n'}
+[4.091449] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/materials\n'}
+[4.091520] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/materials/textures\n'}
+[4.091619] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/materials/textures/m4_site.jpg\n'}
+[4.094782] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/materials/textures/m4_site1.jpg\n'}
+[4.099308] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/materials/textures/m4_site2.jpg\n'}
+[4.104573] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/meshes\n'}
+[4.104680] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/meshes/model.dae\n'}
+[4.105985] (-) TimerEvent: {}
+[4.139160] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/model.config\n'}
+[4.139309] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/mars/model.sdf\n'}
+[4.139442] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5\n'}
+[4.139519] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0\n'}
+[4.139579] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0\n'}
+[4.139675] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/materials\n'}
+[4.139739] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/materials/textures\n'}
+[4.139801] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/materials/textures/Marker0.png\n'}
+[4.139893] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/meshes\n'}
+[4.139965] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/meshes/Marker0.dae\n'}
+[4.140034] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/model-1_4.sdf\n'}
+[4.140133] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/model.config\n'}
+[4.140201] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/model-1_5.sdf\n'}
+[4.140267] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/marker0/model.sdf\n'}
+[4.140327] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/materials\n'}
+[4.140376] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/materials/textures\n'}
+[4.140434] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/materials/textures/Marker0.png\n'}
+[4.140507] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/meshes\n'}
+[4.140573] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/meshes/Marker0.dae\n'}
+[4.140632] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/model-1_4.sdf\n'}
+[4.140703] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/model.config\n'}
+[4.140767] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/model-1_5.sdf\n'}
+[4.140827] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/marker0/model.sdf\n'}
+[4.140907] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/materials\n'}
+[4.140970] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/materials/textures\n'}
+[4.141028] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/materials/textures/4X4_50-5.png\n'}
+[4.141094] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/meshes\n'}
+[4.141154] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/meshes/4X4_50-5.dae\n'}
+[4.141224] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/model-1_4.sdf\n'}
+[4.141325] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/4X4_50-5.png\n'}
+[4.141392] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/model.config\n'}
+[4.141453] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/4X4_50-5.dae\n'}
+[4.141535] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/aruco_marker.xacro\n'}
+[4.141584] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/model-1_5.sdf\n'}
+[4.141611] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/models/4x4_50-5/model.sdf\n'}
+[4.141671] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/worlds\n'}
+[4.141722] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/worlds/test.world\n'}
+[4.141767] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/worlds/world.sdf\n'}
+[4.141798] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/launch\n'}
+[4.141845] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/launch/aruco_marker_launch.launch.py\n'}
+[4.141873] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/launch/world.launch.py\n'}
+[4.141917] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/config\n'}
+[4.141971] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/config/aruco_marker_config.rviz\n'}
+[4.142100] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/lib/sim_package/libBasicSystem.so\n'}
+[4.143548] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/environment/sim_package.dsv\n'}
+[4.143642] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/environment/sim_package.sh\n'}
+[4.143771] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/ament_index/resource_index/package_run_dependencies/sim_package\n'}
+[4.143889] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/ament_index/resource_index/parent_prefix_path/sim_package\n'}
+[4.143981] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/environment/ament_prefix_path.sh\n'}
+[4.144083] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/environment/ament_prefix_path.dsv\n'}
+[4.144164] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/environment/path.sh\n'}
+[4.144249] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/environment/path.dsv\n'}
+[4.144336] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/local_setup.bash\n'}
+[4.144423] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/local_setup.sh\n'}
+[4.144514] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/local_setup.zsh\n'}
+[4.144596] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/local_setup.dsv\n'}
+[4.144681] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/package.dsv\n'}
+[4.144796] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/ament_index/resource_index/packages/sim_package\n'}
+[4.144908] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/cmake/sim_packageConfig.cmake\n'}
+[4.144984] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/cmake/sim_packageConfig-version.cmake\n'}
+[4.145075] (sim_package) StdoutLine: {'line': b'-- Installing: /home/therion/dev/school/URC/srp_sim/install/sim_package/share/sim_package/package.xml\n'}
+[4.146623] (sim_package) CommandEnded: {'returncode': 0}
+[4.206059] (-) TimerEvent: {}
+[4.207532] (sim_package) JobEnded: {'identifier': 'sim_package', 'rc': 0}
+[4.208122] (-) EventReactorShutdown: {}

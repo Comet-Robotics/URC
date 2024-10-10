@@ -1,7 +1,12 @@
 <?xml version="1.0" ?>
 <sdf version="1.7">
+
     <world name="world_demo">
-    
+      <scene>
+      <ambient>.4 .4 .4</ambient>
+      <sky></sky>
+    </scene>
+
 		<plugin
 	  filename="libignition-gazebo-physics-system.so"
 	  name="ignition::gazebo::systems::Physics">

@@ -1,0 +1,33 @@
+[0.007s] Invoking command in '/home/therion/dev/school/URC/srp_sim/build/sim_package': /usr/bin/cmake /home/therion/dev/school/URC/srp_sim/src/sim_package -DCMAKE_INSTALL_PREFIX=/home/therion/dev/school/URC/srp_sim/install/sim_package
+[0.087s] -- The C compiler identification is GNU 11.4.0
+[0.144s] -- The CXX compiler identification is GNU 11.4.0
+[0.151s] -- Detecting C compiler ABI info
+[0.198s] -- Detecting C compiler ABI info - done
+[0.202s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.203s] -- Detecting C compile features
+[0.203s] -- Detecting C compile features - done
+[0.205s] -- Detecting CXX compiler ABI info
+[0.257s] -- Detecting CXX compiler ABI info - done
+[0.262s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.262s] -- Detecting CXX compile features
+[0.262s] -- Detecting CXX compile features - done
+[0.271s] [31mCMake Error at CMakeLists.txt:9 (find_package):
+[0.271s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[0.271s]   has asked CMake to find a package configuration file provided by
+[0.272s]   "ament_cmake", but CMake did not find one.
+[0.272s] 
+[0.272s]   Could not find a package configuration file provided by "ament_cmake" with
+[0.272s]   any of the following names:
+[0.272s] 
+[0.272s]     ament_cmakeConfig.cmake
+[0.272s]     ament_cmake-config.cmake
+[0.272s] 
+[0.272s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[0.272s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[0.272s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[0.272s]   has been installed.
+[0.272s] 
+[0.272s] [0m
+[0.272s] -- Configuring incomplete, errors occurred!
+[0.272s] See also "/home/therion/dev/school/URC/srp_sim/build/sim_package/CMakeFiles/CMakeOutput.log".
+[0.274s] Invoked command in '/home/therion/dev/school/URC/srp_sim/build/sim_package' returned '1': /usr/bin/cmake /home/therion/dev/school/URC/srp_sim/src/sim_package -DCMAKE_INSTALL_PREFIX=/home/therion/dev/school/URC/srp_sim/install/sim_package

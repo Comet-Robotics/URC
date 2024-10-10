@@ -6,7 +6,21 @@
 
     <!-- Name the world -->
     <world name="world1">
+        <scene>
+        <ambient>.4 .4 .4</ambient>
+        <sky></sky>
+        </scene>
+        
+        <include>
+            <uri>model://mars</uri> 
+        </include>
 
+        <include>
+            <uri>
+            https://fuel.gazebosim.org/1.0/OpenRobotics/models/ROBOTIKA_X2_SENSOR_CONFIG_1
+            </uri>
+        </include>
+      
         <!-- Set physics parameters -->
         <physics name="1ms" type="ignored">
             <max_step_size>0.001</max_step_size>
@@ -32,7 +46,7 @@
         </plugin>
 
 
-        <!--light-->
+        <!-- light -->
         <light type="directional" name="sun">
             <cast_shadows>true</cast_shadows>
             <pose>0 0 10 0 0 0</pose>
@@ -48,7 +62,7 @@
         </light>
 
         <!-- Ground Plane -->
-        <model name="ground_plane">
+        <!-- <model name="ground_plane">
             <static>true</static>
             <link name="link">
                 <collision name="collision">
@@ -72,7 +86,7 @@
                 </material>
                 </visual>
             </link>
-          </model>
+          </model> -->
 
     </world>
 </sdf>

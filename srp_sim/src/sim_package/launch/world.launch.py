@@ -4,7 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import  AppendEnvironmentVariable, ExecuteProcess, IncludeLaunchDescription, DeclareLaunchArgument
+from launch.actions import  AppendEnvironmentVariable, ExecuteProcess,SetEnvironmentVariable, IncludeLaunchDescription, DeclareLaunchArgument
 import xacro
 import launch.utilities
 import launch_ros.descriptions as descriptions
@@ -16,6 +16,14 @@ def generate_launch_description():
     pkg_share = get_package_share_directory('sim_package')
     default_rviz_config_path = os.path.join(pkg_share, 'config', 'urdf_config.rviz')
 
+    models_dir = os.path.join(pkg_share, 'models')
+ 
+    print(models_dir)
+    # Set GAZEBO_MODEL_PATH environment variable
+    set_gazebo_model_path = SetEnvironmentVariable(
+        name='IGN_GAZEBO_RESOURCE_PATH',
+        value=os.pathsep.join([models_dir, os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')])
+    )
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
     # Define the world file to load into Gazebo
     world_file_path = os.path.join(
@@ -50,6 +58,7 @@ def generate_launch_description():
     
 
     return LaunchDescription([
+               set_gazebo_model_path,
         #world_server,
         world_client,
         bridge,

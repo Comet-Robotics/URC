@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<sdf version="1.8">
+  <model name="mars">
+    <static>true</static>
+    <link name="main_link">
+      <collision name="plane_collision">
+        <geometry>
+          <mesh>
+            <uri>model://mars/meshes/model.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="plane_visual">
+        <geometry>
+          <mesh>
+            <uri>model://mars/meshes/model.dae</uri>
+   
+
+          </mesh>
+        </geometry>
+        <!-- <material>
+          <script>
+            <uri>model://mars/materials/textures</uri>
+            <name>Desert/Material</name>
+          </script>
+        </material> -->
+      </visual>
+    </link>
+  </model>
+</sdf>
