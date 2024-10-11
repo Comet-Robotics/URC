@@ -5,32 +5,32 @@
   gz_type_name: "gz.msgs.Twist"
   direction: ROS_TO_GZ
 - ros_topic_name: "/rover/imu"
-  gz_topic_name: "/world/world1/model/ROBOTIKA_X2/link/base_link/sensor/imu_sensor/imu"
+  gz_topic_name: "/world/world1/model/rover/link/base_link/sensor/imu_sensor/imu"
   ros_type_name: "rosgraph_msgs/msg/Clock"
   gz_type_name: "gz.msgs.IMU"
   direction: GZ_TO_ROS
 - ros_topic_name: "/rover/odometry"
-  gz_topic_name: "/model/ROBOTIKA_X2/odometry"
+  gz_topic_name: "/model/rover/odometry"
   ros_type_name: "nav_msgs/msg/Odometry"
   gz_type_name: "gz.msgs.Odometry"
   direction: GZ_TO_ROS
 - ros_topic_name: "/tf"
-  gz_topic_name: "/model/ROBOTIKA_X2/tf"
+  gz_topic_name: "/model/rover/tf"
   ros_type_name: "tf2_msgs/msg/TFMessage"
   gz_type_name: "gz.msgs.Pose_V"
   direction: GZ_TO_ROS
-- ros_topic_name: "/rover/camera_front/camera_info"
-  gz_topic_name: "/world/world1/model/ROBOTIKA_X2/link/base_link/sensor/camera_front/camera_info"
+- ros_topic_name: "/camera/camera_front/camera_info"
+  gz_topic_name: "/world/world1/model/rover/link/base_link/sensor/camera_front/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS
-- ros_topic_name: "/rover/camera_front/depth_image"
-  gz_topic_name: "/world/world1/model/ROBOTIKA_X2/link/base_link/sensor/camera_front/depth_image"
+- ros_topic_name: "/camera/depth/image_rect_raw"
+  gz_topic_name: "/world/world1/model/rover/link/base_link/sensor/camera_front/depth_image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
-- ros_topic_name: "/rover/camera_front/image"
-  gz_topic_name: "/world/world1/model/ROBOTIKA_X2/link/base_link/sensor/camera_front/image"
+- ros_topic_name: "/camera/color/image_raw"
+  gz_topic_name: "/world/world1/model/rover/link/base_link/sensor/camera_front/image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
