@@ -48,7 +48,7 @@ URC/rover-ros> `. ./install/local_setup.sh`
 
 **GPS Node**
 run gps node the comm port
-'ros2 run gpsx gps_node --ros-args -p "comm_port:=/dev/ttyUSB0" -p "comm_speed:=9600"'
+`ros2 run gpsx gps_node --ros-args -p "comm_port:=/dev/ttyUSB0" -p "comm_speed:=9600"`
 
 
 **Realsense**
