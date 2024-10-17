@@ -46,6 +46,11 @@ URC/rover-ros> `. ./install/local_setup.sh`
 
 **Running Nodes**
 
+**GPS Node***
+run gps node the comm port
+ros2 run gpsx gps_node --ros-args -p "comm_port:=/dev/ttyUSB0" -p "comm_speed:=9600"
+
+
 **Realsense**
 `ros2 run realsense2_camera realsense2_camera_node`
 `ros2 run depth_image_viewer depth_image_node`
