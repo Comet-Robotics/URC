@@ -1,0 +1,3 @@
+[submodule "ws_urc/src/realsense-ros"]
+	path = ws_urc/src/realsense-ros
+	url = https://github.com/IntelRealSense/realsense-ros.git
