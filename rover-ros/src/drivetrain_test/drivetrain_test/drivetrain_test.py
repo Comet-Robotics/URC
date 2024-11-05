@@ -38,7 +38,6 @@ class DrivetrainActionClient(Node):
     def send_turn(self,turn):
         self.get_logger().info('Sending turn: %d' % turn) 
         goal_msg = Turn.Goal()
-        goal_msg.degree = turn
 
         self.turn_action_client.wait_for_server()
         self.turn_action_client.send_goal_async(

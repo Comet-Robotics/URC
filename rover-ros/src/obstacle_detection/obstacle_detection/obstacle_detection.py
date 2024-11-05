@@ -12,8 +12,11 @@ class ObstacleDetection(Node):
     depth_image = None
 
     #segmentation
-    k_size = 5 
-    block_size = 9
+    k_size_blurring = 5 
+    k_size_opening = 3
+    k_size_closing = 11
+    k_size_dilation = 5
+    block_size = 11
     gauss_threshold = 2
 
     #feature extraction
@@ -51,11 +54,11 @@ class ObstacleDetection(Node):
 
     def color_callback(self,msg):
         cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
-        # cv2.imshow("color",cv_image)
-        # segmented, boxes = self.segmentation(cv_image)
-        # extracted = self.feature_extraction(cv_image, boxes)
-        # cv2.imshow("extracted features", segmented)
-        # cv2.waitKey(2)
+        cv2.imshow("color",cv_image)
+        segmented, boxes = self.segmentation(cv_image)
+        cv2.imshow("extracted features", segmented)
+        extracted = self.feature_extraction(cv_image, boxes)
+        cv2.waitKey(2)
 
     def depth_callback(self, msg):
         # Convert depth image to CV format
@@ -68,12 +71,12 @@ class ObstacleDetection(Node):
         final_img = np.zeros_like(image) #initialize final image
 
         #initialize kernels
-        opening_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.k_size, self.k_size))
-        closing_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.k_size, self.k_size))
-        dilation_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.k_size, self.k_size))
+        opening_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.k_size_opening, self.k_size_opening))
+        closing_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.k_size_closing, self.k_size_closing))
+        dilation_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.k_size_dilation, self.k_size_dilation))
 
         for channel in range(3):
-            blurred = cv2.medianBlur(hsv_img[:, :, channel], self.k_size)
+            blurred = cv2.medianBlur(hsv_img[:, :, channel], self.k_size_blurring)
 
             closed = cv2.morphologyEx(blurred, cv2.MORPH_CLOSE, closing_kernel)
 
@@ -138,8 +141,7 @@ class ObstacleDetection(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = ObstacleDetection()
-    image_path = '/home/urc/URC/rover-ros/src/obstacle_detection/test_images/rocks1.jpg'  # Replace with your image path
-    node.process_image(image_path)
+    rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
 
