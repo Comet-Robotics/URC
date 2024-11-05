@@ -9,7 +9,7 @@ import shlex
 def launch_transcoder(ip_address,port=5000, fps=30):
 
     ffmpeg_cmd = f"ffmpeg -y -f rawvideo -pixel_format bgr24 -video_size 640x480 -framerate {fps} -i - " \
-                     "-vcodec libvpx -vf \"drawtext=:text=\'%{localtime}\':x=10:y=10:fontsize=24:fontcolor=white\" -deadline 1 -g 10 -error-resilient 1 -auto-alt-ref 1 -preset ultrafast -tune zerolatency " \
+                     "-vcodec libvpx -vf \"drawtext=:text=\'%{localtime}\':x=10:y=10:fontsize=24:fontcolor=white\" -deadline 1 -g 10 -error-resilient 1 -auto-alt-ref 1 " \
                       f"-f rtp rtp://{ip_address}:{port} -sdp_file stream.sdp" 
                
 
