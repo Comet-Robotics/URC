@@ -2,10 +2,9 @@
 import '../styles/global.css'
 import Layout from '../layouts/Layout.astro';
 import {Button} from '@/components/ui/button';
-
-// import WebSocketVideo from "../components/WebSocketVideo";
-
+import VideoStream from "@/components/VideoStream"
 ---
+
 
 <Layout title="Welcome to Astro.">
 	<div class="flex flex-row w-full justify-center p-5 gap-5">
@@ -13,6 +12,7 @@ import {Button} from '@/components/ui/button';
 	<h1>Index</h1>
 		<button>Press me</button>
 		<Button>Press ME</Button>
+		<VideoStream client:load/>
 
 	</div>
 </Layout>

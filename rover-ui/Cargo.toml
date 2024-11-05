@@ -22,6 +22,9 @@ tokio = { version = "1.40.0", features = ["full"] }
 actix-ws = "0.3.0"
 rtp = "0.11.0"
 webrtc-util = "0.9.0"
+webrtc = "0.11.0"
+anyhow = "1.0.92"
+base64 = "0.22.1"
 
 [features]
 real = ["opencv"]  # Feature to enable real ROS2 data, pulling in the r2r dependency
