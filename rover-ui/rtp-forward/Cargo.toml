@@ -1,0 +1,24 @@
+[package]
+name = "rtp-forward"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+tokio = { version = "1.32.0", features = ["full"] }
+env_logger = "0.11.3"
+clap = "3"
+hyper = { version = "0.14.27", features = ["full"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+anyhow = "1"
+chrono = "0.4.28"
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+bytes = "1"
+lazy_static = "1"
+rand = "0.8"
+
+memchr = "2.1.1"
+webrtc = "0.11.0"
+base64 = "0.22.1"
