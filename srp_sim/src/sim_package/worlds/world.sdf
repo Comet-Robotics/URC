@@ -1,0 +1,159 @@
+<?xml version="1.0" ?>
+<!-- Set the XML version, always 1 -->
+
+<!-- Set the SDF version to 1.8 -->
+<sdf version="1.8">
+
+    <!-- Name the world -->
+    <world name="world1">
+        <scene>
+        <ambient>.4 .4 .4</ambient>
+        <sky></sky>
+        </scene>
+        
+        <include>
+            <uri>model://mars</uri> 
+        </include>
+
+        <include>
+            <uri>
+            model://rover
+            </uri>
+        </include>
+        <include>
+            <uri>model://falling_rock1</uri>
+<static>true</static>
+            <name>falling_rock1</name>
+            <pose>5 0 -0.75 0 -0 0</pose>
+        </include>
+        <include>
+            <uri>model://falling_rock1</uri>
+<static>true</static>
+            <name>falling_rock1_1</name>
+            <pose>0 5 -1 0 -0 0</pose>
+        </include>
+        <include>
+        <uri>model://falling_rock1</uri>
+<static>true</static>
+        <name>falling_rock1_2</name>
+        <pose>2.51809 -2.78007 -0.75 0 -0 0</pose>
+        </include>
+        <include>
+        <uri>model://falling_rock1</uri>
+<static>true</static>
+        <name>falling_rock1_1_1</name>
+        <pose>2.19445 1.39676 -1 0 -0 0</pose>
+        </include>
+        <include>
+        <uri>model://falling_rock1</uri>
+<static>true</static>
+        <name>falling_rock1_1_2</name>
+        <pose>-2.47811 1.62366 -1 0 -0 0</pose>
+        </include>
+        <include>
+        <uri>model://falling_rock1</uri>
+<static>true</static>
+        <name>falling_rock1_1_3</name>
+        <pose>6.82 3.61 0 0 -0 0</pose>
+        </include>
+        <include>
+        <uri>model://falling_rock1</uri>
+<static>true</static>
+        <name>falling_rock1_1_3_1</name>
+        <pose>10.6949 -1.65326 0 0 -0 0</pose>
+        </include>
+      
+        <!-- Set physics parameters -->
+        <physics name="1ms" type="ignored">
+            <max_step_size>0.001</max_step_size>
+            <real_time_factor>1.0</real_time_factor>
+        </physics>
+
+        <!-- Add the physics plugin -->
+        <plugin
+            filename="libignition-gazebo-physics-system.so"
+            name="ignition::gazebo::systems::Physics">
+        </plugin>
+
+        <!-- Add the user input plugin -->
+        <plugin
+            filename="libignition-gazebo-user-commands-system.so"
+            name="ignition::gazebo::systems::UserCommands">
+        </plugin>
+
+        <!-- Add the Scene itself -->
+        <plugin
+            filename="libignition-gazebo-scene-broadcaster-system.so"
+            name="ignition::gazebo::systems::SceneBroadcaster">
+        </plugin>
+    
+
+        <!-- light -->
+        <light type="directional" name="sun">
+            <cast_shadows>true</cast_shadows>
+            <pose>0 0 10 0 0 0</pose>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+            <attenuation>
+            <range>1000</range>
+            <constant>0.9</constant>
+            <linear>0.01</linear>
+            <quadratic>0.001</quadratic>
+            </attenuation>
+            <direction>-0.5 0.1 -0.9</direction>
+        </light>
+
+        <plugin filename="libignition-gazebo-triggered-publisher-system.so"
+                name="ignition::gazebo::systems::TriggeredPublisher">
+            <input type="ignition.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777235</match>
+            </input>
+            <output type="ignition.msgs.Twist" topic="/cmd_vel">
+                linear: {x: 0.5}, angular: {z: 0.0}
+            </output>
+        </plugin>
+        <!-- Moving Backward-->
+        <plugin filename="libignition-gazebo-triggered-publisher-system.so"
+                name="ignition::gazebo::systems::TriggeredPublisher">
+            <input type="ignition.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777237</match>
+            </input>
+            <output type="ignition.msgs.Twist" topic="/cmd_vel">
+                linear: {x: -0.5}, angular: {z: 0.0}
+            </output>
+        </plugin>
+        <!-- Moving Left-->
+        <plugin filename="libignition-gazebo-triggered-publisher-system.so"
+                name="ignition::gazebo::systems::TriggeredPublisher">
+            <input type="ignition.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777234</match>
+            </input>
+            <output type="ignition.msgs.Twist" topic="/cmd_vel">
+                linear: {x: 0.0}, angular: {z: 0.5}
+            </output>
+        </plugin>
+        <!-- Moving Right-->
+        <plugin filename="libignition-gazebo-triggered-publisher-system.so"
+                name="ignition::gazebo::systems::TriggeredPublisher">
+            <input type="ignition.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777236</match>
+            </input>
+            <output type="ignition.msgs.Twist" topic="/cmd_vel">
+                linear: {x: 0.0}, angular: {z: -0.5}
+            </output>
+        </plugin>
+        <plugin filename="libignition-gazebo-imu-system.so"
+                name="ignition::gazebo::systems::Imu">
+        </plugin>
+        <spherical_coordinates>
+    <surface_model>EARTH_WGS84</surface_model>
+        <world_frame_orientation>ENU</world_frame_orientation>
+        <latitude_deg>-22.986687</latitude_deg>
+        <longitude_deg>-43.202501</longitude_deg>
+        <elevation>0</elevation>
+        <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+
+ 
+    </world>
+</sdf>

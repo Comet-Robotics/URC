@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "srp_sim/src/sim_package"
+		},
+		{
+			"path": "ws_urc/src"
+		}
+	],
+	"settings": {
+		"ros.distro": "humble",
+		"python.autoComplete.extraPaths": [
+			"/home/therion/dev/school/URC/ws_urc/install/video_streamer/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/obstacle_detection/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/drivetrain/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/depth_image_viewer/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/action_drivetrain_interface/local/lib/python3.10/dist-packages",
+			"/opt/ros/humble/lib/python3.10/site-packages",
+			"/opt/ros/humble/local/lib/python3.10/dist-packages"
+		],
+		"python.analysis.extraPaths": [
+			"/home/therion/dev/school/URC/ws_urc/install/video_streamer/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/obstacle_detection/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/drivetrain/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/depth_image_viewer/lib/python3.10/site-packages",
+			"/home/therion/dev/school/URC/ws_urc/install/action_drivetrain_interface/local/lib/python3.10/dist-packages",
+			"/opt/ros/humble/lib/python3.10/site-packages",
+			"/opt/ros/humble/local/lib/python3.10/dist-packages"
+		]
+	}
+}
