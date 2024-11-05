@@ -1,0 +1,6 @@
+int32 degree
+---
+int32 total_degrees
+---
+int32 degrees_moved
+

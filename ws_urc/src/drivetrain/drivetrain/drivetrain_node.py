@@ -1,80 +1,63 @@
 import rclpy
 from rclpy.action import ActionServer
+from geometry_msgs.msg import Twist
+
 from rclpy.node import Node
 import serial
-from action_drivetrain_interface.action import Forward # type: ignore
-from action_drivetrain_interface.action import Turn # type: ignore
 import time
+
 
 class FibonacciActionServer(Node):
 
     def __init__(self):
         super().__init__('drivetrain_action_server')
-        self.forward_action_server = ActionServer(
-            self,
-            Forward,
-            'forward',
-            self.forward_execute_callback)
-        self.turn_action_server = ActionServer(
-            self,
-            Turn,
-            'turn',
-            self.turn_execute_callback)
+        self.get_logger().info(f"LIVE") 
         self.ser = serial.Serial(
             port='/dev/ttyACM0',  # Replace with your port
             baudrate=115200,        # Baud rate
             timeout=1             # Timeout for read operations
         )
-   
+        # self.alive_timer = self.create_timer(1.0 , self.send_alive_message)
+        self.subscription = self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
+    def drive_motors(self, linear_x, linear_y, angular_z):
+        # Define the robot's geometry
+        wheelbase = 0.4  # distance between front and rear wheels, example value
+        trackwidth = 0.3  # distance between left and right wheels, example value
+
+        # Compute motor speeds for each Mecanum wheel
+        front_left_speed = linear_x - linear_y - (angular_z * (wheelbase + trackwidth) / 2)
+        front_right_speed = linear_x + linear_y + (angular_z * (wheelbase + trackwidth) / 2)
+        rear_left_speed = linear_x + linear_y - (angular_z * (wheelbase + trackwidth) / 2)
+        rear_right_speed = linear_x - linear_y + (angular_z * (wheelbase + trackwidth) / 2)
+        self.get_logger().info(f"Right Speed: {front_right_speed} Left Speed: {front_left_speed} Rear Right Speed: {rear_right_speed} Rear Left Speed: {rear_left_speed}")
+        # Send speeds to your motor controllers
+        self.set_motor_speeds(front_left_speed, front_right_speed, rear_left_speed, rear_right_speed)
+
+    def cmd_vel_callback(self, msg):
+        # Extract linear and angular velocities from the Twist message
+        linear_x = msg.linear.x
+        linear_y = msg.linear.y
+        angular_z = msg.angular.z
+
+        # Drive the motors
+        self.drive_motors(linear_x, linear_y, angular_z)
+        # Send PWM signals to your motor controllers here
 
 
-    def forward_execute_callback(self, goal_handle):
-        self.get_logger().info('Starting path...')
-        feedback_msg = Forward.Feedback()
-        feedback_msg.traveled = 0
-        self.ser.write(b'20:20\n')
+    def set_motor_speeds(
+            self,
+            front_left_speed,
+            front_right_speed,
+            rear_left_speed,
+            rear_right_speed
+            ):
+        front_left_speed = int(front_left_speed*10)
+        front_right_speed = int(front_right_speed*10)
+        rear_left_speed = int(rear_left_speed*10)
+        rear_right_speed = int(rear_right_speed*10)
 
-        for i in range(1, goal_handle.request.distance):
-            feedback_msg.traveled = i
-            
-            self.get_logger().info('Feedback: {0}'.format(i))
-            goal_handle.publish_feedback(feedback_msg)
-            time.sleep(1)
-        self.ser.write(b'0:0\n')
-        goal_handle.succeed()
+        self.ser.write(f'{rear_right_speed}:{rear_left_speed}:{front_right_speed}:{front_left_speed}\n'.encode())
 
-        result = Forward.Result()
-        result.total_distance = feedback_msg.traveled
-        return result
-    
-
-
-    def turn_execute_callback(self, goal_handle):
-        self.get_logger().info('Starting left turn...')
-        feedback_msg = Turn.Feedback()
-        feedback_msg.degrees_moved = 0
-        if (goal_handle.request.degree > 0):
-            self.ser.write(b'-20:20\n')
-        else:
-            self.ser.write(b'20:-20\n')
-
-        try:
-
-            for i in range(1, abs(goal_handle.request.degree)):
-                feedback_msg.degrees_moved = i
-                
-                self.get_logger().info('Feedback: {0}'.format(i))
-                goal_handle.publish_feedback(feedback_msg)
-                time.sleep(0.025)
-            self.ser.write(b'0:0\n')
-            goal_handle.succeed()
-
-            result = Turn.Result()
-            result.total_degrees = feedback_msg.degrees_moved
-            return result
-        except:
-            self.ser.write(b'0:0\n')
-    
 
 
 def main(args=None):

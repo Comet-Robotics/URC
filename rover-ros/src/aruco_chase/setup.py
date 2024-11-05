@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'obstacle_detection'
+package_name = 'aruco_chase'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'obstacle_detection = obstacle_detection.obstacle_detection:main'
+            'aruco_chase = aruco_chase.aruco_chase:main'
         ],
     },
 )
