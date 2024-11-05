@@ -43,7 +43,7 @@ pub async fn server(rgb_send: Sender<Bytes>, depth_send: Sender<Bytes>) {
     loop {
 
         let n = video_stream.recv_buf(&mut buf).await.unwrap();
-        if (n == 0){
+        if n == 0{
             continue;
         }
         let packet = match Packet::unmarshal(&mut buf){
@@ -55,8 +55,9 @@ pub async fn server(rgb_send: Sender<Bytes>, depth_send: Sender<Bytes>) {
         };
 
         let image = packet.payload;
+        
 
-        if (rgb_send.receiver_count() > 0){
+        if rgb_send.receiver_count() > 0{
             rgb_send.send(image).unwrap();
         }
     }
