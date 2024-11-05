@@ -6,7 +6,7 @@ def generate_launch_description():
         Node(
             package='octomap_server',
             executable='octomap_server_node',
-            name='octomap_server',
+            name='occupancy_node',
             output='screen',
             parameters=[{
                 'frame_id': 'rover/base_link/camera_front',                     # Set the global frame for the OctoMap
