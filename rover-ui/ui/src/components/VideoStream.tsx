@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const StartStream = () => {
   const [logMessages, setLogMessages] = useState<string[]>([]);
@@ -7,6 +7,10 @@ const StartStream = () => {
   const log = (message:string) => {
     setLogMessages((prevMessages) => [...prevMessages, message]);
   };
+
+  useEffect(() => {
+    
+  },[]);
 
   const startSession = async () => {
     console.log("Starting Session")
@@ -17,6 +21,7 @@ const StartStream = () => {
         }
       ]
     });
+    ;
 
 
 
@@ -33,9 +38,9 @@ const StartStream = () => {
     pc.oniceconnectionstatechange = () => log(pc.iceConnectionState);
 
     // Handle ICE candidate event
-    pc.onicecandidate = async (event) => {
-        console.log(event);
-      if (event.candidate === null) {
+    pc.onicegatheringstatechange = async () => {
+        if (pc.iceGatheringState === 'complete') {
+          // When ICE gathering completes, send local descriptor
         console.log("Sending local descriptor")
         // When ICE gathering is complete, encode local session description
         const localDescriptor = btoa(JSON.stringify(pc.localDescription));
