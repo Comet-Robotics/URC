@@ -18,7 +18,7 @@ class FibonacciActionServer(Node):
             timeout=1             # Timeout for read operations
         )
         # self.alive_timer = self.create_timer(1.0 , self.send_alive_message)
-        self.subscription = self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
+        self.subscription = self.create_subscription(Twist, '/cmd_vel_out', self.cmd_vel_callback, 10)
     def drive_motors(self, linear_x, linear_y, angular_z):
         # Define the robot's geometry
         wheelbase = 0.4  # distance between front and rear wheels, example value
