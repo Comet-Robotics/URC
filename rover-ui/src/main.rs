@@ -1,6 +1,5 @@
 mod data;
 use crate::data::data::server;
-use crate::data::AppState;
 use actix_files::Files;
 use actix_web::middleware::Logger;
 use actix_web::web::{Bytes, Data};
@@ -23,8 +22,8 @@ struct Exchange{
 }
 
 #[post("/start_stream")]
-async fn rgb_feed(
-    mut app_state: Data<DescriptorExhange>,
+async fn start_stream(
+    app_state: Data<DescriptorExhange>,
     body: web::Json<Exchange>
 ) -> Result<HttpResponse, Error> {
     debug!("RGB feed");
@@ -33,10 +32,7 @@ async fn rgb_feed(
 
     let response = rx.await.unwrap();
 
-
     Ok(HttpResponse::Ok().body(response))
-
-
 }
 
 #[actix_web::main]
@@ -56,7 +52,7 @@ async fn main() -> std::io::Result<()> {
 
         app.wrap(Logger::default())
             .app_data(Data::new(sender.clone()))
-            .service(rgb_feed)
+            .service(start_stream)
             .service(Files::new("/", "ui/dist").index_file("index.html"))
     })
     .bind("0.0.0.0:8081")?

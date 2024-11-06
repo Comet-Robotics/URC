@@ -1,4 +1,5 @@
-use std::io::Write;
+
+use tokio::sync::mpsc::Sender;
 use std::sync::Arc;
 use anyhow::Result;
 use tokio::net::UdpSocket;
@@ -58,12 +59,25 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
             ..Default::default()
         },
         "video".to_owned(),
-        "webrtc-rs".to_owned(),
+        "depth_video".to_owned(),
+    ));
+
+    let depth_track = Arc::new(TrackLocalStaticRTP::new(
+        RTCRtpCodecCapability {
+            mime_type: MIME_TYPE_VP8.to_owned(),
+            ..Default::default()
+        },
+        "video".to_owned(),
+        "rgb_video".to_owned(),
     ));
 
     // Add this newly created track to the PeerConnection
-    let rtp_sender = peer_connection
+    let rgb_rtp_sender = peer_connection
         .add_track(Arc::clone(&video_track) as Arc<dyn TrackLocal + Send + Sync>)
+        .await?;
+
+    let depth_rtp_sender = peer_connection
+        .add_track(Arc::clone(&depth_track) as Arc<dyn TrackLocal + Send + Sync>)
         .await?;
 
     // Read incoming RTCP packets
@@ -71,7 +85,13 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
     // like NACK this needs to be called.
     tokio::spawn(async move {
         let mut rtcp_buf = vec![0u8; 1500];
-        while let Ok((_, _)) = rtp_sender.read(&mut rtcp_buf).await {}
+        while let Ok((_, _)) = rgb_rtp_sender.read(&mut rtcp_buf).await {}
+        Result::<()>::Ok(())
+    });
+
+    tokio::spawn(async move {
+        let mut rtcp_buf = vec![0u8; 1500];
+        while let Ok((_, _)) = depth_rtp_sender.read(&mut rtcp_buf).await {}
         Result::<()>::Ok(())
     });
 
@@ -108,29 +128,8 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
     }));
    
 
-    // Open a UDP Listener for RTP Packets on port 5004
-    let listener = UdpSocket::bind("0.0.0.0:5000").await?;
-
-    let done_tx3 = done_tx.clone();
-    let vid_track = Arc::clone(&video_track);
-    // Read RTP packets forever and send them to the WebRTC Client
-    tokio::spawn(async move {
-        let mut inbound_rtp_packet = vec![0u8; 1600]; // UDP MTU
-        while let Ok((n, _)) = listener.recv_from(&mut inbound_rtp_packet).await {
-            if let Err(err) = video_track.write(&inbound_rtp_packet[..n]).await {
-                
-                if Error::ErrClosedPipe == err {
-                    // The peerConnection has been closed.
-                    println!("Track closed");
-
-                } else {
-                    println!("video_track write err: {err}");
-                }
-                let _ = done_tx3.try_send(());
-                return;
-            }
-        }
-    });
+    get_stream(video_track.clone(),done_tx.clone(),"0.0.0.0:5000").await?;
+    get_stream(depth_track.clone(),done_tx.clone(),"0.0.0.0:5001").await?;
     loop {
         //Wait to recieve a local session description from client;
         let (line,sender) = recv.recv().await.unwrap();
@@ -161,6 +160,7 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
             .with_interceptor_registry(registry)
             .build();
 
+
         // Prepare the configuration
         let config = RTCConfiguration {
             ice_servers: vec![RTCIceServer {
@@ -173,8 +173,14 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
         // Create a new RTCPeerConnection
         let peer_connection = Arc::new(api.new_peer_connection(config).await?);
 
-        let rtp_sender = peer_connection
-            .add_track(Arc::clone(&vid_track.clone()) as Arc<dyn TrackLocal + Send + Sync>)
+
+          // Add this newly created track to the PeerConnection
+        let rgb_rtp_sender = peer_connection
+        .add_track(Arc::clone(&video_track) as Arc<dyn TrackLocal + Send + Sync>)
+        .await?;
+
+        let depth_rtp_sender = peer_connection
+            .add_track(Arc::clone(&depth_track) as Arc<dyn TrackLocal + Send + Sync>)
             .await?;
 
         // Read incoming RTCP packets
@@ -182,10 +188,15 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
         // like NACK this needs to be called.
         tokio::spawn(async move {
             let mut rtcp_buf = vec![0u8; 1500];
-            while let Ok((_, _)) = rtp_sender.read(&mut rtcp_buf).await {}
+            while let Ok((_, _)) = rgb_rtp_sender.read(&mut rtcp_buf).await {}
             Result::<()>::Ok(())
         });
 
+        tokio::spawn(async move {
+            let mut rtcp_buf = vec![0u8; 1500];
+            while let Ok((_, _)) = depth_rtp_sender.read(&mut rtcp_buf).await {}
+            Result::<()>::Ok(())
+        });
         // Set the handler for Peer connection state
         // This will notify you when the peer has connected/disconnected
         peer_connection.on_peer_connection_state_change(Box::new(
@@ -222,5 +233,31 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
             println!("generate local_description failed!");
         }
     }
+}
+
+
+async fn get_stream(video_track: Arc<TrackLocalStaticRTP>,done_tx:Sender<()>,ip:&str)-> Result<()>{
+        // Open a UDP Listener for RTP Packets on port 5004
+    let listener = UdpSocket::bind(ip).await?;
+
+    // Read RTP packets forever and send them to the WebRTC Client
+    tokio::spawn(async move {
+        let mut inbound_rtp_packet = vec![0u8; 1600]; // UDP MTU
+        while let Ok((n, _)) = listener.recv_from(&mut inbound_rtp_packet).await {
+            let data = &inbound_rtp_packet[..n];
+            if let Err(err) = video_track.write(data).await {
+                
+                if Error::ErrClosedPipe == err {
+                    // The peerConnection has been closed.
+                    println!("Track closed");
+
+                } else {
+                    println!("video_track write err: {err}");
+                }
+                let _ = done_tx.try_send(());
+                return;
+            }
+        }
+    });
     Ok(())
 }

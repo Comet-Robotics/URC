@@ -9,7 +9,7 @@ const StartStream = () => {
   };
 
   useEffect(() => {
-    
+    startSession();
   },[]);
 
   const startSession = async () => {
@@ -69,6 +69,7 @@ const StartStream = () => {
 
     // Set up transceivers and create an offer
     pc.addTransceiver('video', { direction: 'recvonly' });
+    pc.addTransceiver('video', { direction: 'recvonly' });
 
     try {
       const offer = await pc.createOffer();
@@ -80,17 +81,17 @@ const StartStream = () => {
 
   return (
     <div>
-      <button onClick={startSession}>Start Stream</button>
-      <div id="log">
-        {logMessages.map((msg, index) => (
-          <p key={index}>{msg}</p>
-        ))}
-      </div>
-      <div id="remoteVideos">
+      
+      <div id="remoteVideos" className='flex flex-row justify-center flex-wrap'>
         {remoteVideos.map((videoElement, index) => (
           <div key={index} ref={(ref) => ref && ref.appendChild(videoElement)} />
         ))}
       </div>
+      {/* <div id="log">
+        {logMessages.map((msg, index) => (
+          <p key={index}>{msg}</p>
+        ))}
+      </div> */}
     </div>
   );
 };
