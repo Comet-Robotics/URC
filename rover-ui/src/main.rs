@@ -1,88 +1,80 @@
 mod data;
 use crate::data::data::server;
-use crate::data::AppState;
 use actix_files::Files;
 use actix_web::middleware::Logger;
 use actix_web::web::{Bytes, Data};
-use actix_web::{get, rt, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, rt, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
 use actix_ws::AggregatedMessage;
+use data::rover::{Message, Twist};
 use env_logger::Env;
 use futures_util::StreamExt;
+use serde::Deserialize;
+use tokio::sync::mpsc::{self, Sender};
+use tokio::sync::oneshot;
 use std::io::Read;
 use std::sync::{Arc, Mutex};
-use tokio::sync::broadcast::{Receiver, Sender};
-use tokio::sync::{broadcast, RwLock};
 use tracing::debug;
 
-#[get("/rgb_feed")]
-async fn rgb_feed(
-    mut app_state: Data<AppState>,
-    req: HttpRequest,
-    stream: web::Payload,
+type DescriptorExhange = Sender<(String, oneshot::Sender<String>)>;
+#[derive(Deserialize)]
+struct Exchange{
+    #[serde(rename = "localSessionDescription")]
+    local_session_description: String,
+}
+
+#[post("/start_stream")]
+async fn start_stream(
+    app_state: Data<DescriptorExhange>,
+    body: web::Json<Exchange>
 ) -> Result<HttpResponse, Error> {
     debug!("RGB feed");
-    handle_video_stream(app_state.rgb_frame.subscribe(), req, stream)
+    let (tx,rx) = oneshot::channel::<String>();
+    app_state.send((body.local_session_description.clone(),tx)).await.unwrap();
+
+    let response = rx.await.unwrap();
+
+    Ok(HttpResponse::Ok().body(response))
 }
 
-#[get("/depth_feed")]
-async fn depth_feed(
-    mut app_state: Data<AppState>,
-    req: HttpRequest,
-    stream: web::Payload,
+#[post("/rover/twist")]
+async fn set_twist(
+    app_state: Data<std::sync::mpsc::Sender<Message>>,
+    body: Bytes,
 ) -> Result<HttpResponse, Error> {
-    debug!("Depth feed");
-    handle_video_stream(app_state.rgb_frame.subscribe(), req, stream)
+    let body = body.to_vec();
+    let body = String::from_utf8(body).unwrap();
+    let twist: Twist = serde_json::from_str(&body).unwrap();
+    app_state.send(Message::Twist(twist)).unwrap();
+    Ok(HttpResponse::Ok().finish())
 }
 
-fn handle_video_stream(
-    mut recv: Receiver<Bytes>,
-    req: HttpRequest,
-    stream: web::Payload,
-) -> Result<HttpResponse, Error> {
-    let (res, mut session, stream) = actix_ws::handle(&req, stream)?;
-
-   
-    // start task but don't wait for it
-
-    rt::spawn(async move {
-        loop {
-            let Ok(frame) = recv.recv().await else {
-                continue;
-            };
-
-            if let Err(e) = session.binary(frame.clone()).await {
-                tracing::debug!("Closing Stream");
-                break;
-            }
-        }
-    });
-
-    // respond immediately with response connected to WS session
-    Ok(res)
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("debug"));
+    
+    let (sender,recv) = mpsc::channel::<(String,oneshot::Sender<String>)>(10);
 
-    let (depth_frame, _) = broadcast::channel(1);
-
-    let (rgb_frame, _) = broadcast::channel(1);
-    let app_data = Data::new(AppState {
-        rgb_frame: rgb_frame.clone(),
-        depth_frame: depth_frame.clone(),
-    });
     rt::spawn(async move {
-        server(rgb_frame, depth_frame).await;
+        server(recv).await.unwrap();
     });
+
+    let (rover_sender,rover_recv) = std::sync::mpsc::channel::<Message>();
+
+    rt::task::spawn_blocking(move ||{
+        data::rover::launch_rover_link(rover_recv).unwrap();
+    });
+
+    let sender:DescriptorExhange = sender;
 
     HttpServer::new(move || {
         let app = App::new();
 
         app.wrap(Logger::default())
-            .app_data(app_data.clone())
-            .service(rgb_feed)
-            .service(depth_feed)
+            .app_data(Data::new(sender.clone()))
+            .app_data(Data::new(rover_sender.clone()))
+            .service(start_stream)
+            .service(set_twist)
             .service(Files::new("/", "ui/dist").index_file("index.html"))
     })
     .bind("0.0.0.0:8081")?

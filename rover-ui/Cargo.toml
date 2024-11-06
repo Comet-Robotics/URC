@@ -8,11 +8,6 @@ build = "build.rs"
 actix-web = "4.9.0"
 serde = { version= "1.0.210",features=["derive"] }
 serde_json = "1.0"
-
-
-r2r = { version = "0.9.0", optional = true }  # ROS2 crate, only needed for real data
-opencv = { version= "0.92.3",default-features = false, features = [
-    "clang-runtime","imgcodecs","imgproc"],optional=true }
 actix-files = "0.6.6"
 futures-util = { version = "0.3.30" }
 env_logger = "0.11.5"
@@ -20,11 +15,12 @@ tracing = "0.1.40"
 chrono = "0.4.38"
 tokio = { version = "1.40.0", features = ["full"] }
 actix-ws = "0.3.0"
-rtp = "0.11.0"
-webrtc-util = "0.9.0"
+webrtc = "0.11.0"
+anyhow = "1.0.92"
+base64 = "0.22.1"
+bincode = { version = "=2.0.0-rc.3", features = ["serde"] }
 
 [features]
-real = ["opencv"]  # Feature to enable real ROS2 data, pulling in the r2r dependency
-mock = []
+real = []  # Feature to enable real ROS2 data, pulling in the r2r dependency
 default = ["real"]  # Set the default feature to mock
 
