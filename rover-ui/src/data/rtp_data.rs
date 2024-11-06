@@ -235,7 +235,35 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
     }
 }
 
+#[cfg(feature = "real")]
+async fn get_stream(video_track: Arc<TrackLocalStaticRTP>,done_tx:Sender<()>,ip:&str)-> Result<()>{
+        // Open a UDP Listener for RTP Packets on port 5004
+    let listener = UdpSocket::bind(ip).await?;
 
+    // Read RTP packets forever and send them to the WebRTC Client
+    tokio::spawn(async move {
+        let mut inbound_rtp_packet = vec![0u8; 1600]; // UDP MTU
+        while let Ok((n, _)) = listener.recv_from(&mut inbound_rtp_packet).await {
+            let data = &inbound_rtp_packet[..n];
+            if let Err(err) = video_track.write(data).await {
+                
+                if Error::ErrClosedPipe == err {
+                    // The peerConnection has been closed.
+                    println!("Track closed");
+
+                } else {
+                    println!("video_track write err: {err}");
+                }
+                let _ = done_tx.try_send(());
+                return;
+            }
+        }
+    });
+    Ok(())
+}
+
+
+#[cfg(not(feature = "real"))]
 async fn get_stream(video_track: Arc<TrackLocalStaticRTP>,done_tx:Sender<()>,ip:&str)-> Result<()>{
         // Open a UDP Listener for RTP Packets on port 5004
     let listener = UdpSocket::bind(ip).await?;

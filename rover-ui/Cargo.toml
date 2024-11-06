@@ -18,6 +18,7 @@ actix-ws = "0.3.0"
 webrtc = "0.11.0"
 anyhow = "1.0.92"
 base64 = "0.22.1"
+bincode = { version = "=2.0.0-rc.3", features = ["serde"] }
 
 [features]
 real = []  # Feature to enable real ROS2 data, pulling in the r2r dependency
