@@ -1,1 +1,89 @@
-[patch.crates-io]
+[patch.crates-io.rosidl_runtime_rs]
+path = "/home/urc/URC/ws_urc/install/rosidl_runtime_rs/share/rosidl_runtime_rs/rust"
+
+[patch.crates-io.visualization_msgs]
+path = "/home/urc/URC/ws_urc/install/visualization_msgs/share/visualization_msgs/rust"
+
+[patch.crates-io.test_msgs]
+path = "/home/urc/URC/ws_urc/install/test_msgs/share/test_msgs/rust"
+
+[patch.crates-io.examples_rclrs_minimal_client_service]
+path = "/home/urc/URC/ws_urc/install/examples_rclrs_minimal_client_service/share/examples_rclrs_minimal_client_service/rust"
+
+[patch.crates-io.example_interfaces]
+path = "/home/urc/URC/ws_urc/install/example_interfaces/share/example_interfaces/rust"
+
+[patch.crates-io.action_msgs]
+path = "/home/urc/URC/ws_urc/install/action_msgs/share/action_msgs/rust"
+
+[patch.crates-io.unique_identifier_msgs]
+path = "/home/urc/URC/ws_urc/install/unique_identifier_msgs/share/unique_identifier_msgs/rust"
+
+[patch.crates-io.trajectory_msgs]
+path = "/home/urc/URC/ws_urc/install/trajectory_msgs/share/trajectory_msgs/rust"
+
+[patch.crates-io.stereo_msgs]
+path = "/home/urc/URC/ws_urc/install/stereo_msgs/share/stereo_msgs/rust"
+
+[patch.crates-io.std_srvs]
+path = "/home/urc/URC/ws_urc/install/std_srvs/share/std_srvs/rust"
+
+[patch.crates-io.shape_msgs]
+path = "/home/urc/URC/ws_urc/install/shape_msgs/share/shape_msgs/rust"
+
+[patch.crates-io.realsense2_camera_msgs]
+path = "/home/urc/URC/ws_urc/install/realsense2_camera_msgs/share/realsense2_camera_msgs/rust"
+
+[patch.crates-io.basestation]
+path = "/home/urc/URC/ws_urc/install/basestation_node/share/basestation/rust"
+
+[patch.crates-io.sensor_msgs]
+path = "/home/urc/URC/ws_urc/install/sensor_msgs/share/sensor_msgs/rust"
+
+[patch.crates-io.rust_pubsub]
+path = "/home/urc/URC/ws_urc/install/rust_pubsub/share/rust_pubsub/rust"
+
+[patch.crates-io.nav_msgs]
+path = "/home/urc/URC/ws_urc/install/nav_msgs/share/nav_msgs/rust"
+
+[patch.crates-io.diagnostic_msgs]
+path = "/home/urc/URC/ws_urc/install/diagnostic_msgs/share/diagnostic_msgs/rust"
+
+[patch.crates-io.geometry_msgs]
+path = "/home/urc/URC/ws_urc/install/geometry_msgs/share/geometry_msgs/rust"
+
+[patch.crates-io.examples_rclrs_minimal_pub_sub]
+path = "/home/urc/URC/ws_urc/install/examples_rclrs_minimal_pub_sub/share/examples_rclrs_minimal_pub_sub/rust"
+
+[patch.crates-io.actionlib_msgs]
+path = "/home/urc/URC/ws_urc/install/actionlib_msgs/share/actionlib_msgs/rust"
+
+[patch.crates-io.std_msgs]
+path = "/home/urc/URC/ws_urc/install/std_msgs/share/std_msgs/rust"
+
+[patch.crates-io.statistics_msgs]
+path = "/home/urc/URC/ws_urc/install/statistics_msgs/share/statistics_msgs/rust"
+
+[patch.crates-io.examples_rclrs_message_demo]
+path = "/home/urc/URC/ws_urc/install/examples_rclrs_message_demo/share/examples_rclrs_message_demo/rust"
+
+[patch.crates-io.rclrs]
+path = "/home/urc/URC/ws_urc/install/rclrs/share/rclrs/rust"
+
+[patch.crates-io.rosgraph_msgs]
+path = "/home/urc/URC/ws_urc/install/rosgraph_msgs/share/rosgraph_msgs/rust"
+
+[patch.crates-io.rclrs_example_msgs]
+path = "/home/urc/URC/ws_urc/install/rclrs_example_msgs/share/rclrs_example_msgs/rust"
+
+[patch.crates-io.composition_interfaces]
+path = "/home/urc/URC/ws_urc/install/composition_interfaces/share/composition_interfaces/rust"
+
+[patch.crates-io.rcl_interfaces]
+path = "/home/urc/URC/ws_urc/install/rcl_interfaces/share/rcl_interfaces/rust"
+
+[patch.crates-io.lifecycle_msgs]
+path = "/home/urc/URC/ws_urc/install/lifecycle_msgs/share/lifecycle_msgs/rust"
+
+[patch.crates-io.builtin_interfaces]
+path = "/home/urc/URC/ws_urc/install/builtin_interfaces/share/builtin_interfaces/rust"
