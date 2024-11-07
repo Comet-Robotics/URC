@@ -1,8 +1,12 @@
+use std::net::TcpStream;
 use std::time::Duration;
 
 use std::thread;
 use std::process::{Command, Stdio};
 use std::io;
+
+use bincode::error::DecodeError;
+use rover_msgs::Message;
 
 fn stream_test_video_rtp(ip: &str, port: u16) -> io::Result<()> {
     let rtp_url = format!("rtp://{}:{}?pkt_size=1200", ip, port);
@@ -38,14 +42,29 @@ fn stream_test_video_rtp(ip: &str, port: u16) -> io::Result<()> {
 
 
 fn main() {
-    println!("Hello, world!");
 
 
     stream_test_video_rtp( "0.0.0.0",5000).unwrap();
     stream_test_video_rtp( "0.0.0.0",5001).unwrap();
-    let stream = TcpStream::connect("0.0.0.0:8000").unwrap();
+    let config = bincode::config::standard();
+    let mut stream = TcpStream::connect("0.0.0.0:8000").unwrap();
+    stream.set_nonblocking(true).unwrap();
     loop{
-        thread::sleep(Duration::from_secs(1));
+        match bincode::serde::decode_from_std_read::<Message,_,_>(&mut stream, config){
+            Ok(msg) => {
+                println!("{:?}",msg);
+            }
+            Err(DecodeError::Io { inner, additional }) => {
+                if inner.kind() != std::io::ErrorKind::WouldBlock{
+                    println!("{:?}",inner);
+                    break;
+                }
+            }
+            Err(err)=>{
+                println!("{:?}",err);
+                break;
+            }
+        }
     }
 
 

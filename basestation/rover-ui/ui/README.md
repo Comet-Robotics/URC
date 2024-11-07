@@ -1,54 +1,62 @@
-# Astro Starter Kit: Basics
+# React Shadcn-UI Template
 
-```sh
-npm create astro@latest -- --template basics
+This repository provides a boilerplate template for a React application using the [Shadcn-UI](https://github.com/your-link-to-shadcn-ui-repo) library and [Vite](https://vitejs.dev/) as the build tool and development server. The template is designed to help you kickstart your React projects with Shadcn-UI and Vite, offering a fast development environment and optimized production builds.
+
+## Features
+
+- React 18 with the latest features and optimizations
+- Shadcn-UI integration for a modern and customizable UI component library
+- Vite for fast development and optimized production builds
+- ESLint and Prettier preconfigured for consistent code formatting and linting
+
+## Getting Started
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/Youngermaster/react-shadcn-ui-template.git your-project-name
+   ```
+
+2. Change to the project directory:
+
+   ```bash
+   cd your-project-name
+   ```
+
+3. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+   The development server should now be running at [http://localhost:3000](http://localhost:3000).
+
+## Building for Production
+
+To create an optimized production build, run:
+
+```bash
+npm run build
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+The output will be available in the `dist/` folder.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Customizing the Template
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+You can customize the template by modifying the existing components or adding new ones in the `src` folder. You can also configure the Vite settings by editing the `vite.config.js` file.
 
-## 🚀 Project Structure
+For more information on Shadcn-UI, please refer to the [official documentation](https://your-link-to-shadcn-ui-documentation).
 
-Inside of your Astro project, you'll see the following folders and files:
+## Contributing
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Contributions are welcome! If you have any suggestions, improvements, or bug fixes, please feel free to submit a pull request or create an issue.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## License
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+This project is licensed under the [MIT License](LICENSE).

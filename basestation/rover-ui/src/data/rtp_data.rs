@@ -58,8 +58,8 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
             mime_type: MIME_TYPE_VP8.to_owned(),
             ..Default::default()
         },
-        "video".to_owned(),
-        "depth_video".to_owned(),
+        "rgb_video".to_owned(),
+        "rgb_video".to_owned(),
     ));
 
     let depth_track = Arc::new(TrackLocalStaticRTP::new(
@@ -67,8 +67,8 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
             mime_type: MIME_TYPE_VP8.to_owned(),
             ..Default::default()
         },
-        "video".to_owned(),
-        "rgb_video".to_owned(),
+        "depth_video".to_owned(),
+        "depth_video".to_owned(),
     ));
 
     // Add this newly created track to the PeerConnection

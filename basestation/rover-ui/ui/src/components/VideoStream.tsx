@@ -1,96 +1,147 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 const StartStream = () => {
-  const [logMessages, setLogMessages] = useState<string[]>([]);
-  const [remoteVideos, setRemoteVideos] = useState<HTMLVideoElement[]>([]);
+  const [remoteVideos, setRemoteVideos] = useState<Map<string, HTMLVideoElement>>(new Map());
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [pc, setPc] = useState<RTCPeerConnection | null>(null);
 
-  const log = (message:string) => {
-    setLogMessages((prevMessages) => [...prevMessages, message]);
+  const videoContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const log = (message: string) => {
+    console.log(message);
   };
 
   useEffect(() => {
-    startSession();
-  },[]);
+    const startSession = async () => {
+      console.log("Starting Session");
 
-  const startSession = async () => {
-    console.log("Starting Session")
-    const pc = new RTCPeerConnection({
-      iceServers: [
-     
-      ]
-    });
-    ;
+      const peerConnection = new RTCPeerConnection({
+        iceServers: []
+      });
+      setPc(peerConnection);
 
+      // Handle incoming tracks
+      peerConnection.ontrack = (event) => {
+        const el = document.createElement(event.track.kind) as HTMLVideoElement;
+        el.srcObject = event.streams[0];
+        el.autoplay = true;
+        el.controls = false;
+        setRemoteVideos((prevVideos) => new Map(prevVideos).set(event.streams[0].id, el));
+      };
 
+      // Log the ICE connection state
+      peerConnection.oniceconnectionstatechange = () => log(peerConnection.iceConnectionState);
 
-    // Handle incoming tracks
-    pc.ontrack = (event) => {
-      const el = document.createElement(event.track.kind) as HTMLVideoElement;
-      el.srcObject = event.streams[0];
-      el.autoplay = true;
-      el.controls = true;
-      setRemoteVideos((prevVideos) => [...prevVideos, el]);
-    };
+      // Handle ICE candidate event
+      peerConnection.onicegatheringstatechange = async () => {
+        if (peerConnection.iceGatheringState === 'complete') {
+          console.log("Sending local descriptor");
+          const localDescriptor = btoa(JSON.stringify(peerConnection.localDescription));
 
-    // Log the ICE connection state
-    pc.oniceconnectionstatechange = () => log(pc.iceConnectionState);
+          try {
+            const response = await fetch('/start_stream', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ localSessionDescription: localDescriptor })
+            });
 
-    // Handle ICE candidate event
-    pc.onicegatheringstatechange = async () => {
-        if (pc.iceGatheringState === 'complete') {
-          // When ICE gathering completes, send local descriptor
-        console.log("Sending local descriptor")
-        // When ICE gathering is complete, encode local session description
-        const localDescriptor = btoa(JSON.stringify(pc.localDescription));
-
-        try {
-          // Send the local descriptor to the server and receive the remote descriptor
-          const response = await fetch('/start_stream', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ localSessionDescription: localDescriptor })
-          });
-
-          if (response.ok) {
-            const  remoteSessionDescription = await response.text();
-            pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(remoteSessionDescription))));
-            log("Session established.");
-          } else {
-            log("Failed to start stream.");
+            if (response.ok) {
+              const remoteSessionDescription = await response.text();
+              try {
+                peerConnection.setRemoteDescription(
+                  new RTCSessionDescription(JSON.parse(atob(remoteSessionDescription)))
+                );
+                log("Session established.");
+              } catch (error) {
+                console.error('Error setting remote description:', error);
+                log('Error setting remote description.');
+              }
+            } else {
+              log("Failed to start stream.");
+            }
+          } catch (error) {
+            console.error('Error exchanging session descriptors:', error);
+            log('Error exchanging session descriptors.');
           }
-        } catch (error) {
-          console.error('Error exchanging session descriptors:', error);
-          log('Error exchanging session descriptors.');
         }
+      };
+
+      // Set up transceivers and create an offer
+      peerConnection.addTransceiver('video', { direction: 'recvonly' });
+      peerConnection.addTransceiver('video', { direction: 'recvonly' });
+
+      try {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+      } catch (error) {
+        log('Failed to create offer.');
       }
     };
 
-    // Set up transceivers and create an offer
-    pc.addTransceiver('video', { direction: 'recvonly' });
-    pc.addTransceiver('video', { direction: 'recvonly' });
+    startSession();
 
-    try {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-    } catch (error) {
-      log('Failed to create offer.');
+    return () => {
+      // Clean up on component unmount
+      pc?.close();
+      remoteVideos.forEach((video) => {
+        video.srcObject = null;
+        video.remove();
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    // Clear the video container
+    if (videoContainerRef.current) {
+      videoContainerRef.current.innerHTML = '';
     }
-  };
+
+    // Append the selected video to the container
+    if (selectedVideo && videoContainerRef.current) {
+      const videoElement = remoteVideos.get(selectedVideo);
+      if (videoElement) {
+        videoContainerRef.current.appendChild(videoElement);
+      }
+    }
+  }, [selectedVideo, remoteVideos]);
+
 
   return (
-    <div>
-      
-      <div id="remoteVideos" className='flex flex-row justify-center flex-wrap'>
-        {remoteVideos.map((videoElement, index) => (
-          <div key={index} ref={(ref) => ref && ref.appendChild(videoElement)} />
-        ))}
-      </div>
-      {/* <div id="log">
-        {logMessages.map((msg, index) => (
-          <p key={index}>{msg}</p>
-        ))}
-      </div> */}
-    </div>
+    <Card className='w-full h-full' >
+      <CardHeader>
+          <CardTitle>Streams</CardTitle>
+        <Select onValueChange={(value) => setSelectedVideo(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select Video" />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from(remoteVideos.keys()).map((id: string) => (
+              <SelectItem key={id} value={id}>
+                {id}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardHeader>
+      <CardContent>
+   
+      <div id="remoteVideos"  ref={videoContainerRef} className='w-[640px] h-[480px]' />
+      </CardContent>
+    </Card>
   );
 };
 

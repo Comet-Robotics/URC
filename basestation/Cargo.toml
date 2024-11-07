@@ -1,6 +1,2 @@
-[[workspace]]
-members = [
-"rover-msgs",
-"fake-rover",
-"rover-ui"
-]
+[workspace]
+members = ["rover-msgs", "fake-rover","rover-ui"]
