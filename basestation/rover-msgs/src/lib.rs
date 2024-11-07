@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub enum Message{
     Twist(Twist),
 }
+
 #[derive(Serialize,Deserialize,Debug)]
 pub struct Vector3{
     pub x: f64,

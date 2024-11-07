@@ -19,7 +19,7 @@ webrtc = "0.11.0"
 anyhow = "1.0.92"
 base64 = "0.22.1"
 bincode = { version = "=2.0.0-rc.3", features = ["serde"] }
-rover-msgs = { path = "./rover-msgs" }
+rover-msgs = { path = "../rover-msgs" }
 [features]
 real = []  # Feature to enable real ROS2 data, pulling in the r2r dependency
 default = ["real"]  # Set the default feature to mock
