@@ -1,32 +1,8 @@
 use std::{io::Write, net::TcpListener, sync::mpsc, thread, time::Duration};
 
 use bincode::{error::DecodeError};
+use rover_msgs::Message;
 use serde::{Deserialize, Serialize};
-
-#[derive(Serialize,Deserialize,Debug)]
-pub enum Message{
-    Twist(Twist),
-}
-#[derive(Serialize,Deserialize,Debug)]
-pub struct Vector3{
-    pub x: f64,
-    pub y: f64,
-    pub z: f64
-}
-#[derive(Serialize,Deserialize,Debug)]
-pub struct Twist{
-    pub linear: Vector3 ,
-    pub angular: Vector3
-}
-
-#[derive(Serialize,Deserialize,Debug)]
-pub struct RoverState{
-    pub x: f32,
-    pub y: f32,
-    pub z:f32
-
-}
-
 pub  fn launch_rover_link(mut msg_rx: mpsc::Receiver<Message>) -> Result<(), Box<dyn std::error::Error>>{
 
 
