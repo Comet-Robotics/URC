@@ -9,10 +9,17 @@
         <pose>0 0 0.063494 0 0 0</pose>
         <enable_wind>1</enable_wind>
         <link name="base_link">
-            <sensor name="navsat" type="navsat">
-                <always_on>1</always_on>
-                <update_rate>1</update_rate>
-                <topic>navsat</topic>
+            <sensor name="gps" type="navsat">
+                <plugin filename="ignition-gazebo-navsat-system" name="ignition::gazebo::systems::NavSat">
+                    <topic>/gps/fix</topic> <!-- Topic to publish GPS data -->
+                    <update_rate>1.0</update_rate> <!-- Update rate for the sensor in Hz -->
+                    <gps>
+                    <position_sensing>
+                        <horizontal>2.0</horizontal>
+                        <vertical>3.0</vertical>
+                    </position_sensing>
+                    </gps>
+                </plugin>
             </sensor>
             <inertial>
                 <pose>0.011999 0.002 0.066996 0 -0 0</pose>
@@ -162,6 +169,10 @@
             <sensor name="imu_sensor" type="imu">
                 <always_on>1</always_on>
                 <update_rate>50</update_rate>
+                <plugin 
+                    filename="libignition-gazebo-imu-system.so"
+                    name="ignition::gazebo::systems::Imu">
+                </plugin>
                 <imu>
                     <enable_orientation>0</enable_orientation>
                     <angular_velocity>

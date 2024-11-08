@@ -10,6 +10,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        # Include the launch files
+        ('share/' + package_name + '/launch', ['launch/localization_launch.py', 'launch/occupancy_launch.py']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

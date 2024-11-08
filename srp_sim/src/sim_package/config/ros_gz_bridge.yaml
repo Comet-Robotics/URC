@@ -6,8 +6,8 @@
   direction: ROS_TO_GZ
 - ros_topic_name: "/rover/imu"
   gz_topic_name: "/world/world1/model/rover/link/base_link/sensor/imu_sensor/imu"
-  ros_type_name: "rosgraph_msgs/msg/Clock"
-  gz_type_name: "gz.msgs.IMU"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"  
   direction: GZ_TO_ROS
 - ros_topic_name: "/rover/odometry"
   gz_topic_name: "/model/rover/odometry"
@@ -39,6 +39,12 @@
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "gz.msgs.PointCloudPacked"
   direction: GZ_TO_ROS
+- ros_topic_name: "/rover/gps"
+  gz_topic_name: "/world/world1/model/rover/link/base_link/sensor/gps/navsat"
+  ros_type_name: "sensor_msgs/msg/NavSatFix"
+  gz_type_name: "gz.msgs.NavSat"
+  direction: GZ_TO_ROS
+
 
 
 
