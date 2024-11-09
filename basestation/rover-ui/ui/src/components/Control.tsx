@@ -7,23 +7,23 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
-
-const Telemetry = () => {
+import { Switch } from "@/components/ui/switch"
+const Control = () => {
 
 
     return (
         <Card className="h-full w-full">
             <CardHeader>
-              <CardTitle>Telemetry</CardTitle>
+              <CardTitle>Control</CardTitle>
             </CardHeader>
             <CardContent>
-             
+            <Switch />
             </CardContent>
             <CardFooter>
-      
+              
             </CardFooter>
         </Card>
     );
 };
 
-export default Telemetry;
+export default Control;

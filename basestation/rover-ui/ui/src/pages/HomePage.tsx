@@ -2,6 +2,7 @@
 import VideoStream from "../components/VideoStream";
 import Telemetry from "../components/Telemetry";
 import Controller from "../components/Controller";
+import Control from "@/components/Control";
 
 export default function HomePage() {
   return (
@@ -10,6 +11,7 @@ export default function HomePage() {
       <Controller/>
       <VideoStream/>
       <Telemetry/>
+      <Control/>
     </section>
   );
 }

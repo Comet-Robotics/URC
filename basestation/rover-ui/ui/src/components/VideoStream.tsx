@@ -40,6 +40,9 @@ const StartStream = () => {
         el.srcObject = event.streams[0];
         el.autoplay = true;
         el.controls = false;
+        if( selectedVideo === null) {
+          setSelectedVideo(event.streams[0].id);
+        }
         setRemoteVideos((prevVideos) => new Map(prevVideos).set(event.streams[0].id, el));
       };
 
@@ -122,7 +125,7 @@ const StartStream = () => {
 
   return (
     <Card className='w-full h-full' >
-      <CardHeader>
+      <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle>Streams</CardTitle>
         <Select onValueChange={(value) => setSelectedVideo(value)}>
           <SelectTrigger className="w-[180px]">
