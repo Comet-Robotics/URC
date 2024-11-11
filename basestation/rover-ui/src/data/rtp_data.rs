@@ -102,7 +102,7 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
     // This will notify you when the peer has connected/disconnected
     peer_connection.on_ice_connection_state_change(Box::new(
         move |connection_state: RTCIceConnectionState| {
-            println!("Connection State has changed {connection_state}");
+            tracing::debug!("Connection State has changed {connection_state}");
             if connection_state == RTCIceConnectionState::Failed {
                 let _ = done_tx1.try_send(());
             }
@@ -114,13 +114,13 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
     // Set the handler for Peer connection state
     // This will notify you when the peer has connected/disconnected
     peer_connection.on_peer_connection_state_change(Box::new(move |s: RTCPeerConnectionState| {
-        println!("Peer Connection State has changed: {s}");
+        tracing::debug!("Peer Connection State has changed: {s}");
 
         if s == RTCPeerConnectionState::Failed {
             // Wait until PeerConnection has had no network activity for 30 seconds or another failure. It may be reconnected using an ICE Restart.
             // Use webrtc.PeerConnectionStateDisconnected if you are interested in detecting faster timeout.
             // Note that the PeerConnection may come back from PeerConnectionStateDisconnected.
-            println!("Peer Connection has gone to failed exiting: Done forwarding");
+            tracing::error!("Peer Connection has gone to failed exiting: Done forwarding");
             let _ = done_tx2.try_send(());
         }
 
@@ -201,7 +201,7 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
         // This will notify you when the peer has connected/disconnected
         peer_connection.on_peer_connection_state_change(Box::new(
             move |s: RTCPeerConnectionState| {
-                println!("Peer Connection State has changed: {s}");
+                tracing::debug!("Peer Connection State has changed: {s}");
                 Box::pin(async {})
             },
         ));
@@ -230,7 +230,7 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
             let b64 = signal::encode(&json_str);
             sender.send(b64).unwrap();
         } else {
-            println!("generate local_description failed!");
+            tracing::error!("generate local_description failed!");
         }
     }
 }
@@ -245,14 +245,16 @@ async fn get_stream(video_track: Arc<TrackLocalStaticRTP>,done_tx:Sender<()>,ip:
         let mut inbound_rtp_packet = vec![0u8; 1600]; // UDP MTU
         while let Ok((n, _)) = listener.recv_from(&mut inbound_rtp_packet).await {
             let data = &inbound_rtp_packet[..n];
+            tracing::trace!("Received {} bytes", n);
+
             if let Err(err) = video_track.write(data).await {
                 
                 if Error::ErrClosedPipe == err {
                     // The peerConnection has been closed.
-                    println!("Track closed");
+                    tracing::error!("Track closed");
 
                 } else {
-                    println!("video_track write err: {err}");
+                    tracing::error!("video_track write err: {err}");
                 }
                 let _ = done_tx.try_send(());
                 return;

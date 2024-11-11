@@ -8,7 +8,7 @@ pub  fn launch_rover_link(mut msg_rx: mpsc::Receiver<Message>) -> Result<(), Box
 
     let listener = TcpListener::bind("0.0.0.0:8000")?;
 
-    println!("Rover link launched");
+    tracing::info!("Rover link launched");
 
 
 
@@ -17,11 +17,11 @@ pub  fn launch_rover_link(mut msg_rx: mpsc::Receiver<Message>) -> Result<(), Box
     loop{
         let (mut socket,_addr) = match listener.accept(){
             Ok((socket, addr)) => {
-                println!("New connection: {}", addr);
+                tracing::info!("New connection: {}", addr);
                 (socket, addr)
             }
             Err(e) => {
-                println!("Failed to establish a connection: {}", e);
+                tracing::warn!("Failed to establish a connection: {}", e);
                 continue;
             }
         };
@@ -31,7 +31,7 @@ pub  fn launch_rover_link(mut msg_rx: mpsc::Receiver<Message>) -> Result<(), Box
         loop{
             match msg_rx.try_recv(){
                 Ok(msg) => {
-                    println!("Sending message: {:?}", msg);
+                    tracing::debug!("Sending message: {:?}", msg);
                     bincode::serde::encode_into_std_write(msg, &mut socket, config).unwrap();
                     socket.flush().unwrap();
 
@@ -43,7 +43,7 @@ pub  fn launch_rover_link(mut msg_rx: mpsc::Receiver<Message>) -> Result<(), Box
 
             match bincode::serde::decode_from_std_read::<Message,_,_>(&mut socket, config){
                 Ok(msg) => {
-                    println!("Received message: {:?}", msg);
+                    tracing::debug!("Received message: {:?}", msg);
 
 
                 },
@@ -54,7 +54,7 @@ pub  fn launch_rover_link(mut msg_rx: mpsc::Receiver<Message>) -> Result<(), Box
                             continue;
                         }
                     }
-                    println!("Failed to receive message: {:?}", e);
+                    tracing::error!("Failed to receive message: {:?}", e);
                     break;
                 }
             }
