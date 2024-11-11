@@ -40,9 +40,9 @@ void setup() {
 unsigned long timestamp;
 void loop() {
   // put your main code here, to run repeatedly:
-    stepperx.setSpeed(200);
-    steppery.setSpeed(200);
-    stepperz.setSpeed(500);
+  stepperx.setSpeed(200);
+  steppery.setSpeed(200);
+  stepperz.setSpeed(500);
   // while (Serial.available()){
   //   char cmd[5] = {};
   //   int read = Serial.readBytesUntil(':',cmd,5);
