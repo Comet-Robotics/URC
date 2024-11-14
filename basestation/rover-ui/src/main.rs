@@ -2,7 +2,7 @@ mod data;
 use crate::data::data::server;
 use actix_files::Files;
 use actix_web::middleware::Logger;
-use actix_web::web::{Bytes, Data};
+use actix_web::web::{Bytes, Data, Json};
 use actix_web::{get, post, rt, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
 use actix_ws::AggregatedMessage;
 use env_logger::Env;
@@ -39,12 +39,11 @@ async fn start_stream(
 #[post("/rover/twist")]
 async fn set_twist(
     app_state: Data<std::sync::mpsc::Sender<Message>>,
-    body: Bytes,
+    twist: Json<Twist>
 ) -> Result<HttpResponse, Error> {
-    let body = body.to_vec();
-    let body = String::from_utf8(body).unwrap();
-    let twist: Twist = serde_json::from_str(&body).unwrap();
-    app_state.send(Message::Twist(twist)).unwrap();
+    
+    debug!("Twist: {:?}", twist);
+    app_state.send(Message::Twist(twist.0)).unwrap();
     Ok(HttpResponse::Ok().finish())
 }
 
