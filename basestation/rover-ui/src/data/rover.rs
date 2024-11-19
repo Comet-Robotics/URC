@@ -10,7 +10,7 @@ use rover_msgs::Message;
 
 const TCP_PORT: u16 = 8000;
 const SLEEP_DURATION: Duration = Duration::from_millis(10);
-const BUFFER_SIZE: usize = 1024; // Adjust based on your message size
+const BUFFER_SIZE: usize = 1024; 
 
 #[derive(Debug)]
 enum RoverLinkError {
@@ -37,6 +37,7 @@ impl From<bincode::error::DecodeError> for RoverLinkError {
         RoverLinkError::DecodeError(err)
     }
 }
+
 
 struct RoverConnection {
     socket: std::net::TcpStream,
@@ -151,8 +152,9 @@ pub fn launch_rover_link(
 
             // Handle incoming messages
             match connection.receive_message(config) {
-                Ok(Some(_msg)) => {
+                Ok(Some(msg)) => {
                     // Handle received message here if needed
+
                 }
                 Ok(None) => {
                     thread::sleep(SLEEP_DURATION);
