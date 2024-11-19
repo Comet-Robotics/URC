@@ -12,6 +12,7 @@ orientation_deg = [0.0,0.0,0.0]
 class IMU(Node):
     def __init__(self):
         super().__init__('IMU')
+        self.declare_parameter('comm_port', '/dev/ttyACM0')
         self.imu_data_publisher = self.create_publisher(
             Imu,
             'IMU_Data',
@@ -24,10 +25,11 @@ class IMU(Node):
             10
         )
         self.ser = serial.Serial(
-            port='/dev/ttyACM0',  # Replace with your port
+            port= self.get_parameter('comm_port').value,  # Replace with your port
             baudrate=115200,        # Baud rate
             timeout=1             # Timeout for read operations
         )
+        
 
     def euler_to_quaternion(r, p, y):
             qx = np.sin(r/2) * np.cos(p/2) * np.cos(y/2) - np.cos(r/2) * np.sin(p/2) * np.sin(y/2)

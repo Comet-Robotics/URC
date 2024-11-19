@@ -50,6 +50,15 @@ URC/rover-ros> `. ./install/local_setup.sh`
 run gps node the comm port<br />
 `ros2 run gpsx gps_node --ros-args -p "comm_port:=/dev/ttyUSB0" -p "comm_speed:=9600"`
 
+**IMU Node**
+run imu node
+`ros2 run imu imu_node --ros-args -p "comm_port:=/dev/ttyUSB1"`
+
+Visualizing in rviz:
+For first time, install rviz imu plugin
+`sudo apt-get install ros-humble-imu-tools`
+start base_link and child frame and in rviz select child frame
+`ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 base_link child`
 
 **Realsense**
 `ros2 run realsense2_camera realsense2_camera_node`
