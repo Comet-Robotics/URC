@@ -2,11 +2,12 @@ use std::net::TcpStream;
 use std::process::{Command, Stdio, Child};
 use std::io;
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use bincode::error::DecodeError;
 use rover_msgs::Message;
+use rand::Rng;
 
 const RETRY_DELAY: Duration = Duration::from_secs(1);
 
@@ -164,9 +165,36 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     stream.set_nonblocking(true)?;
-
+    let mut timer = Instant::now();
     // Main message processing loop
     while running.load(Ordering::SeqCst) {
+        if (timer.elapsed().as_secs()) >= 2 {
+            timer = Instant::now();
+
+            let mut rng = rand::thread_rng();
+            let msg = Message::IMU(rover_msgs::IMU {
+                orientation_covariance: rover_msgs::Quaternion { 
+                    x: rng.gen_range(-2.0..1.0), 
+                    y: rng.gen_range(-2.0..1.0), 
+                    z: rng.gen_range(-2.0..1.0), 
+                    w: rng.gen_range(-2.0..1.0) 
+                },
+                angular_velocity_covariance: rover_msgs::Vector3 { 
+                    x: rng.gen_range(-1.0..1.0), 
+                    y: rng.gen_range(-1.0..1.0), 
+                    z: rng.gen_range(-1.0..1.0) 
+                },
+                linear_acceleration_covariance: rover_msgs::Vector3 { 
+                    x: rng.gen_range(-1.0..1.0), 
+                    y: rng.gen_range(-1.0..1.0), 
+                    z: rng.gen_range(-1.0..1.0) 
+                },
+            });
+
+            println!("Sending message: {:?}", msg);
+            bincode::serde::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
+        }
+
         match handle_message_stream(&mut stream) {
             Ok(continue_running) => {
                 if !continue_running {

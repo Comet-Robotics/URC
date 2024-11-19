@@ -1002,6 +1002,7 @@ version = "0.1.0"
 dependencies = [
  "bincode 2.0.0-rc.3",
  "ctrlc",
+ "rand",
  "rover-msgs",
 ]
 
@@ -2040,8 +2041,10 @@ dependencies = [
  "base64 0.22.1",
  "bincode 2.0.0-rc.3",
  "chrono",
+ "ctrlc",
  "env_logger",
  "futures-util",
+ "rand",
  "rover-msgs",
  "serde",
  "serde_json",

@@ -76,6 +76,7 @@ async fn main() -> std::io::Result<()> {
             .service(set_twist)
             .service(Files::new("/", "ui/dist").index_file("index.html"))
     })
+    .disable_signals()
     .bind("0.0.0.0:8081")?
     .run()
     .await
