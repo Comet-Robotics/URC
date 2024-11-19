@@ -1,0 +1,10 @@
+[package]
+name = "fake-rover"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bincode = { version = "=2.0.0-rc.3", features = ["serde"] }
+ctrlc = "3.4.5"
+rand = "0.8.5"
+rover-msgs = { path = "../rover-msgs" }

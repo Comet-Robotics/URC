@@ -4,9 +4,10 @@
   <name>obstacle_detection</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="conner@replogle.dev">therion</maintainer>
+  <maintainer email="you@example.com">urc</maintainer>
   <license>TODO: License declaration</license>
-
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
