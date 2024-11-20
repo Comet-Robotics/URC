@@ -19,6 +19,7 @@ class FibonacciActionServer(Node):
         )
         # self.alive_timer = self.create_timer(1.0 , self.send_alive_message)
         self.subscription = self.create_subscription(Twist, '/cmd_vel_out', self.cmd_vel_callback, 10)
+        self.timer = self.create_timer(0.5, self.timer_callback)
     def drive_motors(self, linear_x, linear_y, angular_z):
         # Define the robot's geometry
         wheelbase = 0.4  # distance between front and rear wheels, example value
@@ -32,7 +33,8 @@ class FibonacciActionServer(Node):
         self.get_logger().info(f"Right Speed: {front_right_speed} Left Speed: {front_left_speed} Rear Right Speed: {rear_right_speed} Rear Left Speed: {rear_left_speed}")
         # Send speeds to your motor controllers
         self.set_motor_speeds(front_left_speed, front_right_speed, rear_left_speed, rear_right_speed)
-
+    def heart_beat_callback(self):
+        self.ser.write(b'apple\n')
     def cmd_vel_callback(self, msg):
         # Extract linear and angular velocities from the Twist message
         linear_x = msg.linear.x
