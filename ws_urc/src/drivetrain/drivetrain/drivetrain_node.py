@@ -7,7 +7,7 @@ import serial
 import time
 
 
-class FibonacciActionServer(Node):
+class DrivetrainNode(Node):
 
     def __init__(self):
         super().__init__('drivetrain_action_server')
@@ -65,7 +65,7 @@ class FibonacciActionServer(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    fibonacci_action_server = FibonacciActionServer()
+    fibonacci_action_server = DrivetrainNode()
 
     rclpy.spin(fibonacci_action_server)
 
