@@ -725,6 +725,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[patch.unused]]
+name = "action_drivetrain_interface"
+version = "0.0.0"
+
+[[patch.unused]]
 name = "action_msgs"
 version = "1.2.1"
 
@@ -759,6 +763,10 @@ version = "0.4.1"
 [[patch.unused]]
 name = "examples_rclrs_minimal_pub_sub"
 version = "0.4.1"
+
+[[patch.unused]]
+name = "gpsx"
+version = "0.0.0"
 
 [[patch.unused]]
 name = "lifecycle_msgs"

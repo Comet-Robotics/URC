@@ -1,3 +1,6 @@
+[patch.crates-io.rclrs]
+path = "/home/urc/URC/ws_urc/install/rclrs/share/rclrs/rust"
+
 [patch.crates-io.rosidl_runtime_rs]
 path = "/home/urc/URC/ws_urc/install/rosidl_runtime_rs/share/rosidl_runtime_rs/rust"
 
@@ -12,6 +15,9 @@ path = "/home/urc/URC/ws_urc/install/examples_rclrs_minimal_client_service/share
 
 [patch.crates-io.example_interfaces]
 path = "/home/urc/URC/ws_urc/install/example_interfaces/share/example_interfaces/rust"
+
+[patch.crates-io.action_drivetrain_interface]
+path = "/home/urc/URC/ws_urc/install/action_drivetrain_interface/share/action_drivetrain_interface/rust"
 
 [patch.crates-io.action_msgs]
 path = "/home/urc/URC/ws_urc/install/action_msgs/share/action_msgs/rust"
@@ -46,6 +52,9 @@ path = "/home/urc/URC/ws_urc/install/rust_pubsub/share/rust_pubsub/rust"
 [patch.crates-io.nav_msgs]
 path = "/home/urc/URC/ws_urc/install/nav_msgs/share/nav_msgs/rust"
 
+[patch.crates-io.gpsx]
+path = "/home/urc/URC/ws_urc/install/gpsx/share/gpsx/rust"
+
 [patch.crates-io.diagnostic_msgs]
 path = "/home/urc/URC/ws_urc/install/diagnostic_msgs/share/diagnostic_msgs/rust"
 
@@ -66,9 +75,6 @@ path = "/home/urc/URC/ws_urc/install/statistics_msgs/share/statistics_msgs/rust"
 
 [patch.crates-io.examples_rclrs_message_demo]
 path = "/home/urc/URC/ws_urc/install/examples_rclrs_message_demo/share/examples_rclrs_message_demo/rust"
-
-[patch.crates-io.rclrs]
-path = "/home/urc/URC/ws_urc/install/rclrs/share/rclrs/rust"
 
 [patch.crates-io.rosgraph_msgs]
 path = "/home/urc/URC/ws_urc/install/rosgraph_msgs/share/rosgraph_msgs/rust"

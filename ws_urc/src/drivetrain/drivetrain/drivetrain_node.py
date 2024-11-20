@@ -13,13 +13,13 @@ class DrivetrainNode(Node):
         super().__init__('drivetrain_action_server')
         self.get_logger().info(f"LIVE") 
         self.ser = serial.Serial(
-            port='/dev/ttyACM0',  # Replace with your port
+            port=self.get_parameter_or("port","/dev/serial/by-id/usb-SOLIS_ROVER_PROJECT_DRIVETRAIN-if00"),  # Replace with your port
             baudrate=115200,        # Baud rate
             timeout=1             # Timeout for read operations
         )
         # self.alive_timer = self.create_timer(1.0 , self.send_alive_message)
         self.subscription = self.create_subscription(Twist, '/cmd_vel_out', self.cmd_vel_callback, 10)
-        self.timer = self.create_timer(0.5, self.timer_callback)
+        self.timer = self.create_timer(0.5, self.heart_beat_callback)
     def drive_motors(self, linear_x, linear_y, angular_z):
         # Define the robot's geometry
         wheelbase = 0.4  # distance between front and rear wheels, example value
