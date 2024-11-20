@@ -7,7 +7,7 @@
 Motor* leftRear;    // "RR" on rover
 Motor* rightRear;   // "RL" on rover
 Motor* leftFront;   // "FR" on rover
-Motor* rightFront;  // 
+Motor* rightFront;  // "RF on rover
 
 uint32_t lastTime = 0;
 
