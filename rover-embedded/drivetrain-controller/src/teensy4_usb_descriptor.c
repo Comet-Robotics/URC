@@ -15,7 +15,11 @@
 #define PRODUCT_NAME_LEN 10
 #define MANUFACTURER_NAME {'S','O','L','I','S',' ','R','O','V','E','R',' ', 'P','R','O','J','E','C','T'}
 #define MANUFACTURER_NAME_LEN 19
-
+#define SERIAL_NUMBER                                            \
+	{                                                        \
+		'U', 'R', 'C',  '_', 'D', 'R', 'I', 'V', 'E' \
+	}
+#define SERIAL_NUMBER_LEN 10
 PROGMEM extern struct usb_string_descriptor_struct usb_string_manufacturer_name = {
     2 + MANUFACTURER_NAME_LEN * 2,
     3,
@@ -27,3 +31,8 @@ PROGMEM extern struct usb_string_descriptor_struct usb_string_product_name = {
     3,
     PRODUCT_NAME
 };
+
+struct usb_string_descriptor_struct usb_string_serial_number = {
+	2 + SERIAL_NUMBER_LEN * 2,
+	3,
+	SERIAL_NUMBER};
