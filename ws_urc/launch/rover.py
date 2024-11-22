@@ -11,7 +11,12 @@ def generate_launch_description():
             parameters=[
 
                 {'rgb_camera.color_profile': '640x480x30'},
-                {'depth_module.depth_profile': '640x480x30'}
+                {'depth_module.depth_profile': '640x480x30'},
+                {"enable_sync": True},
+                {"base_frame_id":"base_link"},
+                {"align_depth.enable": True},
+
+
             ]
         ),
    

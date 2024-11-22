@@ -73,7 +73,9 @@ dependencies = [
  "bincode",
  "clap",
  "geometry_msgs",
+ "gpsx",
  "rclrs",
+ "rover-msgs",
  "sensor_msgs",
  "serde",
  "std_msgs",
@@ -331,6 +333,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
+name = "gpsx"
+version = "0.0.0"
+dependencies = [
+ "rosidl_runtime_rs",
+]
+
+[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -509,6 +518,13 @@ name = "rosidl_runtime_rs"
 version = "0.4.1"
 dependencies = [
  "cfg-if",
+ "serde",
+]
+
+[[package]]
+name = "rover-msgs"
+version = "0.1.0"
+dependencies = [
  "serde",
 ]
 
@@ -763,10 +779,6 @@ version = "0.4.1"
 [[patch.unused]]
 name = "examples_rclrs_minimal_pub_sub"
 version = "0.4.1"
-
-[[patch.unused]]
-name = "gpsx"
-version = "0.0.0"
 
 [[patch.unused]]
 name = "lifecycle_msgs"

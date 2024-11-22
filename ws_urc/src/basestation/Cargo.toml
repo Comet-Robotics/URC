@@ -11,3 +11,6 @@ geometry_msgs = {version="*",features=["serde"]}
 serde = { version = "1.0.214", features = ["derive"] }
 sensor_msgs = "*"
 clap = { version = "4.5.20", features = ["derive"] }
+rover-msgs = {path="../../../basestation/rover-msgs"}
+
+gpsx = "*"
