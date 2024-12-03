@@ -8,7 +8,7 @@
         </plugin>
         <pose>0 0 0.063494 0 0 0</pose>
         <enable_wind>1</enable_wind>
-        <link name="base_link">
+        <link name="base_link" >
             <sensor name="navsat" type="navsat">
                 <always_on>1</always_on>
                 <update_rate>1</update_rate>
@@ -237,22 +237,14 @@
                 </imu>
             </sensor>
 
-            <visual name="camera_visual">
-                <pose>0.23 0 0.19 0 0 0</pose>
-                <geometry>
-                    <box>
-                        <size>0.02 0.02 0.02</size>
-                    </box>
-                </geometry>
-            </visual>
             <sensor name="camera_front" type="rgbd_camera">
-                <pose>0.23 0 0.19 0 0 0</pose>
+                <pose >0.23 0 0.19 0 0 0</pose>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <camera name="camera_front">
-                    <!--<cameraInfoTopicName>camera_info</cameraInfoTopicName>-->
+                    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
                     <!--<hackBaseline>0.07</hackBaseline>-->
-                    <pose frame="">0 0 0 0 -1.5707 1.5707</pose>
+                    <pose >0 0 0 0 -1.5707 1.5707</pose>
                     <horizontal_fov>1.2113</horizontal_fov>
                     <lens>
                         <intrinsics>
@@ -531,6 +523,14 @@
             <wheel_radius>0.098</wheel_radius> <!-- From the wheel dimensions -->
             <odom_publish_frequency>1</odom_publish_frequency>
             <topic>cmd_vel</topic>
+        </plugin>
+        <plugin
+        filename="libignition-gazebo-pose-publisher-system.so"
+        name="ignition::gazebo::systems::PosePublisher">
+            <topic>/tf</topic>
+            <publish_frame>/rover/base_link/camera_front</publish_frame>
+            <publish_interval>0.1</publish_interval> <!-- Update frequency in seconds -->
+            <use_sim_time>true</use_sim_time>
         </plugin>
    
     </model>

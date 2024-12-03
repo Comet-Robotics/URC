@@ -9,6 +9,7 @@ import xacro
 import launch.utilities
 import launch_ros.descriptions as descriptions
 from launch.substitutions import PathJoinSubstitution, Command, LaunchConfiguration, TextSubstitution
+import logging
 
 
 def generate_launch_description():
@@ -54,18 +55,38 @@ def generate_launch_description():
         }],
         output='screen'
     )
-    
-    
 
+    # robot_description_path = os.path.join(models_dir, 'rover', 'model.urdf')
+    # with open(robot_description_path, 'r') as file:
+    #     robot_description = file.read()
     
+    # robot_state_publisher = Node(
+    #     package='robot_state_publisher',
+    #     executable='robot_state_publisher',
+    #     name='robot_state_publisher',
+    #     output='screen',
+    #     parameters=[{'robot_description': robot_description}],
+    # )
 
+    camera_front_to_camera_link = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='camera_front_to_camera_link',
+        output='screen',
+        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'rover/base_link', 'rover/base_link/camera_front']
+    )
+    
+    
     return LaunchDescription([
                set_gazebo_model_path,
         #world_server,
         world_client,
         bridge,
+        # robot_state_publisher,
+        camera_front_to_camera_link
     ])
 
 
+    
     
 
