@@ -71,6 +71,13 @@ def generate_launch_description():
             parameters=[{'use_sim_time': True,
                          'robot_description': doc.toxml()}])
     
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        output='screen',
+        parameters=[{'robot_description': robot_description}],
+    )
 
     camera_front_to_camera_link = Node(
         package='tf2_ros',

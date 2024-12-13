@@ -222,7 +222,7 @@
         
         <link name="camera_link">
             <sensor name="camera_front" type="rgbd_camera">
-                <pose>0.23 0 0.19 0 0 0</pose>
+                <pose>0 0.23 0.19 0 0 0</pose>
                 <always_on>1</always_on>
                 <update_rate>20</update_rate>
                 <horizontal_fov>1.2113</horizontal_fov>
