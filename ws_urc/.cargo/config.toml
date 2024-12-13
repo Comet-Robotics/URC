@@ -1,1 +1,38 @@
-[patch.crates-io]
+[patch.crates-io.sensor_msgs]
+path = "/home/urc/URC/ws_urc/install/sensor_msgs/share/sensor_msgs/rust"
+
+[patch.crates-io.rclrs]
+path = "/home/urc/URC/ws_urc/install/rclrs/share/rclrs/rust"
+
+[patch.crates-io.test_msgs]
+path = "/home/urc/URC/ws_urc/install/test_msgs/share/test_msgs/rust"
+
+[patch.crates-io.geometry_msgs]
+path = "/home/urc/URC/ws_urc/install/geometry_msgs/share/geometry_msgs/rust"
+
+[patch.crates-io.std_msgs]
+path = "/home/urc/URC/ws_urc/install/std_msgs/share/std_msgs/rust"
+
+[patch.crates-io.rosgraph_msgs]
+path = "/home/urc/URC/ws_urc/install/rosgraph_msgs/share/rosgraph_msgs/rust"
+
+[patch.crates-io.rcl_interfaces]
+path = "/home/urc/URC/ws_urc/install/rcl_interfaces/share/rcl_interfaces/rust"
+
+[patch.crates-io.action_msgs]
+path = "/home/urc/URC/ws_urc/install/action_msgs/share/action_msgs/rust"
+
+[patch.crates-io.unique_identifier_msgs]
+path = "/home/urc/URC/ws_urc/install/unique_identifier_msgs/share/unique_identifier_msgs/rust"
+
+[patch.crates-io.builtin_interfaces]
+path = "/home/urc/URC/ws_urc/install/builtin_interfaces/share/builtin_interfaces/rust"
+
+[patch.crates-io.rosidl_runtime_rs]
+path = "/home/urc/URC/ws_urc/install/rosidl_runtime_rs/share/rosidl_runtime_rs/rust"
+
+[patch.crates-io.example_interfaces]
+path = "/home/urc/URC/ws_urc/install/example_interfaces/share/example_interfaces/rust"
+
+[patch.crates-io.rclrs_example_msgs]
+path = "/home/urc/URC/ws_urc/install/rclrs_example_msgs/share/rclrs_example_msgs/rust"

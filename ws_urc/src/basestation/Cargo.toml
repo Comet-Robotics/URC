@@ -1,0 +1,16 @@
+[package]
+name = "basestation"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bincode = { version = "=2.0.0-rc.3", features = ["serde"] }
+rclrs="*"
+std_msgs="*"
+geometry_msgs = {version="*",features=["serde"]}
+serde = { version = "1.0.214", features = ["derive"] }
+sensor_msgs = "*"
+clap = { version = "4.5.20", features = ["derive"] }
+rover-msgs = {path="../../../basestation/rover-msgs"}
+
+gpsx = "*"

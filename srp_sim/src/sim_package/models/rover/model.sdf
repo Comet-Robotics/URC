@@ -10,7 +10,7 @@
         <enable_wind>1</enable_wind>
         <link name="base_link">
             <inertial>
-                <pose>0.011999 0.002 0.066996 0 -0 0</pose>
+                <pose>0.011999 0.002 0.066996 0 0 0</pose>
                 <mass>16.524</mass>
                 <inertia>
                     <ixx>0.320605</ixx>
@@ -22,7 +22,7 @@
                 </inertia>
             </inertial>
             <collision name="chassis_collision">
-                <pose>0 0 0.092 0 -0 0</pose>
+                <pose>0 0 0.092 0 0 0</pose>
                 <geometry>
                     <box>
                         <size>0.42 0.31 0.184</size>

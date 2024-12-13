@@ -56,9 +56,20 @@ def generate_launch_description():
         output='screen'
     )
 
-    robot_description_path = os.path.join(models_dir, 'rover', 'model.urdf')
-    with open(robot_description_path, 'r') as file:
-        robot_description = file.read()
+    sdf = os.path.join(
+    pkg_share,
+    'models', 'rover', 'model.sdf')
+
+    doc = xacro.parse(open(sdf))
+    xacro.process_doc(doc)
+
+    robot_state_publisher =  Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            output='screen',
+            parameters=[{'use_sim_time': True,
+                         'robot_description': doc.toxml()}])
     
     robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -73,13 +84,20 @@ def generate_launch_description():
         executable='static_transform_publisher',
         name='camera_front_to_camera_link',
         output='screen',
-        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'camera_link', 'rover/camera_link/camera_front']
+        arguments=['0.0', '0.0', '0.0', '1.57079632679', '3.14159265359', '1.57079632679', 'rover/camera_link', 'rover/camera_link/camera_front']
     )
-    
+
+    worldflip = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='odom_to_tove',
+        output='screen',
+        arguments=['0.0', '0.0', '0.0', '0.0', '-1.57079632679', '0.0', 'odom', 'base_link']
+    )
     
     return LaunchDescription([
                set_gazebo_model_path,
-        #world_server,
+        # worldflip,
         world_client,
         bridge,
         robot_state_publisher,
@@ -87,5 +105,6 @@ def generate_launch_description():
     ])
 
 
+    
     
 

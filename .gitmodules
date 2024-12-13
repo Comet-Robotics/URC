@@ -1,5 +1,3 @@
-[submodule "rover-ros/src/realsense-ros"]
-	path = rover-ros/src/realsense-ros
+[submodule "ws_urc/src/realsense-ros"]
+	path = ws_urc/src/realsense-ros
 	url = https://github.com/IntelRealSense/realsense-ros.git
-	branch = ros2-master
-
