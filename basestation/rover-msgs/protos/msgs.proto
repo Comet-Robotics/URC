@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+import "std_msgs.proto";  
+import "geometry_msgs.proto"; 
+
+
+package msgs;
+message Message {
+  oneof data_type {
+    IMUData imu = 1;
+    GPSData gps = 2;
+    Twist twist = 3;
+  }
+}
+
+message Twist {
+  geometry_msgs.Vector3 linear = 1;   // Linear velocity
+  geometry_msgs.Vector3 angular = 2;  // Angular velocity
+}
+
+message GPSData {
+  double longitude = 1;
+  double latitude = 2;
+  double altitude = 3;
+  float ground_speed = 4;
+  uint32 satellites = 5;
+  uint32 mode_indicator = 6;
+  float separation = 7;
+  float true_course = 8;
+  float true_course_magnetic = 9;
+  float dilution = 10;
+  uint32 utc_time = 11;
+}
+
+message IMUData {
+  std_msgs.Header header = 1;
+
+  geometry_msgs.Quaternion orientation = 2;
+  repeated double orientation_covariance = 3; // Use repeated for fixed-size arrays (size 9)
+
+  geometry_msgs.Vector3 angular_velocity = 4;
+  repeated double angular_velocity_covariance = 5; // Use repeated for fixed-size arrays (size 9)
+
+  geometry_msgs.Vector3 linear_acceleration = 6;
+  repeated double linear_acceleration_covariance = 7; // Use repeated for fixed-size arrays (size 9)
+}
