@@ -12,10 +12,9 @@ orientation_deg = [0.0,0.0,0.0]
 class IMU(Node):
     def __init__(self):
         super().__init__('IMU')
-        self.declare_parameter('comm_port', '/dev/ttyACM0')
         self.imu_data_publisher = self.create_publisher(
             Imu,
-            'IMU_Data',
+            'imu',
             10
         )
         self.timer = self.create_timer(0.01, self.read_and_send_imu_data);        
@@ -24,8 +23,12 @@ class IMU(Node):
             'robot_orientation',
             10
         )
+        port = self.get_parameter_or('comm_port',"/dev/serial/by-id/usb-Arduino_LLC_Arduino_Nano_Every_87BD260E51544B5933202020FF0A4126-if00")
+
+        self.get_logger().info("IMU Node started")
+        self.get_logger().info(f"Connecting to {port}")
         self.ser = serial.Serial(
-            port= self.get_parameter('comm_port').value,  # Replace with your port
+            port= port,  # Replace with your port
             baudrate=115200,        # Baud rate
             timeout=1             # Timeout for read operations
         )
