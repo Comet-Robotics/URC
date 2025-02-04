@@ -1,0 +1,38 @@
+ekf:
+  ros__parameters:
+    frequency: 10.0  
+    two_d_mode: false  
+    odom_frame: "odom"
+    base_link_frame: "base_link"
+    world_frame: "odom"  
+    debug: true
+    imu0: "/imu"
+    imu0_config: [false, false, false,  # X, Y, Z position
+                  true,  true,  true,   # Roll, Pitch, Yaw (from IMU)
+                  false, false, false,   # X, Y, Z velocity (use odom for X, Y)
+                  false, false, false,  # X, Y, Z acceleration
+                  false, false, false]  # Ang. Velocities
+
+    odom0: "/wheel_odom"
+    odom0_config: [true,  true,  false, # X, Y position (not Z)
+                   false, false, false, # Roll, Pitch, Yaw (from IMU)
+                   true,  true,  false, # X, Y velocity
+                   false, false, false, # Angular velocity (IMU handles this)
+                   false, false, false] # Acceleration
+
+    odom1: "/odom"  # This is where rgbd_odometry publishes
+    odom1_config: [true,  true,  false, # X, Y position (not Z)
+                   false, false, false, # Roll, Pitch, Yaw (from IMU)
+                   true,  true,  false, # X, Y velocity
+                   false, false, false, # Angular velocity (IMU handles this)
+                   false, false, false] # Acceleration
+
+    navsat0: "/navsat"  # Topic where GPS data is published
+    navsat0_config: [true,  true,  true,  # Latitude, Longitude, Altitude
+                     false, false, false, # Roll, Pitch, Yaw (IMU handles these)
+                     false, false, false, # Velocity (IMU handles these)
+                     false, false, false, # Acceleration (IMU handles these)
+                     false, false, false] # Angular velocities (IMU handles these)
+
+    use_sim_time: true
+    publish_tf: true
