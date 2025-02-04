@@ -5,7 +5,7 @@ ekf:
     odom_frame: "odom"
     base_link_frame: "base_link"
     world_frame: "odom"  
-    debug: true
+    debug: false
     imu0: "/imu"
     imu0_config: [false, false, false,  # X, Y, Z position
                   true,  true,  true,   # Roll, Pitch, Yaw (from IMU)
