@@ -1,12 +1,15 @@
 use serde::{Deserialize, Serialize};
-
-
-#[derive(Serialize,Deserialize,Debug)]
+use ts_rs::TS;
+#[derive(TS)]
+#[ts(export)]
+#[derive(Serialize,Deserialize,Debug,Clone)]
 pub enum Message{
     Twist(Twist),
     IMU(IMU),
+    GPS(Vector3)
 }
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(TS)]
+#[derive(Serialize,Deserialize,Debug,Clone)]
 pub struct IMU{
     //Header header
     //geometry_msgs/Quaternion orientation
@@ -19,28 +22,31 @@ pub struct IMU{
     pub linear_acceleration_covariance:Vector3 // Row major x, y z 
 }
 
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(TS)]
+#[derive(Serialize,Deserialize,Debug,Clone)]
 pub struct Vector3{
     pub x: f64,
     pub y: f64,
     pub z: f64
 }
 
-
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(TS)]
+#[derive(Serialize,Deserialize,Debug,Clone)]
 pub struct Quaternion{
     pub x: f64,
     pub y: f64,
     pub z: f64,
     pub w: f64
 }
-#[derive(Serialize,Deserialize,Debug)]
+
+#[derive(TS)]
+#[derive(Serialize,Deserialize,Debug,Clone)]
 pub struct Twist{
     pub linear: Vector3 ,
     pub angular: Vector3
 }
-
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(TS)]
+#[derive(Serialize,Deserialize,Debug,Clone)]
 pub struct RoverState{
     pub x: f32,
     pub y: f32,

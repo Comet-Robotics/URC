@@ -9,6 +9,7 @@ use env_logger::Env;
 use futures_util::StreamExt;
 use rover_msgs::{Message, Twist};
 use serde::Deserialize;
+use tokio::select;
 use tokio::sync::mpsc::{self, Sender};
 use tokio::sync::oneshot;
 use std::io::Read;
@@ -36,15 +37,57 @@ async fn start_stream(
     Ok(HttpResponse::Ok().body(response))
 }
 
-#[post("/rover/twist")]
-async fn set_twist(
-    app_state: Data<std::sync::mpsc::Sender<Message>>,
-    twist: Json<Twist>
+
+#[get("/message_stream")]
+async fn message_stream(
+    sender: Data<std::sync::mpsc::Sender<Message>>,
+    sender_broadcast: Data<tokio::sync::broadcast::Sender<Message>>,
+    req: HttpRequest, stream: web::Payload
 ) -> Result<HttpResponse, Error> {
-    
-    debug!("Twist: {:?}", twist);
-    app_state.send(Message::Twist(twist.0)).unwrap();
-    Ok(HttpResponse::Ok().finish())
+    let (res, mut session, stream) = actix_ws::handle(&req, stream)?;
+
+    let mut stream = stream
+        .aggregate_continuations()
+        // aggregate continuation frames up to 1MiB
+        .max_continuation_size(2_usize.pow(20));
+
+    // start task but don't wait for it
+    rt::spawn(async move {
+        // receive messages from websocket
+        let mut recv = sender_broadcast.subscribe();
+        loop{
+
+
+            select!{
+                msg = stream.next() => {
+                    match msg {
+                        Some(Ok(AggregatedMessage::Text(text))) => {
+                            let msg:Message = serde_json::from_str(&text).unwrap();
+                            sender.send(msg).unwrap();
+                        }
+                        _ => {
+                            break;
+                        }
+                    }
+                }
+                msg = recv.recv() => {
+                    match msg {
+                        Ok(msg) => {
+                            debug!("Sending msg to websocket");
+                            let text = serde_json::to_string(&msg).unwrap();
+                            session.text(text).await.unwrap();
+                        }
+                        _ => {}
+                    }
+                }
+            }
+
+
+        }
+    });
+
+    // respond immediately with response connected to WS session
+    Ok(res)
 }
 
 
@@ -60,20 +103,25 @@ async fn main() -> std::io::Result<()> {
 
     let (rover_sender,rover_recv) = std::sync::mpsc::channel::<Message>();
 
+    let (message_send,message_recv) = tokio::sync::broadcast::channel::<Message>(10);
+    let msg1 = message_send.clone();
     rt::task::spawn_blocking(move ||{
-        data::rover::launch_rover_link(rover_recv).unwrap();
+        data::rover::launch_rover_link(rover_recv,msg1).unwrap();
     });
 
     let sender:DescriptorExhange = sender;
+
+
 
     HttpServer::new(move || {
         let app = App::new();
 
         app.wrap(Logger::default())
+        .app_data(Data::new(message_send.clone()))
             .app_data(Data::new(sender.clone()))
             .app_data(Data::new(rover_sender.clone()))
             .service(start_stream)
-            .service(set_twist)
+            .service(message_stream)
             .service(Files::new("/", "ui/dist").index_file("index.html"))
     })
     .disable_signals()

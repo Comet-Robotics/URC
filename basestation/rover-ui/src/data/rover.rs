@@ -1,12 +1,9 @@
 use std::{
-    io::{Read, Write},
-    net::TcpListener,
-    sync::mpsc,
-    thread,
-    time::Duration,
+    io::{Read, Write}, net::TcpListener, sync::mpsc, thread, time::Duration
 };
 use bincode::{error::DecodeError, config::Configuration};
 use rover_msgs::Message;
+use tokio::sync::broadcast;
 
 const TCP_PORT: u16 = 8000;
 const SLEEP_DURATION: Duration = Duration::from_millis(10);
@@ -105,7 +102,6 @@ impl RoverConnection {
         match bincode::serde::decode_from_slice(available_slice, config) {
             Ok((msg, consumed)) => {
                 self.read_pos += consumed;
-                tracing::debug!("Received message: {:?}", msg);
                 Ok(Some(msg))
             }
             Err(DecodeError::Io { inner, .. }) if inner.kind() == std::io::ErrorKind::UnexpectedEof => {
@@ -119,8 +115,9 @@ impl RoverConnection {
     }
 }
 
-pub fn launch_rover_link(
-    mut msg_rx: mpsc::Receiver<Message>,
+pub  fn launch_rover_link(
+     msg_rx: mpsc::Receiver<Message>,
+     msg_tx: broadcast::Sender<Message>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind(("0.0.0.0", TCP_PORT))?;
     tracing::info!("Rover link launched on port {}", TCP_PORT);
@@ -154,7 +151,10 @@ pub fn launch_rover_link(
             match connection.receive_message(config) {
                 Ok(Some(msg)) => {
                     // Handle received message here if needed
+                    
+                    tracing::debug!("Received message: {:?}", msg);
 
+                    msg_tx.send(msg).unwrap();
                 }
                 Ok(None) => {
                     thread::sleep(SLEEP_DURATION);

@@ -83,8 +83,7 @@ impl StreamManager {
             ))
             .arg("-vcodec")
             .arg("libvpx")
-            .arg("-cpu-used")
-            .arg("5")
+         
             .arg("-deadline")
             .arg("1")
             .arg("-g")
@@ -190,6 +189,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     z: rng.gen_range(-1.0..1.0) 
                 },
             });
+
+            println!("Sending message: {:?}", msg);
+            bincode::serde::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
+
+            let msg = Message::GPS(rover_msgs::Vector3 { 
+                    x: rng.gen_range(-1.0..1.0), 
+                    y: rng.gen_range(-1.0..1.0), 
+                    z: rng.gen_range(-1.0..1.0) 
+                });
 
             println!("Sending message: {:?}", msg);
             bincode::serde::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;

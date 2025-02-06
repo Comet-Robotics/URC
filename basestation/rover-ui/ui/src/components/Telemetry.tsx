@@ -8,15 +8,16 @@ import {
     CardTitle,
   } from "@/components/ui/card"
 
-const Telemetry = () => {
+const Telemetry = ({messages}:{messages: any[]}) => {
 
 
     return (
-        <Card className="h-full w-full">
+        <Card className="h-full w-24">
             <CardHeader>
               <CardTitle>Telemetry</CardTitle>
             </CardHeader>
             <CardContent>
+              {JSON.stringify(messages)}
              
             </CardContent>
             <CardFooter>
