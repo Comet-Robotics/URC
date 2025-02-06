@@ -3,4 +3,4 @@ import type { IMU } from "./IMU";
 import type { Twist } from "./Twist";
 import type { Vector3 } from "./Vector3";
 
-export type Message = { "Twist": Twist } | { "IMU": IMU } | { "GPS": Vector3 };
+export type Message = { "type": "Twist" } & Twist | { "type": "IMU" } & IMU | { "type": "GPS" } & Vector3;

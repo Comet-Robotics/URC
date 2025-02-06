@@ -7,8 +7,9 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
+import { Vector3 } from "../../../../rover-msgs/bindings/Vector3";
 
-const Telemetry = ({messages}:{messages: any[]}) => {
+const Telemetry = ({gps}:{gps: Vector3}) => {
 
 
     return (
@@ -17,7 +18,7 @@ const Telemetry = ({messages}:{messages: any[]}) => {
               <CardTitle>Telemetry</CardTitle>
             </CardHeader>
             <CardContent>
-              {JSON.stringify(messages)}
+              <p>X: {gps.x} Y: {gps.y} Z: {gps.z}</p>
              
             </CardContent>
             <CardFooter>

@@ -6,18 +6,24 @@ import Control from "@/components/Control";
 import {  useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket"
 import { Message } from "@/lib/types";
+import { Vector3 } from "../../../../rover-msgs/bindings/Vector3";
 
 export default function HomePage() {
 
   const [socketUrl, setSocketUrl] = useState('/message_stream');
   const [messageHistory, setMessageHistory] = useState<Message[]>([]);
+  const [gps, setGPS ] = useState<Vector3>({x:0.0,y:0.0,z:0.0});
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
   useEffect(() => {
     if (lastMessage !== null) {
       console.log(lastMessage)
-      setMessageHistory((prev) => prev.concat(JSON.parse(lastMessage.data)));
+      let message: Message = JSON.parse(lastMessage.data);
+      if (message.type == "GPS"){
+        setGPS(message)
+      }
+      setMessageHistory((prev) => prev.concat());
     }
   }, [lastMessage]);
 
@@ -35,7 +41,7 @@ export default function HomePage() {
      {connectionStatus} 
       <Controller sendMovement={(twist) => sendMessage(JSON.stringify(twist))} />
       <VideoStream/>
-      <Telemetry messages={messageHistory.slice(-2)} />
+      <Telemetry gps={gps} />
     </section>
   );
 }

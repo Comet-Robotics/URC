@@ -56,7 +56,7 @@ impl RoverConnection {
 
     fn send_message(&mut self, msg: Message, config: Configuration) -> Result<(), RoverLinkError> {
         tracing::debug!("Sending message: {:?}", msg);
-        bincode::serde::encode_into_std_write(msg, &mut self.socket, config)?;
+        bincode::encode_into_std_write(msg, &mut self.socket, config)?;
         Ok(())
     }
 
@@ -99,7 +99,7 @@ impl RoverConnection {
 
         // Try to decode a message from the buffer
         let available_slice = &self.read_buffer[self.read_pos..self.bytes_read];
-        match bincode::serde::decode_from_slice(available_slice, config) {
+        match bincode::decode_from_slice(available_slice, config) {
             Ok((msg, consumed)) => {
                 self.read_pos += consumed;
                 Ok(Some(msg))

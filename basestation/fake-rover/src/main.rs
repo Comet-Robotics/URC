@@ -10,13 +10,40 @@ use rover_msgs::Message;
 use rand::Rng;
 
 const RETRY_DELAY: Duration = Duration::from_secs(1);
+// Add starting GPS coordinates (Example: Logan, Utah)
+const STARTING_LAT: f64 = 41.745161;
+const STARTING_LON: f64 = -111.809472;
+const STARTING_ALT: f64 = 1382.0; // meters
+const GPS_MOVEMENT_SCALE: f64 = 0.0001; // Approximately 11 meters at this latitude
+
+struct GpsState {
+    latitude: f64,
+    longitude: f64,
+    altitude: f64,
+}
+
+impl GpsState {
+    fn new() -> Self {
+        Self {
+            latitude: STARTING_LAT,
+            longitude: STARTING_LON,
+            altitude: STARTING_ALT,
+        }
+    }
+
+    fn update_position(&mut self, rng: &mut rand::rngs::ThreadRng) {
+        self.latitude += rng.gen_range(-GPS_MOVEMENT_SCALE..GPS_MOVEMENT_SCALE);
+        self.longitude += rng.gen_range(-GPS_MOVEMENT_SCALE..GPS_MOVEMENT_SCALE);
+        self.altitude += rng.gen_range(-0.5..0.5); // Half meter variation in altitude
+    }
+}
 
 struct VideoStreamConfig {
     ip: String,
     port: u16,
     width: u32,
     height: u32,
-    framerate: u32,
+    framerate: u32
 }
 
 impl VideoStreamConfig {
@@ -111,7 +138,7 @@ impl StreamManager {
 fn handle_message_stream(stream: &mut TcpStream) -> Result<bool, String> {
     let config = bincode::config::standard();
     
-    match bincode::serde::decode_from_std_read::<Message, _, _>(stream, config) {
+    match bincode::decode_from_std_read::<Message, _, _>(stream, config) {
         Ok(msg) => {
             println!("Received message: {:?}", msg);
             Ok(true)
@@ -165,6 +192,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     stream.set_nonblocking(true)?;
     let mut timer = Instant::now();
+    let mut gps = GpsState::new();
     // Main message processing loop
     while running.load(Ordering::SeqCst) {
         if (timer.elapsed().as_secs()) >= 2 {
@@ -191,16 +219,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             });
 
             println!("Sending message: {:?}", msg);
-            bincode::serde::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
-
+            bincode::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
+            gps.update_position(&mut rng);
             let msg = Message::GPS(rover_msgs::Vector3 { 
-                    x: rng.gen_range(-1.0..1.0), 
-                    y: rng.gen_range(-1.0..1.0), 
-                    z: rng.gen_range(-1.0..1.0) 
+                    x: gps.latitude, 
+                    y: gps.longitude, 
+                    z:gps.altitude
                 });
 
             println!("Sending message: {:?}", msg);
-            bincode::serde::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
+            bincode::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
         }
 
         match handle_message_stream(&mut stream) {
