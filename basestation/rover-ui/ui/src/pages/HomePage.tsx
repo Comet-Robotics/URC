@@ -7,6 +7,7 @@ import {  useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket"
 import { Message } from "@/lib/types";
 import { Vector3 } from "../../../../rover-msgs/bindings/Vector3";
+import { Map } from "@/components/Map";
 
 export default function HomePage() {
 
@@ -42,6 +43,7 @@ export default function HomePage() {
       <Controller sendMovement={(twist) => sendMessage(JSON.stringify(twist))} />
       <VideoStream/>
       <Telemetry gps={gps} />
+      <Map roverPosition={[gps.x,gps.y]}/>
     </section>
   );
 }
