@@ -19,7 +19,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (lastMessage !== null) {
-      console.log(lastMessage)
+      // console.log(lastMessage)
       let message: Message = JSON.parse(lastMessage.data);
       if (message.type == "GPS"){
         setGPS(message)
@@ -38,12 +38,12 @@ export default function HomePage() {
 
 
   return (
-    <section className="container flex flex-row justify-evenly gap-3 pb-8 pt-6 md:py-10">
-     {connectionStatus} 
-      <Controller sendMovement={(twist) => sendMessage(JSON.stringify(twist))} />
+    <section className="grid grid-cols-3 gap-4">
       <VideoStream/>
+
+      <Controller sendMovement={(twist) => sendMessage(JSON.stringify(twist))} />
       <Telemetry gps={gps} />
-      <Map roverPosition={[gps.x,gps.y]}/>
+      {/* <Map roverPosition={[gps.x,gps.y]}/> */}
     </section>
   );
 }

@@ -28,7 +28,6 @@ async fn start_stream(
     app_state: Data<DescriptorExhange>,
     body: web::Json<Exchange>
 ) -> Result<HttpResponse, Error> {
-    debug!("RGB feed");
     let (tx,rx) = oneshot::channel::<String>();
     app_state.send((body.local_session_description.clone(),tx)).await.unwrap();
 
@@ -36,6 +35,7 @@ async fn start_stream(
 
     Ok(HttpResponse::Ok().body(response))
 }
+
 
 
 #[get("/message_stream")]

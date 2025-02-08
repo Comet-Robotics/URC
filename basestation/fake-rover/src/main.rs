@@ -43,7 +43,8 @@ struct VideoStreamConfig {
     port: u16,
     width: u32,
     height: u32,
-    framerate: u32
+    framerate: u32,
+    cpu_usage: i8, // Add cpu_usage
 }
 
 impl VideoStreamConfig {
@@ -54,6 +55,7 @@ impl VideoStreamConfig {
             width: 640,
             height: 480,
             framerate: 30,
+            cpu_usage: 5, // Default CPU usage value
         }
     }
 
@@ -108,11 +110,12 @@ impl StreamManager {
                 "testsrc=size={}x{}:rate={}",
                 config.width, config.height, config.framerate
             ))
+            .arg("-preset")
+            .arg("ultrafast")
             .arg("-vcodec")
             .arg("libvpx")
-         
             .arg("-deadline")
-            .arg("1")
+            .arg("realtime")
             .arg("-g")
             .arg("10")
             .arg("-error-resilient")
@@ -137,8 +140,7 @@ impl StreamManager {
 
 fn handle_message_stream(stream: &mut TcpStream) -> Result<bool, String> {
     let config = bincode::config::standard();
-    
-    match bincode::decode_from_std_read::<Message, _, _>(stream, config) {
+    match bincode::decode_from_std_read::<Message, _,_ >(stream, config) {
         Ok(msg) => {
             println!("Received message: {:?}", msg);
             Ok(true)
@@ -161,16 +163,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut stream_manager = StreamManager::new();
 
     // Start video streams
-    let stream1 = VideoStreamConfig::new("0.0.0.0", 5000);
-    let stream2 = VideoStreamConfig::new("0.0.0.0", 5001);
-    
+    let mut stream1 = VideoStreamConfig::new("0.0.0.0", 5000);
+    let mut stream2 = VideoStreamConfig::new("0.0.0.0", 5001);
+
+    stream1.cpu_usage = 6; // Set different cpu_usage values for each stream
+    stream2.cpu_usage = 7;
+
     stream_manager.add_stream(&stream1)?;
     stream_manager.add_stream(&stream2)?;
 
     // Set up ctrl-c handler for graceful shutdown
     let running = Arc::new(AtomicBool::new(true));
     let r = running.clone();
-    
     ctrlc::set_handler(move || {
         println!("Received Ctrl+C! Initiating shutdown...");
         r.store(false, Ordering::SeqCst);
@@ -189,44 +193,43 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     };
-
     stream.set_nonblocking(true)?;
     let mut timer = Instant::now();
     let mut gps = GpsState::new();
+
     // Main message processing loop
     while running.load(Ordering::SeqCst) {
         if (timer.elapsed().as_secs()) >= 2 {
             timer = Instant::now();
-
             let mut rng = rand::thread_rng();
+
             let msg = Message::IMU(rover_msgs::IMU {
-                orientation_covariance: rover_msgs::Quaternion { 
-                    x: rng.gen_range(-2.0..1.0), 
-                    y: rng.gen_range(-2.0..1.0), 
-                    z: rng.gen_range(-2.0..1.0), 
-                    w: rng.gen_range(-2.0..1.0) 
+                orientation_covariance: rover_msgs::Quaternion {
+                    x: rng.gen_range(-2.0..1.0),
+                    y: rng.gen_range(-2.0..1.0),
+                    z: rng.gen_range(-2.0..1.0),
+                    w: rng.gen_range(-2.0..1.0)
                 },
-                angular_velocity_covariance: rover_msgs::Vector3 { 
-                    x: rng.gen_range(-1.0..1.0), 
-                    y: rng.gen_range(-1.0..1.0), 
-                    z: rng.gen_range(-1.0..1.0) 
+                angular_velocity_covariance: rover_msgs::Vector3 {
+                    x: rng.gen_range(-1.0..1.0),
+                    y: rng.gen_range(-1.0..1.0),
+                    z: rng.gen_range(-1.0..1.0)
                 },
-                linear_acceleration_covariance: rover_msgs::Vector3 { 
-                    x: rng.gen_range(-1.0..1.0), 
-                    y: rng.gen_range(-1.0..1.0), 
-                    z: rng.gen_range(-1.0..1.0) 
+                linear_acceleration_covariance: rover_msgs::Vector3 {
+                    x: rng.gen_range(-1.0..1.0),
+                    y: rng.gen_range(-1.0..1.0),
+                    z: rng.gen_range(-1.0..1.0)
                 },
             });
-
             println!("Sending message: {:?}", msg);
             bincode::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
+
             gps.update_position(&mut rng);
-            let msg = Message::GPS(rover_msgs::Vector3 { 
-                    x: gps.latitude, 
-                    y: gps.longitude, 
+            let msg = Message::GPS(rover_msgs::Vector3 {
+                    x: gps.latitude,
+                    y: gps.longitude,
                     z:gps.altitude
                 });
-
             println!("Sending message: {:?}", msg);
             bincode::encode_into_std_write(msg, &mut stream, bincode::config::standard())?;
         }
@@ -242,7 +245,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 break;
             }
         }
-        
+
         // Small sleep to prevent tight CPU loop
         thread::sleep(Duration::from_millis(1));
     }

@@ -72,7 +72,7 @@ const Controller = ({ sendMovement }: ControllerProps) => {
     }, [twist, sending, sendMovement]);
 
     return (
-        <Card className="h-full w-full">
+        <Card className="h-full w-full col-span-1">
             <CardHeader>
                 <CardTitle>Controller Control</CardTitle>
             </CardHeader>

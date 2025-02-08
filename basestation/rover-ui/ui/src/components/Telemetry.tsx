@@ -13,7 +13,7 @@ const Telemetry = ({gps}:{gps: Vector3}) => {
 
 
     return (
-        <Card className="h-full w-24">
+        <Card className="h-full w-full col-span-2">
             <CardHeader>
               <CardTitle>Telemetry</CardTitle>
             </CardHeader>
