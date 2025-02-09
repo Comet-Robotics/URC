@@ -38,7 +38,7 @@ export default function HomePage() {
 
 
   return (
-    <section className="grid grid-cols-3 gap-4">
+    <section className="grid grid-cols-3 gap-4 p-4">
       <VideoStream/>
 
       <Controller sendMovement={(twist) => sendMessage(JSON.stringify(twist))} />
