@@ -114,16 +114,12 @@ export const Map = ({roverPosition}:{roverPosition: [number, number]}) => {
 
   return (
     <div
+    className="w-80 h-80 rounded-[50%] "
       style={{
-        width: "300px",
-        height: "300px",
         border: "5px solid teal",
-        borderRadius: "50%",
         overflow: "hidden",
         background: "rgba(0, 0, 0, 0.6)",
-        position: "absolute",
-        left: "110px",
-        top: "10px",
+      
       }}
     >
       <MapContainer

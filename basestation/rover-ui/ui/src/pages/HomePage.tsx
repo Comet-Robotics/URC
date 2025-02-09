@@ -8,12 +8,14 @@ import useWebSocket, { ReadyState } from "react-use-websocket"
 import { Message } from "@/lib/types";
 import { Vector3 } from "../../../../rover-msgs/bindings/Vector3";
 import { Map } from "@/components/Map";
+import { IMU } from "../../../../rover-msgs/bindings/IMU";
 
 export default function HomePage() {
 
   const [socketUrl, setSocketUrl] = useState('/message_stream');
   const [messageHistory, setMessageHistory] = useState<Message[]>([]);
   const [gps, setGPS ] = useState<Vector3>({x:0.0,y:0.0,z:0.0});
+  const [imu, setIMU] = useState<IMU>({} as IMU);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
@@ -23,6 +25,9 @@ export default function HomePage() {
       let message: Message = JSON.parse(lastMessage.data);
       if (message.type == "GPS"){
         setGPS(message)
+      }
+      if (message.type == "IMU"){
+        setIMU(message)
       }
       setMessageHistory((prev) => prev.concat());
     }
@@ -42,8 +47,7 @@ export default function HomePage() {
       <VideoStream/>
 
       <Controller sendMovement={(twist) => sendMessage(JSON.stringify(twist))} />
-      <Telemetry gps={gps} />
-      {/* <Map roverPosition={[gps.x,gps.y]}/> */}
+      <Telemetry gps={gps} imu={imu}/>
     </section>
   );
 }
