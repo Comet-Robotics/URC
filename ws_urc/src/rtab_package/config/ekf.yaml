@@ -1,38 +1,31 @@
 ekf:
   ros__parameters:
-    frequency: 10.0  
-    two_d_mode: false  
+    frequency: 50.0  
+    two_d_mode: false 
+    sensor_timeout: 0.1 
     odom_frame: "odom"
     base_link_frame: "base_link"
     world_frame: "odom"  
     debug: false
-    imu0: "/imu"
-    imu0_config: [false, false, false,  # X, Y, Z position
-                  true,  true,  true,   # Roll, Pitch, Yaw (from IMU)
-                  false, false, false,   # X, Y, Z velocity (use odom for X, Y)
-                  false, false, false,  # X, Y, Z acceleration
-                  false, false, false]  # Ang. Velocities
 
-    odom0: "/wheel_odom"
-    odom0_config: [true,  true,  false, # X, Y position (not Z)
-                   false, false, false, # Roll, Pitch, Yaw (from IMU)
-                   true,  true,  false, # X, Y velocity
-                   false, false, false, # Angular velocity (IMU handles this)
-                   false, false, false] # Acceleration
+    odom0: "/odom"  # This is where rgbd_odometry publishes
+    odom0_config: [true, true, true,
+                  false, false, false,
+                  true, true, true,
+                  false, false, false,
+                  false, false, false]
+    imu0: '/imu'
+    imu0_config: [false, false, false, # X, Y position (not Z)
+                   true, true, true, # Roll, Pitch, Yaw (from IMU)
+                   false, false, false, # X, Y velocity
+                   true,  true,  true, # Angular velocity (IMU handles this)
+                   false, false, false]
 
-    odom1: "/odom"  # This is where rgbd_odometry publishes
-    odom1_config: [true,  true,  false, # X, Y position (not Z)
-                   false, false, false, # Roll, Pitch, Yaw (from IMU)
-                   true,  true,  false, # X, Y velocity
-                   false, false, false, # Angular velocity (IMU handles this)
-                   false, false, false] # Acceleration
+    odom0_differential: false
+    imu0_differential: false
 
-    navsat0: "/navsat"  # Topic where GPS data is published
-    navsat0_config: [true,  true,  true,  # Latitude, Longitude, Altitude
-                     false, false, false, # Roll, Pitch, Yaw (IMU handles these)
-                     false, false, false, # Velocity (IMU handles these)
-                     false, false, false, # Acceleration (IMU handles these)
-                     false, false, false] # Angular velocities (IMU handles these)
+    odom0_relative: true
+    imu0_relative: true
 
     use_sim_time: true
     publish_tf: true

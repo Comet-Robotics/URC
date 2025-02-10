@@ -54,9 +54,9 @@ def generate_launch_description():
     )
 
     robot_state_publisher_node = Node(
-    package='robot_state_publisher',
-    executable='robot_state_publisher',
-    parameters=[{'robot_description': Command(['xacro ', rover_model])}]
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[{'robot_description': Command(['xacro ', rover_model])}]
     )
 
     spawn = Node( package='ros_gz_sim', executable='create', arguments=[ '-name', 'rover', '-topic', 'robot_description', ], output='screen', ) 

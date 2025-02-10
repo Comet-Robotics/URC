@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <robot name="rover" xmlns:xacro="http://ros.org/wiki/xacro">
-    <xacro:property name="base_width" value="0.5"/>
-    <xacro:property name="base_length" value="0.7"/>
-    <xacro:property name="base_height" value="0.2"/>
-    <xacro:property name="wheel_radius" value="0.15"/>
-    <xacro:property name="wheel_width" value="0.05"/>
-    <xacro:property name="wheel_ygap" value="0.055"/>
-    <xacro:property name="wheel_zoff" value="0.1"/>
-    <xacro:property name="wheel_xoff" value="0.25"/>
+    <xacro:property name="base_width" value="0.31"/>
+    <xacro:property name="base_length" value="0.42"/>
+    <xacro:property name="base_height" value="0.184"/>
+    <xacro:property name="wheel_radius" value="0.098"/>
+    <xacro:property name="wheel_width" value="0.04"/>
+    <xacro:property name="wheel_ygap" value="0.02"/>
+    <xacro:property name="wheel_zoff" value="0.125"/>
+    <xacro:property name="wheel_xoff" value="0.15"/>
     <xacro:property name="wheel_offset" value="${wheel_radius + wheel_zoff}"/>
     <gazebo>
         <plugin
@@ -78,11 +78,10 @@
                 <surface>
                     <friction>
                         <ode>
-                            <mu>0.5</mu>  <!-- Friction coefficient -->
-                            <mu2>0.3</mu2> <!-- Secondary friction coefficient -->
+                            <mu>1</mu>  <!-- Friction coefficient -->
+                            <mu2>0.5</mu2> <!-- Secondary friction coefficient -->
                             <slip1>0.0026</slip1>
                             <slip2>0</slip2>
-                            <fdir1>0 0 1</fdir1>
                         </ode>
                     </friction>
                 </surface>
@@ -95,7 +94,7 @@
             <child link="${prefix}_link"/>
             <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(base_width/2+wheel_ygap)} ${-wheel_zoff}" rpy="0 0 0"/>
             <axis xyz="0 1 0"/>
-            <limit lower="-1e50" upper="1e50" effort="10" velocity="3"/>
+            <limit lower="-1e50" upper="1e50" effort="1000" velocity="2.0"/>
         </joint>
     </xacro:macro>
 
@@ -133,13 +132,18 @@
             <always_on>true</always_on>
             <update_rate>50</update_rate>
             <ignition_frame_id>imu_link</ignition_frame_id>
+            <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.004</stddev>  <!-- Increase this if needed -->
+            </noise>
         </sensor>
     </gazebo>
 
     <joint name="camera_joint" type="fixed">
         <parent link="base_link"/>
         <child link="camera_link"/>
-        <origin xyz="${base_length/2} 0 ${base_height/4}" rpy="0 0 0"/>
+        <origin xyz="${base_length/2} 0 ${base_height/4}" rpy="0 ${pi/9} 0"/>
     </joint>
 
     <link name="camera_link">
@@ -247,8 +251,8 @@
             filename="libignition-gazebo-diff-drive-system.so"
             name="ignition::gazebo::systems::DiffDrive">
             <left_joint>frontwhl_l_joint</left_joint>
-            <left_joint>drivewhl_l_joint</left_joint>
             <right_joint>frontwhl_r_joint</right_joint>
+            <left_joint>drivewhl_l_joint</left_joint>
             <right_joint>drivewhl_r_joint</right_joint>
             <wheel_separation>${base_length}</wheel_separation> 
             <wheel_radius>${wheel_radius}</wheel_radius> 
@@ -258,6 +262,8 @@
             <frame_id>odom</frame_id>
             <child_frame_id>base_link</child_frame_id>
             <odom_publish_frequency>50</odom_publish_frequency>  
+            <max_angular_velocity>0.2</max_angular_velocity>
+            <min_angular_velocity>-0.2</min_angular_velocity>
         </plugin>
     </gazebo> 
 </robot>
