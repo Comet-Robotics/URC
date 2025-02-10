@@ -1,6 +1,6 @@
 ekf:
   ros__parameters:
-    frequency: 50.0  
+    frequency: 20.0  
     two_d_mode: false 
     sensor_timeout: 0.1 
     odom_frame: "odom"
