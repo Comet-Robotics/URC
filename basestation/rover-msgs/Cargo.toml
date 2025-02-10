@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bincode = "2.0.0-rc.3"
+prost = "0.13.4"
 serde = { version= "1.0.210",features=["derive"] }
-ts-rs = "10.1.0"
+
+[build-dependencies]
+prost-build = "0.13.4"

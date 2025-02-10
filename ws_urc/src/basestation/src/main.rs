@@ -15,7 +15,6 @@ impl BaseStationNode {
 
         let twist_pub = node.create_publisher::<Twist>("cmd_vel_manual", rclrs::QOS_PROFILE_DEFAULT)?;
         
-
         Ok(Self {
             node,
          

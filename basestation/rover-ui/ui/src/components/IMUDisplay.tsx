@@ -2,9 +2,8 @@ import * as THREE from 'three';
 import { createRoot } from 'react-dom/client';
 import React, { useRef, useState, useMemo } from 'react';
 import { Canvas, useFrame, ThreeElements, Vector3 } from '@react-three/fiber';
+import { IMUData, Quaternion } from '@/types/binding';
 
-import { IMU } from '../../../../rover-msgs/bindings/IMU';
-import { Quaternion } from '../../../../rover-msgs/bindings/Quaternion';
 
 interface BoxProps  {
   orientation: Quaternion;
@@ -48,8 +47,7 @@ function Box({ orientation, ...props }: BoxProps) {
   );
 }
 
-export const IMUDisplay = ({ imu }: { imu: IMU }) => {
-    console.log(imu.orientation_covariance)
+export const IMUDisplay = ({ imu }: { imu?: IMUData }) => {
   return (
     <div
       className="w-80 h-80 rounded-[50%] "
@@ -58,7 +56,7 @@ export const IMUDisplay = ({ imu }: { imu: IMU }) => {
         overflow: 'hidden',
         background: 'rgba(0, 0, 0, 0.6)',
       }}
-    >
+    >{
       <Canvas>
         <ambientLight intensity={Math.PI / 2} />
         <spotLight
@@ -70,10 +68,11 @@ export const IMUDisplay = ({ imu }: { imu: IMU }) => {
         />
         <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
         {
-            imu.orientation_covariance != undefined && 
-        <Box position={[0, 0, 0]} orientation={imu.orientation_covariance} />
+            imu?.orientation != undefined && 
+        <Box position={[0, 0, 0]} orientation={imu.orientation} />
         }
       </Canvas>
+    }
     </div>
   );
 };

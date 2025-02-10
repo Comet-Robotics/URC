@@ -9,7 +9,6 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Vector3 } from "../../../../rover-msgs/bindings/Vector3";
 
 //==================================================================================================================================================================================
 
@@ -57,7 +56,7 @@ const ClickToAddMarker = ({ onMarkerAdd }:{
 
 //=====================================================================================================================================
 // Position stuff
-export const Map = ({roverPosition}:{roverPosition: [number, number]}) => {
+export const Map = ({roverPosition}:{roverPosition?: [number, number]}) => {
   
 
   const [targetAngle, setTargetAngle] = useState<number>(0); // Target rotation angle
@@ -76,13 +75,14 @@ export const Map = ({roverPosition}:{roverPosition: [number, number]}) => {
 
   // Add the current position to the trail with offset
   useEffect(() => {
-    setTrail((prevTrail) => [
-      ...prevTrail,
-      {
-        position: [roverPosition[0] , roverPosition[1]],
-        timestamp: Date.now(),
-      },
-    ]);
+    if (roverPosition)
+      setTrail((prevTrail) => [
+        ...prevTrail,
+        {
+          position: [roverPosition[0] , roverPosition[1]],
+          timestamp: Date.now(),
+        },
+      ]);
   }, [roverPosition]);
 
   // Remove points older than 5 seconds
@@ -122,6 +122,8 @@ export const Map = ({roverPosition}:{roverPosition: [number, number]}) => {
       
       }}
     >
+      {
+        roverPosition && 
       <MapContainer
         center={roverPosition}
         zoom={20}
@@ -169,6 +171,9 @@ export const Map = ({roverPosition}:{roverPosition: [number, number]}) => {
         />
         <CenterMap position={roverPosition} />
       </MapContainer>
+      }
+      {roverPosition == undefined &&
+      <p>No Data</p>}
     </div>
   );
 };

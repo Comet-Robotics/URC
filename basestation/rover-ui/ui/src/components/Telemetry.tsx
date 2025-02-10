@@ -7,12 +7,11 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
-import { Vector3 } from "../../../../rover-msgs/bindings/Vector3";
 import { Map } from "./Map";
-import { IMU } from "../../../../rover-msgs/bindings/IMU";
 import {IMUDisplay} from "./IMUDisplay";
+import { GPSData, IMUData } from "@/types/binding";
 
-const Telemetry = ({gps,imu}:{gps: Vector3,imu: IMU}) => {
+const Telemetry = ({gps,imu}:{gps?: GPSData,imu?: IMUData}) => {
 
 
     return (
@@ -21,7 +20,7 @@ const Telemetry = ({gps,imu}:{gps: Vector3,imu: IMU}) => {
               <CardTitle>Telemetry</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-row flex-wrap gap-4">
-              <Map roverPosition={[gps.x,gps.y]}/>           
+              <Map roverPosition={ gps ?[gps.latitude!,gps.longitude!] : undefined}/>           
               <IMUDisplay imu={imu} />
             </CardContent>
             <CardFooter>

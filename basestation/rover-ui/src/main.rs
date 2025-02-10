@@ -7,13 +7,12 @@ use actix_web::{get, post, rt, web, App, Error, HttpRequest, HttpResponse, HttpS
 use actix_ws::AggregatedMessage;
 use env_logger::Env;
 use futures_util::StreamExt;
-use rover_msgs::{Message, Twist};
+use prost::Message as _;
+use rover_msgs::rover::Message;
 use serde::Deserialize;
 use tokio::select;
 use tokio::sync::mpsc::{self, Sender};
 use tokio::sync::oneshot;
-use std::io::Read;
-use std::sync::{Arc, Mutex};
 use tracing::debug;
 
 type DescriptorExhange = Sender<(String, oneshot::Sender<String>)>;
@@ -40,7 +39,7 @@ async fn start_stream(
 
 #[get("/message_stream")]
 async fn message_stream(
-    sender: Data<std::sync::mpsc::Sender<Message>>,
+    sender: Data<tokio::sync::mpsc::Sender<Message>>,
     sender_broadcast: Data<tokio::sync::broadcast::Sender<Message>>,
     req: HttpRequest, stream: web::Payload
 ) -> Result<HttpResponse, Error> {
@@ -61,9 +60,9 @@ async fn message_stream(
             select!{
                 msg = stream.next() => {
                     match msg {
-                        Some(Ok(AggregatedMessage::Text(text))) => {
-                            let msg:Message = serde_json::from_str(&text).unwrap();
-                            sender.send(msg).unwrap();
+                        Some(Ok(AggregatedMessage::Binary(bin))) => {
+                            let msg:Message = Message::decode(bin).unwrap();
+                            sender.send(msg).await.unwrap()
                         }
                         _ => {
                             break;
@@ -73,9 +72,12 @@ async fn message_stream(
                 msg = recv.recv() => {
                     match msg {
                         Ok(msg) => {
-                            debug!("Sending msg to websocket");
-                            let text = serde_json::to_string(&msg).unwrap();
-                            session.text(text).await.unwrap();
+                            let mut buf = Vec::new();
+                            buf.reserve(msg.encoded_len());
+                            // Unwrap is safe, since we have reserved sufficient capacity in the vector.
+                            msg.encode(&mut buf).unwrap();                    
+                            
+                            session.binary(buf).await.unwrap();
                         }
                         _ => {}
                     }
@@ -101,12 +103,12 @@ async fn main() -> std::io::Result<()> {
         server(recv).await.unwrap();
     });
 
-    let (rover_sender,rover_recv) = std::sync::mpsc::channel::<Message>();
+    let (rover_sender,rover_recv) = mpsc::channel::<Message>(20);
 
     let (message_send,message_recv) = tokio::sync::broadcast::channel::<Message>(10);
     let msg1 = message_send.clone();
-    rt::task::spawn_blocking(move ||{
-        data::rover::launch_rover_link(rover_recv,msg1).unwrap();
+    rt::spawn(async move {
+        data::rover::launch_rover_link(rover_recv,msg1).await.unwrap();
     });
 
     let sender:DescriptorExhange = sender;

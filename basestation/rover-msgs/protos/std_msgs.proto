@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package std_msgs;
-
-message Header {
-  uint32 seq = 1;               // Sequence ID
-  string stamp = 2;             // Timestamp in ISO 8601 format or seconds.nanoseconds (adapt as needed)
-  string frame_id = 3;          // Reference frame ID
-}

@@ -1,10 +1,8 @@
 syntax = "proto3";
 
-import "std_msgs.proto";  
-import "geometry_msgs.proto"; 
+package rover;
 
 
-package msgs;
 message Message {
   oneof data_type {
     IMUData imu = 1;
@@ -14,8 +12,8 @@ message Message {
 }
 
 message Twist {
-  geometry_msgs.Vector3 linear = 1;   // Linear velocity
-  geometry_msgs.Vector3 angular = 2;  // Angular velocity
+  Vector3 linear = 1;   // Linear velocity
+  Vector3 angular = 2;  // Angular velocity
 }
 
 message GPSData {
@@ -33,14 +31,34 @@ message GPSData {
 }
 
 message IMUData {
-  std_msgs.Header header = 1;
+  Header header = 1;
 
-  geometry_msgs.Quaternion orientation = 2;
+  Quaternion orientation = 2;
   repeated double orientation_covariance = 3; // Use repeated for fixed-size arrays (size 9)
 
-  geometry_msgs.Vector3 angular_velocity = 4;
+  Vector3 angular_velocity = 4;
   repeated double angular_velocity_covariance = 5; // Use repeated for fixed-size arrays (size 9)
 
-  geometry_msgs.Vector3 linear_acceleration = 6;
+  Vector3 linear_acceleration = 6;
   repeated double linear_acceleration_covariance = 7; // Use repeated for fixed-size arrays (size 9)
+}
+
+
+
+message Quaternion {
+  double x = 1;  // X component
+  double y = 2;  // Y component
+  double z = 3;  // Z component
+  double w = 4;  // W component
+}
+
+message Vector3 {
+  double x = 1;  // X component
+  double y = 2;  // Y component
+  double z = 3;  // Z component
+}
+message Header {
+  uint32 seq = 1;               // Sequence ID
+  string stamp = 2;             // Timestamp in ISO 8601 format or seconds.nanoseconds (adapt as needed)
+  string frame_id = 3;          // Reference frame ID
 }

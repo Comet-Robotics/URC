@@ -14,7 +14,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Slider } from './ui/slider';
-import { Twist } from '../../../../rover-msgs/bindings/Twist';
+import { Twist } from '@/types/binding';
 
 interface ControllerProps {
     sendMovement: (msg: Twist) => void;

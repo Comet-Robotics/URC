@@ -2,7 +2,6 @@
 name = "rover-ui"
 version = "0.1.0"
 edition = "2021"
-build = "build.rs"
 
 [dependencies]
 actix-web = "4.9.0"
@@ -22,6 +21,8 @@ bincode = { version = "=2.0.0-rc.3" }
 rover-msgs = { path = "../rover-msgs" }
 rand = "0.8.5"
 ctrlc = "3.4.5"
+prost = "0.13.4"
+prost-stream = { version = "0.1.2", features = ["async"] }
 [features]
 real = []  # Feature to enable real ROS2 data, pulling in the r2r dependency
 default = ["real"]  # Set the default feature to mock

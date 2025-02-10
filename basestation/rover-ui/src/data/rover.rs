@@ -1,172 +1,116 @@
+
 use std::{
-    io::{Read, Write}, net::TcpListener, sync::mpsc, thread, time::Duration
+    io::{Read, Write}, 
+    thread, 
+    time::Duration
 };
-use bincode::{error::DecodeError, config::Configuration};
-use rover_msgs::Message;
-use tokio::sync::broadcast;
+use rover_msgs::rover::Message;
+use tokio::{
+    sync::{broadcast,mpsc},
+    net::{TcpListener, TcpStream},
+    io::{AsyncReadExt, AsyncWriteExt},
+};
+use prost::{decode_length_delimiter, length_delimiter_len, Message as _};
+use prost::DecodeError;
+use tracing::debug;
 
-const TCP_PORT: u16 = 8000;
-const SLEEP_DURATION: Duration = Duration::from_millis(10);
-const BUFFER_SIZE: usize = 1024; 
-
-#[derive(Debug)]
-enum RoverLinkError {
-    IoError(std::io::Error),
-    BincodeError(bincode::error::EncodeError),
-    DecodeError(bincode::error::DecodeError),
-    BufferTooSmall,
-}
-
-impl From<std::io::Error> for RoverLinkError {
-    fn from(err: std::io::Error) -> Self {
-        RoverLinkError::IoError(err)
-    }
-}
-
-impl From<bincode::error::EncodeError> for RoverLinkError {
-    fn from(err: bincode::error::EncodeError) -> Self {
-        RoverLinkError::BincodeError(err)
-    }
-}
-
-impl From<bincode::error::DecodeError> for RoverLinkError {
-    fn from(err: bincode::error::DecodeError) -> Self {
-        RoverLinkError::DecodeError(err)
-    }
-}
+// ... existing code ...
+const TCP_PORT:u16 = 8000;
+const BUFFER_SIZE: usize = 1024;
 
 
-struct RoverConnection {
-    socket: std::net::TcpStream,
-    read_buffer: [u8; BUFFER_SIZE],
-    read_pos: usize,
-    bytes_read: usize,
-}
-
-impl RoverConnection {
-    fn new(socket: std::net::TcpStream) -> Result<Self, std::io::Error> {
-        socket.set_nonblocking(true)?;
-        Ok(RoverConnection {
-            socket,
-            read_buffer: [0; BUFFER_SIZE],
-            read_pos: 0,
-            bytes_read: 0,
-        })
-    }
-
-    fn send_message(&mut self, msg: Message, config: Configuration) -> Result<(), RoverLinkError> {
-        tracing::debug!("Sending message: {:?}", msg);
-        bincode::encode_into_std_write(msg, &mut self.socket, config)?;
-        Ok(())
-    }
-
-    fn fill_buffer(&mut self) -> Result<bool, std::io::Error> {
-        // Reset buffer if we've consumed all data
-        if self.read_pos >= self.bytes_read {
-            self.read_pos = 0;
-            self.bytes_read = 0;
-        }
-
-        // Compact buffer if needed
-        if self.read_pos > 0 && self.bytes_read > 0 {
-            self.read_buffer.copy_within(self.read_pos..self.bytes_read, 0);
-            self.bytes_read -= self.read_pos;
-            self.read_pos = 0;
-        }
-
-        // Try to fill the remaining buffer space
-        match self.socket.read(&mut self.read_buffer[self.bytes_read..]) {
-            Ok(0) => Ok(false), // Connection closed
-            Ok(n) => {
-                self.bytes_read += n;
-                Ok(true)
-            }
-            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => Ok(true),
-            Err(e) => Err(e),
-        }
-    }
-
-    fn receive_message(&mut self, config: Configuration) -> Result<Option<Message>, RoverLinkError> {
-        // Try to fill buffer with new data
-        if !self.fill_buffer()? {
-            return Ok(None);
-        }
-
-        // Check if we have any data to process
-        if self.read_pos >= self.bytes_read {
-            return Ok(None);
-        }
-
-        // Try to decode a message from the buffer
-        let available_slice = &self.read_buffer[self.read_pos..self.bytes_read];
-        match bincode::decode_from_slice(available_slice, config) {
-            Ok((msg, consumed)) => {
-                self.read_pos += consumed;
-                Ok(Some(msg))
-            }
-            Err(DecodeError::Io { inner, .. }) if inner.kind() == std::io::ErrorKind::UnexpectedEof => {
-                Ok(None) // Need more data
-            }
-            Err(e) => {
-                tracing::debug!("Failed to decode message: {}", e);
-               Ok(None)
-            }
-        }
-    }
-}
-
-pub  fn launch_rover_link(
-     msg_rx: mpsc::Receiver<Message>,
-     msg_tx: broadcast::Sender<Message>,
+pub async fn launch_rover_link(
+    mut msg_rx: mpsc::Receiver<Message>,
+    msg_tx: broadcast::Sender<Message>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let listener = TcpListener::bind(("0.0.0.0", TCP_PORT))?;
+    let listener = TcpListener::bind(("0.0.0.0", TCP_PORT)).await?;
     tracing::info!("Rover link launched on port {}", TCP_PORT);
-    let config = bincode::config::standard();
 
-    while let Ok((socket, addr)) = listener.accept() {
+    'connection_loop: loop {
+        tracing::info!("Waiting for rover connection...");
+        let (mut socket, addr) = listener.accept().await?;
         tracing::info!("New connection: {}", addr);
         
-        let mut connection = match RoverConnection::new(socket) {
-            Ok(conn) => conn,
-            Err(e) => {
-                tracing::warn!("Failed to establish connection: {}", e);
-                continue;
-            }
-        };
+        let (read_half, mut write_half) = socket.into_split();
+        
+        // Spawn a task to handle incoming messages
+        let  msg_tx = msg_tx.clone();
+        let read_task = tokio::spawn(async move {
+            let mut buf = vec![0u8; BUFFER_SIZE];
+            let mut read_half = tokio::io::BufReader::new(read_half);
+            
+            loop {
+                read_half.read_exact(&mut buf[..1]).await.unwrap();
 
+                let msg = { match decode_length_delimiter(&buf[..1]) {
+                        Ok(sz) => {
+                            if sz > buf.len() {
+                                buf.resize(sz, 0);
+                            }
+                            read_half.read_exact(&mut buf[..sz]).await.unwrap();
+                            Message::decode(&buf[..sz]).unwrap()
+                        }
+                        Err(_) => {
+                            // protobuf 消息的长度信息最少占有 1 byte, 最多占有 10 bytes
+                            read_half.read_exact(&mut buf[1..10]).await.unwrap();
+                            let sz = decode_length_delimiter(&buf[..10]).unwrap();
+                            let delimiter_len = length_delimiter_len(sz);
+                            let idx = delimiter_len;
+                            let left = sz - (10 - idx);
+
+                            if 10 + left > buf.len() {
+                                buf.resize(10 + left, 0);
+                            }
+
+                            read_half.read_exact(&mut buf[10..left]).await.unwrap();
+                            Message::decode(&buf[idx..idx + sz]).unwrap()
+                        }
+                    }
+                };
+        
+                debug!("Recivied Message {msg:?}");
+                msg_tx.send(msg).unwrap();
+            
+
+            }
+        });
+        
+        // Handle outgoing messages
         loop {
-            // Handle outgoing messages
-            match msg_rx.try_recv() {
-                Ok(msg) => {
-                    if let Err(e) = connection.send_message(msg, config) {
-                        tracing::error!("Failed to send message: {:?}", e);
-                        break;
+            if read_task.is_finished(){
+                break;
+            }
+        
+            let msg = msg_rx.recv().await;
+            match msg {
+                Some(msg) => {
+                    let encoded = msg.encode_to_vec();
+                    let length = encoded.len() as u32;
+                    
+                    // Send message length first
+                    if let Err(e) = write_half.write_all(&length.to_be_bytes()).await {
+                        tracing::error!("Failed to write message length: {}", e);
+                        continue 'connection_loop;
+                    }
+
+                    // Send message content
+                    if let Err(e) = write_half.write_all(&encoded).await {
+                        tracing::error!("Failed to write message: {}", e);
+                        continue 'connection_loop;
+                    }
+
+                    if let Err(e) = write_half.flush().await {
+                        tracing::error!("Failed to flush: {}", e);
+                        continue 'connection_loop;
                     }
                 }
-                Err(mpsc::TryRecvError::Empty) => {}
-                Err(mpsc::TryRecvError::Disconnected) => return Ok(()),
-            }
-
-            // Handle incoming messages
-            match connection.receive_message(config) {
-                Ok(Some(msg)) => {
-                    // Handle received message here if needed
-                    
-                    tracing::debug!("Received message: {:?}", msg);
-
-                    msg_tx.send(msg).unwrap();
-                }
-                Ok(None) => {
-                    thread::sleep(SLEEP_DURATION);
-                    continue;
-                }
-                Err(e) => {
-                    tracing::error!("Connection error: {:?}", e);
-                    break;
+                None => {
+                    tracing::error!("Error receiving message from channe");
+                    continue 'connection_loop;
                 }
             }
+            
+            
         }
     }
-
-    Ok(())
 }
