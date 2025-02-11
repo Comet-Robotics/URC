@@ -1,0 +1,1 @@
+protoc --python_out=basestation --proto_path ../../../basestation/rover-msgs/src  ../../../basestation/rover-msgs/src/msgs.proto 

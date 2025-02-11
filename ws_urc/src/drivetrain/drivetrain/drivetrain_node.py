@@ -11,8 +11,7 @@ class DrivetrainNode(Node):
 
     def __init__(self):
         super().__init__('drivetrain_action_server')
-        self.declare_parameter("port","/dev/ttyACM0")
-        port = self.get_parameter_or("port",Parameter("/dev/serial/by-id/usb-SOLIS_ROVER_PROJECT_DRIVETRAIN-if00"))
+        port = "/dev/serial/by-id/usb-SOLIS_ROVER_PROJECT_DRIVETRAIN-if00"
         self.get_logger().info(f"Opening on Port {port} ") 
         self.ser = serial.Serial(
             port=port,  # Replace with your port
@@ -22,6 +21,7 @@ class DrivetrainNode(Node):
         # self.alive_timer = self.create_timer(1.0 , self.send_alive_message)
         self.subscription = self.create_subscription(Twist, '/cmd_vel_out', self.cmd_vel_callback, 10)
         self.timer = self.create_timer(0.5, self.heart_beat_callback)
+ #       self.read_timer = self.create_timer(0.1, self.read_serial_data)
         self.get_logger().info(f"LIVE") 
 
     def drive_motors(self, linear_x, linear_y, angular_z):
@@ -49,6 +49,10 @@ class DrivetrainNode(Node):
         self.drive_motors(linear_x, linear_y, angular_z)
         # Send PWM signals to your motor controllers here
 
+    # def read_serial_data(self):
+    #     if self.ser.in_waiting > 0:
+    #         data = self.ser.readline().decode('utf-8').strip()
+    #         self.get_logger().info(f"Received from serial: {data}")
 
     def set_motor_speeds(
             self,
