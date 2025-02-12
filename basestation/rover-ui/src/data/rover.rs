@@ -69,7 +69,7 @@ pub async fn launch_rover_link(
                     }
                 };
         
-                debug!("Recivied Message {msg:?}");
+                // debug!("Recivied Message {msg:?}");
                 msg_tx.send(msg).unwrap();
             
 
@@ -89,7 +89,7 @@ pub async fn launch_rover_link(
                 Ok(msg) => {
                     let encoded = msg.encode_to_vec();
                     let length = encoded.len() as u32;
-                    
+                    tracing::debug!("Sending message");
                     // Send message length first
                     if let Err(e) = write_half.write_all(&length.to_be_bytes()).await {
                         tracing::error!("Failed to write message length: {}", e);

@@ -15,16 +15,16 @@ import {
 } from "@/components/ui/select"
 import { Slider } from './ui/slider';
 import { Twist } from '@/types/binding';
+import { Button } from './ui/button';
+import { Switch } from './ui/switch';
+import { Label } from './ui/label';
 
 interface ControllerProps {
     sendMovement: (msg: Twist) => void;
 }
 
 const Controller = ({ sendMovement }: ControllerProps) => {
-    const [twist, setTwist] = useState<Twist>({
-        linear: { x: 0, y: 0, z: 0 },
-        angular: { x: 0, y: 0, z: 0 },
-    });
+    const [twist, setTwist] = useState<Twist>();
     const [linearSpeed, setLinearSpeed] = useState(2);
     const [angularSpeed, setAngularSpeed] = useState(8);
     const [sending, setSending] = useState(false);
@@ -43,12 +43,9 @@ const Controller = ({ sendMovement }: ControllerProps) => {
         const gamepads = navigator.getGamepads();
         const gamepad = gamepads[0];
 
-        if ( gamepad) {
+        if ( gamepad && sending) {
             updateMovement(gamepad);
-            setSending(true);
-        } else {
-            setSending(false);
-        }
+        } 
     }, [ updateMovement]);
 
     useEffect(() => {
@@ -66,20 +63,24 @@ const Controller = ({ sendMovement }: ControllerProps) => {
     }, [handleGamepadInput]);
 
     useEffect(() => {
-        if (sending) {
+        if (sending && twist) {
             sendMovement(twist);
+            setTwist(undefined);
         }
     }, [twist, sending, sendMovement]);
-
+    console.log(sending)
     return (
         <Card className="h-full w-full col-span-1">
             <CardHeader>
                 <CardTitle>Controller Control</CardTitle>
             </CardHeader>
             <CardContent>
-                <p>Linear: {JSON.stringify(twist.linear)}</p>
-                <p>Angular: {JSON.stringify(twist.angular)}</p>
-                <p>Sending: {sending ? "Yes" : "No"}</p>
+         
+                <p>Linear: {JSON.stringify(twist?.linear)}</p>
+                <p>Angular: {JSON.stringify(twist?.angular)}</p>
+                <Label htmlFor="sending">Enabled</Label>
+                <Switch id="sending" checked={sending}  
+                      onCheckedChange={(a ) => {console.log(a); setSending(a);}} />
                 <div className="space-y-4">
                     <div>
                         <p>Angular Speed: {angularSpeed}</p>
@@ -100,6 +101,7 @@ const Controller = ({ sendMovement }: ControllerProps) => {
                         />
                     </div>
                 </div>
+
             </CardContent>
             <CardFooter />
         </Card>

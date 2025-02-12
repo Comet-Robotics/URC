@@ -53,6 +53,7 @@ async fn message_stream(
     // start task but don't wait for it
     rt::spawn(async move {
         // receive messages from websocket
+        debug!("Starting websocket from client");
         let mut recv = sender_broadcast.subscribe();
         loop{
 

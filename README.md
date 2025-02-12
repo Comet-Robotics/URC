@@ -10,4 +10,6 @@ Issues: Once research is done we will create an issue for a topic and this is wh
 
 ## Cloning
 
-tbd
+Install git 
+
+git clone <github_uri>
