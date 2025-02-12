@@ -17,8 +17,6 @@ def generate_launch_description():
                 {"enable_sync": True},
                 {"base_frame_id":"base_link"},
                 {"align_depth.enable": True},
-
-
             ]
         ),
         Node(
@@ -64,13 +62,13 @@ def generate_launch_description():
         ),
         
         # Basestation Node
-        # Node(
-        #     package='basestation',
-        #     executable='basestation',
-        #     name='basestation',
-        #     parameters=[
-        #         {'ip': ip}
-        #     ]
+        Node(
+            package='basestation',
+            executable='basestation',
+            name='basestation',
+            parameters=[
+                {'ip': ip}
+            ]
         
-        # ),
+        ),
 ])
