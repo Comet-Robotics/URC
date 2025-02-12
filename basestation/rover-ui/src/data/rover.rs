@@ -6,9 +6,7 @@ use std::{
 };
 use rover_msgs::rover::Message;
 use tokio::{
-    sync::{broadcast,mpsc},
-    net::{TcpListener, TcpStream},
-    io::{AsyncReadExt, AsyncWriteExt},
+    io::{AsyncReadExt, AsyncWriteExt}, net::{TcpListener, TcpStream}, sync::{broadcast,mpsc::{self, error::TryRecvError}}
 };
 use prost::{decode_length_delimiter, length_delimiter_len, Message as _};
 use prost::DecodeError;
@@ -40,7 +38,10 @@ pub async fn launch_rover_link(
             let mut read_half = tokio::io::BufReader::new(read_half);
             
             loop {
-                read_half.read_exact(&mut buf[..1]).await.unwrap();
+                if let Err(err) = read_half.read_exact(&mut buf[..1]).await{
+                    tracing::error!("Failed to read message length: {}", err);
+                    break;
+                }
 
                 let msg = { match decode_length_delimiter(&buf[..1]) {
                         Ok(sz) => {
@@ -73,17 +74,19 @@ pub async fn launch_rover_link(
             
 
             }
+            tracing::debug!("Read task finished");
         });
         
         // Handle outgoing messages
         loop {
             if read_task.is_finished(){
+                tracing::debug!("Read task finished restarting");
                 break;
             }
         
-            let msg = msg_rx.recv().await;
+            let msg = msg_rx.try_recv();
             match msg {
-                Some(msg) => {
+                Ok(msg) => {
                     let encoded = msg.encode_to_vec();
                     let length = encoded.len() as u32;
                     
@@ -104,7 +107,11 @@ pub async fn launch_rover_link(
                         continue 'connection_loop;
                     }
                 }
-                None => {
+                Err(TryRecvError::Empty) => {
+                    // No message to send
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+                Err(err) => {
                     tracing::error!("Error receiving message from channe");
                     continue 'connection_loop;
                 }
