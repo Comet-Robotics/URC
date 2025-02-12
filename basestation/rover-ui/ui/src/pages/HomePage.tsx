@@ -5,11 +5,9 @@ import Controller from "../components/Controller";
 import Control from "@/components/Control";
 import {  useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket"
-import { Map } from "@/components/Map";
-import { decodeMessage ,encodeTwist,GPSData,IMUData,Message,Quaternion,Vector3} from "@/types/binding";
+import { decodeMessage, encodeTwist, GPSData, IMUData, Message, Quaternion, Vector3, Twist, encodeMessage } from "@/types/binding";
 
 export default function HomePage() {
-
   const [socketUrl, setSocketUrl] = useState('/message_stream');
   const [messageHistory, setMessageHistory] = useState<Message[]>([]);
   const [gps, setGPS ] = useState<GPSData>();
@@ -49,12 +47,33 @@ export default function HomePage() {
     [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
   }[readyState];
 
+  const handleMovement = (twist: Twist) => {
+    // Create a Message object containing the twist
+    const message: Message = {
+      twist: twist
+    };
+    
+    // Encode the full message
+    const encoded = encodeMessage(message);
+    
+    // // Create a length-delimited message by prepending the length
+    // const lengthDelimited = new Uint8Array(encoded.length + 4);
+    // const view = new DataView(lengthDelimited.buffer);
+    
+    // // Write the length as a 32-bit integer
+    // view.setUint32(0, encoded.length, true);
+    
+    // // Copy the encoded message after the length
+    // lengthDelimited.set(encoded, 4);
+    
+    // Send the length-delimited message
+    sendMessage(encoded);
+  };
 
   return (
     <section className="grid grid-cols-3 gap-4 p-4">
       <VideoStream/>
-
-      <Controller sendMovement={(twist) => sendMessage(encodeTwist(twist))} />
+      <Controller sendMovement={handleMovement} />
       <Telemetry gps={gps} imu={imu}/>
     </section>
   );
