@@ -1,18 +1,16 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "React.js",
+  name: "URC Hermes",
   description:
-    "Beautifully designed components built with Radix UI and Tailwind CSS.",
+    "UTD URC Control Software",
   mainNav: [
     {
-      title: "Home",
+      title: "Dash",
       href: "/",
     },
   ],
   links: {
-    twitter: "https://twitter.com/shadcn",
-    github: "https://github.com/Youngermaster/react-shadcn-ui-template",
-    docs: "https://ui.shadcn.com",
+   
   },
 };

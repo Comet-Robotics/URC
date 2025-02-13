@@ -5,7 +5,7 @@ use anyhow::Result;
 use tokio::net::UdpSocket;
 use tokio::sync::{mpsc, oneshot};
 use webrtc::api::interceptor_registry::register_default_interceptors;
-use webrtc::api::media_engine::{MediaEngine, MIME_TYPE_VP8};
+use webrtc::api::media_engine::{MediaEngine, MIME_TYPE_H264, MIME_TYPE_VP8};
 use webrtc::api::APIBuilder;
 use webrtc::ice_transport::ice_connection_state::RTCIceConnectionState;
 use webrtc::ice_transport::ice_server::RTCIceServer;
@@ -55,7 +55,7 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
     // Create Track that we send video back to browser on
     let video_track = Arc::new(TrackLocalStaticRTP::new(
         RTCRtpCodecCapability {
-            mime_type: MIME_TYPE_VP8.to_owned(),
+            mime_type: MIME_TYPE_H264.to_owned(),
             ..Default::default()
         },
         "rgb_video".to_owned(),
@@ -64,7 +64,7 @@ pub async fn server(mut recv: mpsc::Receiver<(String,oneshot::Sender<String>)>) 
 
     let depth_track = Arc::new(TrackLocalStaticRTP::new(
         RTCRtpCodecCapability {
-            mime_type: MIME_TYPE_VP8.to_owned(),
+            mime_type: MIME_TYPE_H264.to_owned(),
             ..Default::default()
         },
         "depth_video".to_owned(),
