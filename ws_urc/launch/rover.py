@@ -64,7 +64,7 @@ def generate_launch_description():
         # Basestation Node
         Node(
             package='basestation',
-            executable='basestation',
+            executable='basestation_node',
             name='basestation',
             parameters=[
                 {'ip': ip}
