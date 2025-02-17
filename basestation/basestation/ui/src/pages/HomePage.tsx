@@ -9,7 +9,7 @@ import { decodeMessage, encodeTwist, GPSData, IMUData, Message, Quaternion, Vect
 import Connection from "@/components/Connection";
 
 export default function HomePage() {
-  const [socketUrl, setSocketUrl] = useState('/message_stream');
+  const [socketUrl, setSocketUrl] = useState('/ws');
   const [gps, setGPS ] = useState<GPSData>();
   const [imu, setIMU] = useState<IMUData>();
   const [roverAddress,setRoverAddress] = useState<string>();

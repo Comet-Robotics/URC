@@ -1,12 +1,10 @@
 
 use std::{
-    io::{Read, Write}, 
-    thread, 
-    time::Duration
+    io::{Read, Write}, net::IpAddr, sync::{atomic::AtomicBool, Arc}, thread, time::Duration
 };
 use rover_msgs::rover::Message;
 use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt}, net::{TcpListener, TcpStream}, sync::{broadcast,mpsc::{self, error::TryRecvError}}
+    io::{AsyncReadExt, AsyncWriteExt}, net::{TcpListener, TcpStream}, sync::{broadcast,mpsc::{self, error::TryRecvError}, watch}
 };
 use prost::{decode_length_delimiter, length_delimiter_len, Message as _};
 use prost::DecodeError;
@@ -20,15 +18,17 @@ const BUFFER_SIZE: usize = 1024;
 pub async fn launch_rover_link(
     mut msg_rx: mpsc::Receiver<Message>,
     msg_tx: broadcast::Sender<Message>,
+    connected: watch::Sender<Option<IpAddr>>
 ) -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind(("0.0.0.0", TCP_PORT)).await?;
     tracing::info!("Rover link launched on port {}", TCP_PORT);
 
     'connection_loop: loop {
+        connected.send(None).unwrap();
         tracing::info!("Waiting for rover connection...");
         let (mut socket, addr) = listener.accept().await?;
         tracing::info!("New connection: {}", addr);
-        
+        connected.send(Some(addr.ip())).unwrap();
         let (read_half, mut write_half) = socket.into_split();
         
         // Spawn a task to handle incoming messages

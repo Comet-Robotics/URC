@@ -114,7 +114,7 @@ impl StreamManager {
             .arg("-preset")
             .arg("ultrafast")
             .arg("-vcodec")
-            .arg("libvpx")
+            .arg("libx264")
             .arg("-deadline")
             .arg("realtime")
             .arg("-g")
@@ -218,10 +218,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             };
             println!("Sending message: {:?}", msg);
             let mut buf = Vec::new();
-            let sz = msg.encoded_len() + 10;
+            let sz = msg.encoded_len() ;
             buf.reserve(sz);
 
-            msg.encode_length_delimited(&mut buf)?;
+            msg.encode(&mut buf)?;
             stream.write_all(&buf)?;
 
 
@@ -243,10 +243,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             };
             println!("Sending message: {:?}", msg);
             let mut buf = Vec::new();
-            let sz = msg.encoded_len() + 10;
+            let sz = msg.encoded_len() ;
             buf.reserve(sz);
 
-            msg.encode_length_delimited(&mut buf)?;
+            msg.encode(&mut buf)?;
             stream.write_all(&buf)?;
             gps.update_position(&mut rng);
         }
