@@ -136,18 +136,27 @@ class DataForwarder(Node):
 
     #add some stuff to send and receive to do ham instead
     def send_protobuf_message(self, message):
-        try:
-            serialized_data = message.SerializeToString()
-            message_length = len(serialized_data)
-            packed_length = struct.pack('!I', message_length)
-            self.sock.sendall(packed_length + serialized_data)
-            self.get_logger().debug(f"Sent message of length: {message_length}")
-        except socket.error as e:
-            self.get_logger().error(f"Error sending data: {e}")
-            if self.sock:
-                self.sock.close()
-            self.sock = None
-            self.connect_retry_timer.reset()
+        serialized_data = message.SerializeToString()
+        message_length = len(serialized_data)
+        packed_length = struct.pack('!I', message_length)
+
+        flag = True
+        if flag:
+            try:
+                self.serial.write(base64.b64encode(packed_length + serialized_data) + "\n")
+                self.get_logger().debug(f"Sent message of length: {message_length}")
+            except socket.error as e:
+                self.get_logger().error(f"Error sending data: {e}")
+        else:
+            try:
+                self.sock.sendall(packed_length + serialized_data)
+                self.get_logger().debug(f"Sent message of length: {message_length}")
+            except socket.error as e:
+                self.get_logger().error(f"Error sending data: {e}")
+                if self.sock:
+                    self.sock.close()
+                self.sock = None
+                self.connect_retry_timer.reset()
 
     
     def receive_protobuf_messages(self):
