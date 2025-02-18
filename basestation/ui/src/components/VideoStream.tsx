@@ -19,36 +19,28 @@ interface RemoteVideoProps {
   pc: RTCPeerConnection | null; // Pass the peer connection
 }
 
+// eslint-disable-next-line react/display-name
 const RemoteVideo = React.memo(({ streamId, stream, pc }: RemoteVideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [bitrate, setBitrate] = useState<number | null>(null);
   const [fps, setFps] = useState<number | null>(null);
   const [resolution, setResolution] = useState<string | null>(null);
-  const [latency, setLatency] = useState<number | null>(null);
   const [previousBytesReceived, setPreviousBytesReceived] = useState<number | null>(null);
   const [previousTimestamp, setPreviousTimestamp] = useState<number | null>(null);
+  const [noDataReceived, setNoDataReceived] = useState(true);
+  const [lastDataTime, setLastDataTime] = useState<number>(Date.now());
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.srcObject = stream;
-    video.autoplay = true;
-    video.controls = false;
-    video.width = 640;
-    video.height = 480;
-
-    const handleTrackAdded = () => {
-      video.srcObject = stream;
-    };
-
-    stream.getTracks().forEach(track => {
-      track.addEventListener('ended', handleTrackAdded);
-    });
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = stream;
+    videoRef.current.autoplay = true;
+    videoRef.current.controls = false;
+    videoRef.current.width = 640;
+    videoRef.current.height = 480;
+    videoRef.current.muted = true;
 
     return () => {
-      stream.getTracks().forEach(track => {
-        track.removeEventListener('ended', handleTrackAdded);
-      });
+     
       console.log(`Cleaning Up Video ${streamId}`);
     };
   }, [stream, streamId]);
@@ -58,14 +50,22 @@ const RemoteVideo = React.memo(({ streamId, stream, pc }: RemoteVideoProps) => {
     if (!pc) return;
     try {
       const stats = await pc.getStats(null);
+      let hasReceivedData = false;
+      
       stats.forEach(report => {
-        console.log(report);
         if (report.type === 'inbound-rtp' && report.kind === 'video') {
           if (report.trackIdentifier !== stream.getVideoTracks()[0]?.id) {
             return;
           }
+          
+ 
+
           // Bitrate calculation
           const bytesReceived = report.bytesReceived;
+          if (bytesReceived > 0 && bytesReceived !== previousBytesReceived) {
+            hasReceivedData = true;
+            setLastDataTime(Date.now());
+          }
           const timestamp = report.timestamp;
           if (previousBytesReceived === null) {
             setPreviousBytesReceived(bytesReceived);
@@ -92,10 +92,18 @@ const RemoteVideo = React.memo(({ streamId, stream, pc }: RemoteVideoProps) => {
 
      
       });
+
+      // If it's been more than 5 seconds since last data
+      if (Date.now() - lastDataTime > 5000) {
+        setNoDataReceived(true);
+      } else if (hasReceivedData) {
+        setNoDataReceived(false);
+      }
+
     } catch (e) {
       console.error("Error getting stats:", e);
     }
-  }, [pc, previousBytesReceived, previousTimestamp, stream]);
+  }, [pc, previousBytesReceived, previousTimestamp, stream, lastDataTime]);
 
   // Call getConnectionStats periodically
   useEffect(() => {
@@ -108,18 +116,23 @@ const RemoteVideo = React.memo(({ streamId, stream, pc }: RemoteVideoProps) => {
   return (
     <div id={streamId} className="relative">
       <video ref={videoRef} playsInline className="w-full h-full max-h-[70vh] object-contain" />
+      {noDataReceived && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-white">
+          <span className="text-lg">No video data received...</span>
+        </div>
+      )}
       <div className="absolute bottom-2 left-2 bg-gray-800/80 text-white p-2 rounded-lg text-sm flex gap-4">
         <span>{streamId}</span>
         {bitrate !== null && <span>{bitrate.toFixed(1)} Mbps</span>}
         {fps !== null && <span>{Math.round(fps)} FPS</span>}
         {resolution !== null && <span>{resolution}</span>}
-        {latency !== null && <span>{latency.toFixed(1)} ms</span>}
       </div>
     </div>
   );
 });
 
-const StartStream = () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const StartStream = ({send_json,message}:{send_json: (msg: RTCSessionDescription | RTCIceCandidate | RTCSessionDescriptionInit) => void,message?:any}) => {
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
   const [selectedVideo, setSelectedVideo] = useState<string | null>("both"); // Default to single
   const [pc, setPc] = useState<RTCPeerConnection | null>(null);
@@ -156,12 +169,15 @@ const StartStream = () => {
     };
   }, []);
   useEffect(() => {
+   
     const startSession = async () => {
       console.log("Starting Session");
       const peerConnection = new RTCPeerConnection({
         iceServers: [] // Add your ICE servers here for production
       });
       setPc(peerConnection);
+      await navigator.mediaDevices.getUserMedia({ audio: true})
+      
       // Handle incoming tracks
       peerConnection.ontrack = (event) => {
         const stream = event.streams[0];
@@ -181,38 +197,12 @@ const StartStream = () => {
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           console.log('New ICE candidate:', event.candidate);
+          send_json(event.candidate)
         }
       };
       // Handle ICE gathering state event
       peerConnection.onicegatheringstatechange = async () => {
         console.log("ICE gathering state changed to:", peerConnection.iceGatheringState);  // Debugging
-        if (peerConnection.iceGatheringState === 'complete') {
-          console.log("Sending local descriptor");
-          const localDescriptor = btoa(JSON.stringify(peerConnection.localDescription));
-          try {
-            const response = await fetch('/start_stream', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ localSessionDescription: localDescriptor })
-            });
-            if (response.ok) {
-              const remoteSessionDescription = await response.text();
-              try {
-                const remoteDesc = new RTCSessionDescription(JSON.parse(atob(remoteSessionDescription)));
-                await peerConnection.setRemoteDescription(remoteDesc);
-                log("Session established.");
-              } catch (error) {
-                console.error('Error setting remote description:', error);
-                log('Error setting remote description.');
-              }
-            } else {
-              log("Failed to start stream.");
-            }
-          } catch (error) {
-            console.error('Error exchanging session descriptors:', error);
-            log('Error exchanging session descriptors.');
-          }
-        }
       };
       // Set up transceivers and create an offer
       peerConnection.addTransceiver('video', { direction: 'recvonly' });
@@ -220,6 +210,7 @@ const StartStream = () => {
       try {
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
+        send_json(offer)
       } catch (error) {
         console.error('Failed to create offer:', error); // Log the error
         log('Failed to create offer.');
@@ -235,6 +226,21 @@ const StartStream = () => {
       });
     };
   }, [log]);
+
+  useEffect(()=>{
+    if (!pc || !message){
+      return;
+    }
+    if (message.candidate != undefined){
+      console.log("adding canidate")
+      pc?.addIceCandidate(message)
+    }else{
+      console.log("Setting Remote Description")
+      pc.setRemoteDescription(message)
+    }
+  },[message,pc])
+
+
   const streamIds = Array.from(remoteStreams.keys());
   const bothStreamsReady = streamIds.length >= 2 && connectionState == "connected" &&streamIds.every(id => remoteStreams.get(id) !== undefined);
   const singleStreamReady = selectedVideo !== "both" && connectionState == "connected"&& selectedVideo !== null && remoteStreams.get(selectedVideo) !== undefined;
@@ -266,14 +272,14 @@ const StartStream = () => {
       <CardContent>
         <div ref={videoContainerRef} className="w-full h-full z-50" style={{ backgroundColor: 'black' }}>
           {singleStreamReady ? (
-            <RemoteVideo key={selectedVideo!}  streamId={selectedVideo!} stream={remoteStreams.get(selectedVideo!)!} pc={pc} />
+            <RemoteVideo  streamId={selectedVideo!} stream={remoteStreams.get(selectedVideo!)!} pc={pc} />
           ) : bothStreamsReady ? (
             <div className="flex w-full h-full">
               <div className="w-1/2 h-full">
-                <RemoteVideo key={streamIds[0]} streamId={streamIds[0]} stream={remoteStreams.get(streamIds[0])!} pc={pc} />
+                <RemoteVideo  streamId={streamIds[0]} stream={remoteStreams.get(streamIds[0])!} pc={pc} />
               </div>
               <div className="w-1/2 h-full">
-                <RemoteVideo key={streamIds[1]} streamId={streamIds[1]} stream={remoteStreams.get(streamIds[1])!} pc={pc} />
+                <RemoteVideo  streamId={streamIds[1]} stream={remoteStreams.get(streamIds[1])!} pc={pc} />
               </div>
             </div>
           ) : (

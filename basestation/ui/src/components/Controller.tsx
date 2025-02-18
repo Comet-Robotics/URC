@@ -80,15 +80,15 @@ const Controller = ({ sendMovement }: ControllerProps) => {
     
     return (
         <Card className="h-full w-full col-span-1 row-span-1">
-            <CardHeader>
+            <CardHeader className='flex justify-between flex-row'>
                 <CardTitle>Controller Control</CardTitle>
+                <Switch id="sending" checked={sending}  
+                      onCheckedChange={(a ) => {console.log(a); setSending(a);}} />
+                  
             </CardHeader>
             <CardContent>
                 <p>{gamePadDetected ? "Controller Detected" : "Controller Disconnected"}</p>
                 <p>Twist: {JSON.stringify(twist)}</p>
-                <Label htmlFor="sending">Enabled</Label>
-                <Switch id="sending" checked={sending}  
-                      onCheckedChange={(a ) => {console.log(a); setSending(a);}} />
                 <div className="space-y-4">
                     <div>
                         <p>Angular Speed: {angularSpeed}</p>
@@ -108,6 +108,10 @@ const Controller = ({ sendMovement }: ControllerProps) => {
                             onValueChange={(values) => setLinearSpeed(values[0])} 
                         />
                     </div>
+                    <Button onClick={()=> sendMovement({
+                    linear: { x: 1.0, y: 0, z: 0 },
+                    angular: { x: 0, y: 1.0, z: 0 }
+                })}>Test</Button>
                 </div>
 
             </CardContent>
