@@ -1,21 +1,23 @@
 package main
 
 import (
-    "fmt"
-    "log"
-    "net"
-    "net/http"
-    "os"
-    "os/signal"
-    "sync"
-    "syscall"
+	"encoding/binary"
+	"fmt"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 
-    "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 
-    spa "github.com/roberthodgen/spa-server"
-    "github.com/gorilla/websocket" // Import the gorilla/websocket library
+	"basestation/go/msgspb"
 
-    "basestation/go/msgspb"
+	"github.com/gorilla/websocket" // Import the gorilla/websocket library
+	"github.com/pion/webrtc/v4"
+	spa "github.com/roberthodgen/spa-server"
 )
 
 // Define a global upgrader for WebSocket connections
@@ -31,6 +33,9 @@ var upgrader = websocket.Upgrader{
 var tcpConn net.Conn
 var tcpConnMutex sync.Mutex
 
+var videoStreams make(map[*webrtc.TrackLocalStaticRTP]bool)
+var videoStreamsMutex sync.Mutex
+
 // Map to store WebSocket connections
 var websocketConnections = make(map[*websocket.Conn]bool)
 var websocketConnectionsMutex sync.Mutex
@@ -42,6 +47,9 @@ func main() {
 
     // Start the TCP server in a goroutine
     go startTCPServer()
+
+    go startRTP_WebRTC(5000)
+  
 
     // HTTP Server setup
     http.Handle("/", spa.SpaHandler("ui/dist", "index.html"))
@@ -116,17 +124,36 @@ func handleTCPConnection(conn net.Conn) {
         fmt.Println("TCP connection closed")
     }()
 
-    buffer := make([]byte, 1024) // Adjust buffer size as needed
-
     for {
-        n, err := conn.Read(buffer)
+        // Read the length prefix (4 bytes)
+        lengthBytes := make([]byte, 4)
+        n, err := conn.Read(lengthBytes)
         if err != nil {
-            fmt.Printf("TCP read error: %v\n", err)
+            fmt.Printf("TCP read error (length): %v\n", err)
+            return
+        }
+        if n != 4 {
+            fmt.Printf("TCP read error (incomplete length): read %d bytes, expected 4\n", n)
             return
         }
 
+        messageLength := binary.BigEndian.Uint32(lengthBytes)
+
+        // Read the message body
+        messageBuffer := make([]byte, messageLength)
+        n, err = conn.Read(messageBuffer)
+        if err != nil {
+            fmt.Printf("TCP read error (message): %v\n", err)
+            return
+        }
+        if uint32(n) != messageLength {
+            fmt.Printf("TCP read error (incomplete message): read %d bytes, expected %d\n", n, messageLength)
+            return
+        }
+
+        // Unmarshal the protobuf message
         message := &msgspb.Message{}
-        if err := proto.Unmarshal(buffer[:n], message); err != nil {
+        if err := proto.Unmarshal(messageBuffer, message); err != nil {
             log.Println("Failed to parse message:", err)
             continue // Or handle the error more robustly
         }
@@ -135,8 +162,7 @@ func handleTCPConnection(conn net.Conn) {
 
         // Forward to all WebSocket clients
         forwardToAllWebSockets(message)
-    }
-}
+    }}
 
 // forwardToAllWebSockets sends a protobuf message to all connected WebSocket clients.
 func forwardToAllWebSockets(message *msgspb.Message) {
@@ -172,8 +198,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     websocketConnections[conn] = true // Add the new connection to the map
     websocketConnectionsMutex.Unlock()
 
+    
+
+
+
     defer func() {
-        websocketConnectionsMutex.Lock()
+    websocketConnectionsMutex.Lock()
         delete(websocketConnections, conn) // Remove the connection when it's closed
         websocketConnectionsMutex.Unlock()
         conn.Close()

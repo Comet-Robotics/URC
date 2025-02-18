@@ -5,6 +5,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use bincode::Encode;
 use prost::Message as _;
 use rover_msgs::rover::{self, Message};
 use rand::Rng;
@@ -146,8 +147,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut stream_manager = StreamManager::new();
 
     // Start video streams
-    let mut stream1 = VideoStreamConfig::new("0.0.0.0", 5000);
-    let mut stream2 = VideoStreamConfig::new("0.0.0.0", 5001);
+    let mut stream1 = VideoStreamConfig::new("localhost", 5000);
+    let mut stream2 = VideoStreamConfig::new("localhost", 5001);
 
     stream1.cpu_usage = 6; // Set different cpu_usage values for each stream
     stream2.cpu_usage = 7;
@@ -168,7 +169,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if !running.load(Ordering::SeqCst){
             return Ok(());
         }
-        match TcpStream::connect("0.0.0.0:8000") {
+        match TcpStream::connect("localhost:8000") {
             Ok(stream) => break stream,
             Err(e) => {
                 eprintln!("Failed to connect: {}. Retrying in {:?}...", e, RETRY_DELAY);
@@ -218,9 +219,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             };
             println!("Sending message: {:?}", msg);
             let mut buf = Vec::new();
-            let sz = msg.encoded_len() ;
-            buf.reserve(sz);
-
+            let sz:u32 = msg.encoded_len() as u32 ;
+            buf.reserve(sz as usize+4);
+            buf.write(&sz.to_be_bytes())?;
             msg.encode(&mut buf)?;
             stream.write_all(&buf)?;
 
@@ -243,11 +244,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             };
             println!("Sending message: {:?}", msg);
             let mut buf = Vec::new();
-            let sz = msg.encoded_len() ;
-            buf.reserve(sz);
-
+            let sz:u32 = msg.encoded_len() as u32 ;
+            buf.reserve(sz as usize+4);
+            buf.write(&sz.to_be_bytes())?;
             msg.encode(&mut buf)?;
             stream.write_all(&buf)?;
+
+
             gps.update_position(&mut rng);
         }
 
