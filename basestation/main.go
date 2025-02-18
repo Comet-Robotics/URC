@@ -355,8 +355,13 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 					panic(err)
 				}
 			default:
-				fmt.Println("Unknown Message", p)
-				panic("Unknown message")
+				var msg map[string]interface{}
+				if err := json.Unmarshal(p, &msg); err != nil {
+					fmt.Println("Error unmarshalling JSON", err)
+					return
+				}
+				fmt.Println("Unknown Message", msg)
+				
 			}
 		}
 	}

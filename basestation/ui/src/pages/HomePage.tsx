@@ -2,19 +2,18 @@ import React from "react";
 import VideoStream from "../components/VideoStream";
 import Telemetry from "../components/Telemetry";
 import Controller from "../components/Controller";
-import Control from "@/components/Control";
 import {  useEffect, useState } from "react";
-import useWebSocket, { ReadyState } from "react-use-websocket"
-import { decodeMessage, encodeTwist, GPSData, IMUData, Message, Quaternion, Vector3, Twist, encodeMessage } from "@/types/binding";
+import useWebSocket from "react-use-websocket"
+import { decodeMessage, GPSData, IMUData, Message, Twist, encodeMessage } from "@/types/binding";
 import Connection from "@/components/Connection";
 
 export default function HomePage() {
-  const [socketUrl, setSocketUrl] = useState('/ws');
+  const [socketUrl] = useState('/ws');
   const [gps, setGPS ] = useState<GPSData>();
   const [imu, setIMU] = useState<IMUData>();
   const [roverAddress,setRoverAddress] = useState<string>();
   const [message, setMessage] = useState<RTCIceCandidate | RTCSessionDescription>();
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+  const { sendMessage, lastMessage } = useWebSocket(socketUrl);
 
   useEffect(() => {
     const processMessage = async () => {
@@ -24,7 +23,7 @@ export default function HomePage() {
         if (lastMessage.data instanceof Blob) {
           const arrayBuffer = await lastMessage.data.arrayBuffer();
           const uint8Array = new Uint8Array(arrayBuffer);
-          let message: Message = decodeMessage(uint8Array);
+          const message: Message = decodeMessage(uint8Array);
           if (message.gps) {
             setGPS(message.gps);
           }
@@ -34,7 +33,7 @@ export default function HomePage() {
         }else{
         
           
-          let lastMessageData = JSON.parse(lastMessage.data)
+          const lastMessageData = JSON.parse(lastMessage.data)
           if (lastMessageData.roverAddress !== undefined){
             if (lastMessageData.roverAddress === false){
               setRoverAddress(undefined)
@@ -52,13 +51,13 @@ export default function HomePage() {
     processMessage();
   }, [lastMessage]);
 
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: 'Connecting',
-    [ReadyState.OPEN]: 'Open',
-    [ReadyState.CLOSING]: 'Closing',
-    [ReadyState.CLOSED]: 'Closed',
-    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-  }[readyState];
+  // const connectionStatus = {
+  //   [ReadyState.CONNECTING]: 'Connecting',
+  //   [ReadyState.OPEN]: 'Open',
+  //   [ReadyState.CLOSING]: 'Closing',
+  //   [ReadyState.CLOSED]: 'Closed',
+  //   [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+  // }[readyState];
 
   const handleMovement = (twist: Twist) => {
     // Create a Message object containing the twist

@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { eventNames } from 'process';
 
 interface RemoteVideoProps {
   streamId: string;
@@ -20,12 +19,12 @@ interface RemoteVideoProps {
   pc: RTCPeerConnection | null; // Pass the peer connection
 }
 
+// eslint-disable-next-line react/display-name
 const RemoteVideo = React.memo(({ streamId, stream, pc }: RemoteVideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [bitrate, setBitrate] = useState<number | null>(null);
   const [fps, setFps] = useState<number | null>(null);
   const [resolution, setResolution] = useState<string | null>(null);
-  const [latency, setLatency] = useState<number | null>(null);
   const [previousBytesReceived, setPreviousBytesReceived] = useState<number | null>(null);
   const [previousTimestamp, setPreviousTimestamp] = useState<number | null>(null);
   const [noDataReceived, setNoDataReceived] = useState(true);
@@ -127,12 +126,12 @@ const RemoteVideo = React.memo(({ streamId, stream, pc }: RemoteVideoProps) => {
         {bitrate !== null && <span>{bitrate.toFixed(1)} Mbps</span>}
         {fps !== null && <span>{Math.round(fps)} FPS</span>}
         {resolution !== null && <span>{resolution}</span>}
-        {latency !== null && <span>{latency.toFixed(1)} ms</span>}
       </div>
     </div>
   );
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const StartStream = ({send_json,message}:{send_json: (msg: RTCSessionDescription | RTCIceCandidate | RTCSessionDescriptionInit) => void,message?:any}) => {
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
   const [selectedVideo, setSelectedVideo] = useState<string | null>("both"); // Default to single
@@ -170,12 +169,15 @@ const StartStream = ({send_json,message}:{send_json: (msg: RTCSessionDescription
     };
   }, []);
   useEffect(() => {
+   
     const startSession = async () => {
       console.log("Starting Session");
       const peerConnection = new RTCPeerConnection({
         iceServers: [] // Add your ICE servers here for production
       });
       setPc(peerConnection);
+      await navigator.mediaDevices.getUserMedia({ audio: true})
+      
       // Handle incoming tracks
       peerConnection.ontrack = (event) => {
         const stream = event.streams[0];
