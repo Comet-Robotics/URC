@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package rover;
-option go_package = "basestation/go/msgspb";
+option go_package = "rover-msgs/go/msgspb";
 
 message Message {
   oneof data_type {

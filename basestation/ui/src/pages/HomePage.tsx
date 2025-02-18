@@ -32,13 +32,18 @@ export default function HomePage() {
             setIMU(message.imu);
           }
         }else{
-          // if (lastMessage.data === "None"){
-          //   setRoverAddress(undefined)
-          // }else{
-
-          //   setRoverAddress(lastMessage.data as string)
-          // }
-          setMessage(JSON.parse(lastMessage.data))
+        
+          
+          let lastMessageData = JSON.parse(lastMessage.data)
+          if (lastMessageData.roverAddress !== undefined){
+            if (lastMessageData.roverAddress === false){
+              setRoverAddress(undefined)
+            }else{
+              setRoverAddress(lastMessageData.roverAddress as string)
+            }
+          }else{
+            setMessage(lastMessageData)
+          }
         }
        
       }
@@ -65,14 +70,14 @@ export default function HomePage() {
     const encoded = encodeMessage(message);
     
     // // Create a length-delimited message by prepending the length
-    // const lengthDelimited = new Uint8Array(encoded.length + 4);
-    // const view = new DataView(lengthDelimited.buffer);
+    const lengthDelimited = new Uint8Array(encoded.length + 4);
+    const view = new DataView(lengthDelimited.buffer);
     
-    // // Write the length as a 32-bit integer
-    // view.setUint32(0, encoded.length, true);
+    // Write the length as a 32-bit integer
+    view.setUint32(0, encoded.length, true);
     
-    // // Copy the encoded message after the length
-    // lengthDelimited.set(encoded, 4);
+    // Copy the encoded message after the length
+    lengthDelimited.set(encoded, 4);
     
     // Send the length-delimited message
     sendMessage(encoded);
