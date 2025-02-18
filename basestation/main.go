@@ -192,7 +192,7 @@ func handleTCPConnection(conn net.Conn) {
 			continue // Or handle the error more robustly
 		}
 
-		fmt.Printf("Received from TCP client: %s\n", message)
+		fmt.Printf("Received from TCP client: %s\n",message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
 
 		// Forward to all WebSocket clients
 		forwardToAllWebSockets(message)
@@ -315,7 +315,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				continue // Or handle the error more robustly
 			}
 
-			fmt.Printf("Received from WebSocket client: %s\n", message)
+			fmt.Printf("Received from WebSocket client: %s\n",message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
+
 
 			// Forward to TCP server
 			forwardToTCPServer(message)
@@ -361,7 +362,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				fmt.Println("Unknown Message", msg)
-				
+
 			}
 		}
 	}

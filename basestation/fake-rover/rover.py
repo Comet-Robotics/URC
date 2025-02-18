@@ -94,15 +94,29 @@ class FFmpegProcess:
             print(f"Terminating ffmpeg process for {self.config.rtp_url()}...")
             try:
                 self.process.terminate()
-                self.process.wait()
+                try:
+                    # Wait up to 3 seconds for the process to terminate
+                    self.process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    print("FFmpeg process didn't terminate, sending SIGKILL...")
+                    self.process.kill()  # Send SIGKILL
+                    self.process.wait()  # Wait for the kill to complete
                 print(f"FFmpeg process terminated for {self.config.rtp_url()}")
             except Exception as e:
                 print(f"Failed to terminate ffmpeg process: {e}")
+            finally:
+                self.process = None
 
 
 class StreamManager:
     def __init__(self):
         self.processes = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop_all()
 
     def add_stream(self, config):
         ffmpeg_process = FFmpegProcess(config)
@@ -151,80 +165,86 @@ def create_gps_data(gps_state):
 
 
 def main():
-    # Create stream manager to handle ffmpeg processes
-    stream_manager = StreamManager()
-
-    # Start video streams
-    stream1 = VideoStreamConfig("localhost", 5000)
-    stream2 = VideoStreamConfig("localhost", 5001)
-
-    stream1.cpu_usage = 6  # Set different cpu_usage values for each stream
-    stream2.cpu_usage = 7
-
-    stream_manager.add_stream(stream1)
-    stream_manager.add_stream(stream2)
-
-    # Set up ctrl-c handler for graceful shutdown
-    running = True
+    def cleanup():
+        print("Cleaning up resources...")
+        stream_manager.stop_all()
+        try:
+            stream.close()
+        except:
+            pass
 
     def signal_handler(sig, frame):
         nonlocal running
         print("Received Ctrl+C! Initiating shutdown...")
         running = False
+        cleanup()
 
+    # Set up ctrl-c handler for graceful shutdown
+    running = True
     signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
-    # Connect to TCP server with retry logic
-    while running:
-        try:
-            stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            stream.connect(("localhost", 8000))
-            stream.setblocking(False)
-            break  # Connection successful, exit the loop
-        except socket.error as e:
-            print(f"Failed to connect: {e}. Retrying in {RETRY_DELAY} seconds...")
-            time.sleep(RETRY_DELAY)
-    else:
-        print("Exited connection loop due to shutdown signal.")
-        stream_manager.stop_all()
-        return  # Exit if the loop was exited due to a shutdown signal
+    # Use context manager for StreamManager
+    with StreamManager() as stream_manager:
+        # Start video streams
+        stream1 = VideoStreamConfig("localhost", 5000)
+        stream2 = VideoStreamConfig("localhost", 5001)
 
-    timer = time.time()
-    gps = GpsState()
+        stream1.cpu_usage = 6  # Set different cpu_usage values for each stream
+        stream2.cpu_usage = 7
 
-    # Main message processing loop
-    while running:
-        if time.time() - timer >= 2:
-            timer = time.time()
+        stream_manager.add_stream(stream1)
+        stream_manager.add_stream(stream2)
 
-            # Create and send IMU data
-            imu_data = create_imu_data()
-            msg = rover.Message()
-            msg.imu.CopyFrom(imu_data)
-            print(f"Sending message: {msg}")
-            payload = msg.SerializeToString()
-            size = len(payload)
-            stream.sendall(struct.pack(">I", size))  # Big-endian unsigned integer
-            stream.sendall(payload)
+        # Connect to TCP server with retry logic
+        while running:
+            try:
+                stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                stream.connect(("localhost", 8000))
+                stream.setblocking(False)
+                break  # Connection successful, exit the loop
+            except socket.error as e:
+                print(f"Failed to connect: {e}. Retrying in {RETRY_DELAY} seconds...")
+                time.sleep(RETRY_DELAY)
+        else:
+            print("Exited connection loop due to shutdown signal.")
+            stream_manager.stop_all()
+            return  # Exit if the loop was exited due to a shutdown signal
 
-            # Create and send GPS data
-            gps_data = create_gps_data(gps)
-            msg = rover.Message()
-            msg.gps.CopyFrom(gps_data)
-            print(f"Sending message: {msg}")
-            payload = msg.SerializeToString()
-            size = len(payload)
-            stream.sendall(struct.pack(">I", size))  # Big-endian unsigned integer
-            stream.sendall(payload)
+        timer = time.time()
+        gps = GpsState()
 
-            gps.update_position()
+        # Main message processing loop
+        while running:
+            if time.time() - timer >= 2:
+                timer = time.time()
 
-        # Small sleep to prevent tight CPU loop
-        time.sleep(0.001)
+                # Create and send IMU data
+                imu_data = create_imu_data()
+                msg = rover.Message()
+                msg.imu.CopyFrom(imu_data)
+                print(f"Sending message: {msg}")
+                payload = msg.SerializeToString()
+                size = len(payload)
+                stream.sendall(struct.pack(">I", size))  # Big-endian unsigned integer
+                stream.sendall(payload)
 
-    print("Shutting down...")
-    stream_manager.stop_all()
-    stream.close()
+                # Create and send GPS data
+                gps_data = create_gps_data(gps)
+                msg = rover.Message()
+                msg.gps.CopyFrom(gps_data)
+                print(f"Sending message: {msg}")
+                payload = msg.SerializeToString()
+                size = len(payload)
+                stream.sendall(struct.pack(">I", size))  # Big-endian unsigned integer
+                stream.sendall(payload)
+
+                gps.update_position()
+
+            # Small sleep to prevent tight CPU loop
+            time.sleep(0.001)
+
+    print("Shutdown complete")
 
 
 if __name__ == "__main__":
