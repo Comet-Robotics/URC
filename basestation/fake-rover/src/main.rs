@@ -128,7 +128,7 @@ impl StreamManager {
             .arg("rtp")
             .arg(config.rtp_url())
             .stdout(Stdio::null())
-            .stderr(Stdio::null())
+        //     .stderr(Stdio::null())
             .spawn()
             .map_err(|e| io::Error::new(
                 e.kind(),

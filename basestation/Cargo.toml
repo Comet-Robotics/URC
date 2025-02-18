@@ -1,2 +1,2 @@
 [workspace]
-members = ["rover-msgs", "fake-rover","rover-ui"]
+members = ["rover-msgs", "fake-rover"]

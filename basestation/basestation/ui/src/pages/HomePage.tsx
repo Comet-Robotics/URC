@@ -13,6 +13,7 @@ export default function HomePage() {
   const [gps, setGPS ] = useState<GPSData>();
   const [imu, setIMU] = useState<IMUData>();
   const [roverAddress,setRoverAddress] = useState<string>();
+  const [message, setMessage] = useState<RTCIceCandidate | RTCSessionDescription>();
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
   useEffect(() => {
@@ -31,12 +32,13 @@ export default function HomePage() {
             setIMU(message.imu);
           }
         }else{
-          if (lastMessage.data === "None"){
-            setRoverAddress(undefined)
-          }else{
+          // if (lastMessage.data === "None"){
+          //   setRoverAddress(undefined)
+          // }else{
 
-            setRoverAddress(lastMessage.data as string)
-          }
+          //   setRoverAddress(lastMessage.data as string)
+          // }
+          setMessage(JSON.parse(lastMessage.data))
         }
        
       }
@@ -78,7 +80,7 @@ export default function HomePage() {
 
   return (
     <section className="grid xl:grid-cols-4 row-span-4 grid-cols-3 gap-4 p-4">
-      <VideoStream/>
+      <VideoStream   send_json={(value) => {sendMessage(JSON.stringify(value));}} message={message}  />
       <Connection roverAddress={roverAddress} />
 
       <Controller sendMovement={handleMovement} />

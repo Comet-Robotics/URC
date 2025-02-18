@@ -10,11 +10,10 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
-
 	"google.golang.org/protobuf/proto"
-
+  "encoding/json"
 	"basestation/go/msgspb"
-
+  "basestation/video_stream"
 	"github.com/gorilla/websocket" // Import the gorilla/websocket library
 	"github.com/pion/webrtc/v4"
 	spa "github.com/roberthodgen/spa-server"
@@ -33,7 +32,7 @@ var upgrader = websocket.Upgrader{
 var tcpConn net.Conn
 var tcpConnMutex sync.Mutex
 
-var videoStreams make(map[*webrtc.TrackLocalStaticRTP]bool)
+var videoStreams = make(map[string]*webrtc.TrackLocalStaticRTP)
 var videoStreamsMutex sync.Mutex
 
 // Map to store WebSocket connections
@@ -48,8 +47,10 @@ func main() {
     // Start the TCP server in a goroutine
     go startTCPServer()
 
-    go startRTP_WebRTC(5000)
-  
+    rgb_video := video_stream.StartRTPToWebRTC(5000,"rgb_video")
+    depth_video := video_stream.StartRTPToWebRTC(5001,"depth_video")
+    videoStreams[rgb_video.ID()] = rgb_video
+    videoStreams[depth_video.ID()] = depth_video
 
     // HTTP Server setup
     http.Handle("/", spa.SpaHandler("ui/dist", "index.html"))
@@ -162,7 +163,8 @@ func handleTCPConnection(conn net.Conn) {
 
         // Forward to all WebSocket clients
         forwardToAllWebSockets(message)
-    }}
+    }
+}
 
 // forwardToAllWebSockets sends a protobuf message to all connected WebSocket clients.
 func forwardToAllWebSockets(message *msgspb.Message) {
@@ -199,16 +201,54 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
     websocketConnectionsMutex.Unlock()
 
     
+    peerConnection, err := webrtc.NewPeerConnection(webrtc.Configuration{})
+	  if err != nil {
+		  panic(err)
+	  }
 
+    
+    peerConnection.OnICECandidate(func(candidate *webrtc.ICECandidate) {
+      if candidate == nil {
+        return
+      }
 
+      if err = conn.WriteJSON(candidate.ToJSON()); err != nil {
+
+        fmt.Println("Error Writing to JSON",err)
+        return
+      }
+    })
+    
+    peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
+		  fmt.Printf("ICE Connection State has changed: %s\n", connectionState.String())
+	  })
+    
+    
 
     defer func() {
-    websocketConnectionsMutex.Lock()
+        websocketConnectionsMutex.Lock()
         delete(websocketConnections, conn) // Remove the connection when it's closed
         websocketConnectionsMutex.Unlock()
         conn.Close()
         fmt.Println("WebSocket connection closed")
     }()
+
+    for track := range videoStreams{
+      fmt.Println("Adding Video Stream")
+      rtpSender, err := peerConnection.AddTrack(videoStreams[track])
+      if err != nil{
+        panic(err)
+      }
+      go func() {
+        rtcpBuf := make([]byte, 1500)
+        for {
+          if _, _, rtcpErr := rtpSender.Read(rtcpBuf); rtcpErr != nil {
+            return
+          }
+        }
+      }()
+    }
+  
 
     fmt.Println("WebSocket connection established")
 
@@ -235,8 +275,46 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
             // Forward to TCP server
             forwardToTCPServer(message)
-        } else {
-            fmt.Println("Received non-binary message. Ignoring.")
+        }  
+        if messageType == websocket.TextMessage {
+            var (
+			        candidate webrtc.ICECandidateInit
+			        offer     webrtc.SessionDescription
+        		)
+
+            switch {
+              // Attempt to unmarshal as a SessionDescription. If the SDP field is empty
+              // assume it is not one.
+              case json.Unmarshal(p, &offer) == nil && offer.SDP != "":
+                fmt.Println("Received Offer")
+                if err = peerConnection.SetRemoteDescription(offer); err != nil {
+                  panic(err)
+                }
+
+                answer, answerErr := peerConnection.CreateAnswer(nil)
+                if answerErr != nil {
+                  panic(answerErr)
+                }
+
+                if err = peerConnection.SetLocalDescription(answer); err != nil {
+                  panic(err)
+                }
+
+                
+
+                if err = conn.WriteJSON(answer); err != nil {
+                  panic(err)
+                }
+              // Attempt to unmarshal as a ICECandidateInit. If the candidate field is empty
+              // assume it is not one.
+              case json.Unmarshal(p, &candidate) == nil && candidate.Candidate != "":
+                fmt.Println("Adding Candidate")
+                if err = peerConnection.AddICECandidate(candidate); err != nil {
+                  panic(err)
+                }
+              default:
+                panic("Unknown message")
+              }
         }
     }
 }

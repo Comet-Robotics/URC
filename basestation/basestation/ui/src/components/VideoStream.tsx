@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { eventNames } from 'process';
 
 interface RemoteVideoProps {
   streamId: string;
@@ -119,7 +120,7 @@ const RemoteVideo = React.memo(({ streamId, stream, pc }: RemoteVideoProps) => {
   );
 });
 
-const StartStream = () => {
+const StartStream = ({send_json,message}:{send_json: (msg: RTCSessionDescription | RTCIceCandidate | RTCSessionDescriptionInit) => void,message?:any}) => {
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
   const [selectedVideo, setSelectedVideo] = useState<string | null>("both"); // Default to single
   const [pc, setPc] = useState<RTCPeerConnection | null>(null);
@@ -181,38 +182,12 @@ const StartStream = () => {
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           console.log('New ICE candidate:', event.candidate);
+          send_json(event.candidate)
         }
       };
       // Handle ICE gathering state event
       peerConnection.onicegatheringstatechange = async () => {
         console.log("ICE gathering state changed to:", peerConnection.iceGatheringState);  // Debugging
-        if (peerConnection.iceGatheringState === 'complete') {
-          console.log("Sending local descriptor");
-          const localDescriptor = btoa(JSON.stringify(peerConnection.localDescription));
-          try {
-            const response = await fetch('/start_stream', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ localSessionDescription: localDescriptor })
-            });
-            if (response.ok) {
-              const remoteSessionDescription = await response.text();
-              try {
-                const remoteDesc = new RTCSessionDescription(JSON.parse(atob(remoteSessionDescription)));
-                await peerConnection.setRemoteDescription(remoteDesc);
-                log("Session established.");
-              } catch (error) {
-                console.error('Error setting remote description:', error);
-                log('Error setting remote description.');
-              }
-            } else {
-              log("Failed to start stream.");
-            }
-          } catch (error) {
-            console.error('Error exchanging session descriptors:', error);
-            log('Error exchanging session descriptors.');
-          }
-        }
       };
       // Set up transceivers and create an offer
       peerConnection.addTransceiver('video', { direction: 'recvonly' });
@@ -220,6 +195,7 @@ const StartStream = () => {
       try {
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
+        send_json(offer)
       } catch (error) {
         console.error('Failed to create offer:', error); // Log the error
         log('Failed to create offer.');
@@ -235,6 +211,22 @@ const StartStream = () => {
       });
     };
   }, [log]);
+
+  useEffect(()=>{
+    if (!pc || !message){
+      return;
+    }
+    console.log(message)
+    if (message.candidate != undefined){
+      console.log("adding canidate")
+      pc?.addIceCandidate(message)
+    }else{
+      console.log("Setting Remote Description")
+      pc.setRemoteDescription(message)
+    }
+  },[message,pc])
+
+
   const streamIds = Array.from(remoteStreams.keys());
   const bothStreamsReady = streamIds.length >= 2 && connectionState == "connected" &&streamIds.every(id => remoteStreams.get(id) !== undefined);
   const singleStreamReady = selectedVideo !== "both" && connectionState == "connected"&& selectedVideo !== null && remoteStreams.get(selectedVideo) !== undefined;
