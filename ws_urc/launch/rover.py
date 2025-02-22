@@ -3,7 +3,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    ip = "100.117.177.44"
+    ip = "192.168.1.68"
     return LaunchDescription([
         # RealSense Camera Node
         Node(
@@ -38,14 +38,14 @@ def generate_launch_description():
    
         
         # Video Streamer Node
-        Node(
-            package='video_streamer',
-            executable='video_streamer',
-            name='video_streamer',
-            parameters=[
-                {'ip': ip}
-            ]
-        ),
+         Node(
+             package='video_streamer',
+             executable='video_streamer',
+             name='video_streamer',
+             parameters=[
+                 {'ip': ip}
+             ]
+         ),
 
         Node(
             package='drivetrain',

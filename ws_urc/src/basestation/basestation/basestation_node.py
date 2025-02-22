@@ -1,4 +1,5 @@
 import rclpy
+import rclpy.logging
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
 from gpsx.msg import Gpsx
@@ -17,12 +18,13 @@ from . import msgs_pb2
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterDescriptor
 import threading
+import base64
 
 class DataForwarder(Node):
 
     def __init__(self):
         super().__init__('data_forwarder')
-        
+ 
         ip_descriptor = ParameterDescriptor(description='IP address of the server')
         self.declare_parameter('ip', '127.0.0.1', ip_descriptor)
         server_ip = self.get_parameter('ip').get_parameter_value().string_value
@@ -42,14 +44,31 @@ class DataForwarder(Node):
 
         self.server_address = (server_ip, 8000)
         self.server_ip = server_ip
-        self.connect_retry_timer = self.create_timer(5.0, self.try_reconnect)
+        self.connect_retry_timer = self.create_timer(1.0, self.try_reconnect)
         self.connect_retry_timer.cancel()
 
         self.cmd_vel_publisher = self.create_publisher(RosTwist, '/cmd_vel_manual', 10)
+        self.serial = open("/dev/ttyACM0", "rw")
         self.receive_thread = threading.Thread(target=self.receive_protobuf_messages)
         self.receive_thread.start()
-
         self.connect_to_server()
+
+
+    def cleanup(self):
+        """Perform cleanup operations."""
+        self.turn_off_motors()
+        
+        if self.sock:
+            try:
+                self.sock.shutdown(socket.SHUT_RDWR)
+                self.sock.close()
+            except Exception as e:
+                self.get_logger().error(f"Error closing socket: {e}")
+        
+        if hasattr(self, 'connect_retry_timer') and not self.connect_retry_timer.is_canceled():
+            self.connect_retry_timer.cancel()
+        
+        self.get_logger().info("Cleanup completed")
 
     def connect_to_server(self):
         if self.sock:
@@ -112,7 +131,6 @@ class DataForwarder(Node):
         
 
         if math.isnan(msg.longitude) or math.isnan(msg.latitude) or math.isnan(msg.altitude):
-            self.get_logger().warn("Received NaN value in GPS data, skipping message.")
             return
 
         gps_data.longitude = float(msg.longitude)
@@ -132,43 +150,72 @@ class DataForwarder(Node):
 
         self.send_protobuf_message(message)
 
+
+    #add some stuff to send and receive to do ham instead
     def send_protobuf_message(self, message):
-        try:
-            serialized_data = message.SerializeToString()
-            message_length = len(serialized_data)
-            packed_length = struct.pack('!I', message_length)
-            self.sock.sendall(packed_length + serialized_data)
-            self.get_logger().debug(f"Sent message of length: {message_length}")
-        except socket.error as e:
-            self.get_logger().error(f"Error sending data: {e}")
-            if self.sock:
-                self.sock.close()
-            self.sock = None
-            self.connect_retry_timer.reset()
+        serialized_data = message.SerializeToString()
+        message_length = len(serialized_data)
+        packed_length = struct.pack('!I', message_length)
 
-    def receive_protobuf_messages(self):
-        while rclpy.ok():
-            if self.sock is None:
-                time.sleep(1)
-                continue
-
+        flag = True
+        if flag:
             try:
-                packed_length = self.sock.recv(4)
-                if not packed_length:
-                    continue
-                message_length = struct.unpack('!I', packed_length)[0]
-                serialized_data = self.sock.recv(message_length)
-                message = msgs_pb2.Message()
-                message.ParseFromString(serialized_data)
-                self.handle_received_message(message)
+                self.serial.write(base64.b64encode(packed_length + serialized_data) + "\n")
+                self.get_logger().debug(f"Sent message of length: {message_length}")
             except socket.error as e:
-                self.get_logger().error(f"Error receiving data: {e}")
+                self.get_logger().error(f"Error sending data: {e}")
+        else:
+            try:
+                self.sock.sendall(packed_length + serialized_data)
+                self.get_logger().debug(f"Sent message of length: {message_length}")
+            except socket.error as e:
+                self.get_logger().error(f"Error sending data: {e}")
+                if self.sock:
+                    self.sock.close()
                 self.sock = None
                 self.connect_retry_timer.reset()
+
+    
+    def receive_protobuf_messages(self):
+        while rclpy.ok():
+            flag = True
+            if flag:
+                line = self.serial.readline()
+                line : str
+                if "[PACKET RX]" in line:
+                    msg = line[line.find("[PACKET RX]")+11:]
+                    msg = base64.b64decode(msg)
+                    packed_length = msg[:4]
+                    message_length = struct.unpack('!I', packed_length)[0]
+                    serialized_data = msg[4:message_length+4]
+                    message = msgs_pb2.Message()
+                    message.ParseFromString(serialized_data)
+                    self.handle_received_message(msg)
+
+
+            else:
+                if self.sock is None:
+                    time.sleep(1)
+                    continue
+
+                try:
+                    packed_length = self.sock.recv(4)
+                    if not packed_length:
+                        continue
+                    message_length = struct.unpack('!I', packed_length)[0]
+                    serialized_data = self.sock.recv(message_length)
+                    message = msgs_pb2.Message()
+                    message.ParseFromString(serialized_data)
+                    self.handle_received_message(message)
+                except socket.error as e:
+                    self.get_logger().error(f"Error receiving data: {e}")
+                    self.sock = None
+                    self.connect_retry_timer.reset()
 
     def handle_received_message(self, message):
         if message.HasField('twist'):
             self.publish_twist_message(message.twist)
+        # if message is radio_change
 
     def publish_twist_message(self, twist_msg):
         twist = RosTwist()
@@ -188,22 +235,23 @@ class DataForwarder(Node):
         return datetime.datetime.fromtimestamp(total_seconds).isoformat()
 
     def destroy_node(self):
-        if self.sock:
-            self.sock.close()
-            self.get_logger().info("Socket closed.")
-        self.turn_off_motors()
-        self.connect_retry_timer.cancel()
+        """Enhanced destroy_node with proper cleanup."""
+        # self.cleanup()
+        if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
+            self.receive_thread.join(timeout=2.0)
+            if self.receive_thread.is_alive():
+                self.get_logger().warning("Receive thread did not terminate gracefully")
         super().destroy_node()
 
 def main(args=None):
     rclpy.init(args=args)
-
-    data_forwarder = DataForwarder()
-
-    rclpy.spin(data_forwarder)
-    data_forwarder.destroy_node()
-    data_forwarder.receive_thread.join()
-    rclpy.shutdown()
+    try:
+        data_forwarder = DataForwarder()
+        rclpy.spin(data_forwarder)
+    except Exception as e:
+        if data_forwarder:
+            data_forwarder.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
