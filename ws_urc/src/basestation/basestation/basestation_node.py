@@ -1,4 +1,5 @@
 import rclpy
+import rclpy.logging
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
 from gpsx.msg import Gpsx
@@ -17,12 +18,13 @@ from . import msgs_pb2
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterDescriptor
 import threading
+import signal
 
 class DataForwarder(Node):
 
     def __init__(self):
         super().__init__('data_forwarder')
-        
+ 
         ip_descriptor = ParameterDescriptor(description='IP address of the server')
         self.declare_parameter('ip', '127.0.0.1', ip_descriptor)
         server_ip = self.get_parameter('ip').get_parameter_value().string_value
@@ -42,7 +44,7 @@ class DataForwarder(Node):
 
         self.server_address = (server_ip, 8000)
         self.server_ip = server_ip
-        self.connect_retry_timer = self.create_timer(5.0, self.try_reconnect)
+        self.connect_retry_timer = self.create_timer(1.0, self.try_reconnect)
         self.connect_retry_timer.cancel()
 
         self.cmd_vel_publisher = self.create_publisher(RosTwist, '/cmd_vel_manual', 10)
@@ -50,6 +52,23 @@ class DataForwarder(Node):
         self.receive_thread.start()
 
         self.connect_to_server()
+
+
+    def cleanup(self):
+        """Perform cleanup operations."""
+        self.turn_off_motors()
+        
+        if self.sock:
+            try:
+                self.sock.shutdown(socket.SHUT_RDWR)
+                self.sock.close()
+            except Exception as e:
+                self.get_logger().error(f"Error closing socket: {e}")
+        
+        if hasattr(self, 'connect_retry_timer') and not self.connect_retry_timer.is_canceled():
+            self.connect_retry_timer.cancel()
+        
+        self.get_logger().info("Cleanup completed")
 
     def connect_to_server(self):
         if self.sock:
@@ -112,7 +131,6 @@ class DataForwarder(Node):
         
 
         if math.isnan(msg.longitude) or math.isnan(msg.latitude) or math.isnan(msg.altitude):
-            self.get_logger().warn("Received NaN value in GPS data, skipping message.")
             return
 
         gps_data.longitude = float(msg.longitude)
@@ -147,7 +165,7 @@ class DataForwarder(Node):
             self.connect_retry_timer.reset()
 
     def receive_protobuf_messages(self):
-        while rclpy.ok():
+        while  rclpy.ok():
             if self.sock is None:
                 time.sleep(1)
                 continue
@@ -188,22 +206,23 @@ class DataForwarder(Node):
         return datetime.datetime.fromtimestamp(total_seconds).isoformat()
 
     def destroy_node(self):
-        if self.sock:
-            self.sock.close()
-            self.get_logger().info("Socket closed.")
-        self.turn_off_motors()
-        self.connect_retry_timer.cancel()
+        """Enhanced destroy_node with proper cleanup."""
+        # self.cleanup()
+        if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
+            self.receive_thread.join(timeout=2.0)
+            if self.receive_thread.is_alive():
+                self.get_logger().warning("Receive thread did not terminate gracefully")
         super().destroy_node()
 
 def main(args=None):
     rclpy.init(args=args)
-
-    data_forwarder = DataForwarder()
-
-    rclpy.spin(data_forwarder)
-    data_forwarder.destroy_node()
-    data_forwarder.receive_thread.join()
-    rclpy.shutdown()
+    try:
+        data_forwarder = DataForwarder()
+        rclpy.spin(data_forwarder)
+    except Exception as e:
+        if data_forwarder:
+            data_forwarder.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
