@@ -2,7 +2,10 @@ module basestation
 
 go 1.23.0
 
+require go.bug.st/serial v1.6.2
+
 require (
+	github.com/creack/goselect v0.1.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/pion/datachannel v1.5.10 // indirect

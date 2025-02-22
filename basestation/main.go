@@ -2,6 +2,7 @@ package main
 
 import (
 	"basestation/rover-msgs/go/msgspb"
+	"basestation/serial"
 	"basestation/video_stream"
 	"encoding/binary"
 	"encoding/json"
@@ -40,7 +41,6 @@ var tcpConn net.Conn
 var tcpConnMutex sync.Mutex
 
 var videoStreams = make(map[string]*webrtc.TrackLocalStaticRTP)
-var videoStreamsMutex sync.Mutex
 
 // Map to store WebSocket connections
 var websocketConnections = make(map[*websocket.Conn]bool)
@@ -50,7 +50,12 @@ var websocketConnectionsMutex sync.Mutex
 var (
 	// Add channel to coordinate shutdown
 	shutdownChan = make(chan struct{})
+	wg           sync.WaitGroup
+	tcpListener  net.Listener
 )
+
+// Add to the top-level variables
+var serialConn *serial.SerialConnection
 
 func main() {
 	// Create a channel to listen for OS signals
@@ -58,6 +63,7 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	// Start the TCP server in a goroutine
+	wg.Add(1)
 	go startTCPServer()
 
 	rgb_video := video_stream.StartRTPToWebRTC(5000, "rgb_video", shutdownChan)
@@ -65,9 +71,24 @@ func main() {
 	videoStreams[rgb_video.ID()] = rgb_video
 	videoStreams[depth_video.ID()] = depth_video
 
+	// Initialize serial connection (add this before starting the HTTP server)
+	serial, err := serial.NewSerialConnection("/dev/tty.usbmodem3401", 115200)
+	serialConn = serial
+	if err != nil {
+		fmt.Printf("Error opening serial port: %v\n", err)
+	} else {
+		defer serialConn.Close()
+	}
+	serial.SetReadTimeout(10 * time.Millisecond) // Set a read timeout of 10ms
+
+	// After initializing serial connection, start the serial handler
+	if serialConn != nil {
+		wg.Add(1)
+		go handleSerialMessages()
+	}
+
 	// HTTP Server setup
 	http.Handle("/", spa.SpaHandler("ui/dist", "index.html"))
-
 	// Add the WebSocket handler
 	http.HandleFunc("/ws", handleWebSocket)
 
@@ -83,8 +104,18 @@ func main() {
 	<-sigChan
 	fmt.Println("\nReceived shutdown signal. Cleaning up...")
 
+	// Close TCP listener first to stop accepting new connections
+	if tcpListener != nil {
+		tcpListener.Close()
+	}
+
 	// Signal all goroutines to stop
 	close(shutdownChan)
+
+	// Wait for goroutines to finish
+	fmt.Println("Waiting for goroutines to finish...")
+	wg.Wait()
+	fmt.Println("All goroutines finished")
 
 	// Perform cleanup
 	tcpConnMutex.Lock()
@@ -100,36 +131,49 @@ func main() {
 	}
 	websocketConnectionsMutex.Unlock()
 
-	// Give goroutines time to clean up
-	time.Sleep(time.Second)
+	// Add to the cleanup section
+	if serialConn != nil {
+		serialConn.Close()
+	}
+
 	fmt.Println("Shutdown complete.")
 	os.Exit(0)
 }
 
 func startTCPServer() {
-	listener, err := net.Listen("tcp", ":8000") // Choose a different port
+	defer wg.Done()
+	var err error
+	tcpListener, err = net.Listen("tcp", ":8000") // Choose a different port
 	if err != nil {
 		fmt.Printf("TCP server error: %v\n", err)
 		return
 	}
-	defer listener.Close()
+	defer tcpListener.Close()
 	fmt.Println("TCP server listening on :8000")
 
 	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			fmt.Printf("TCP accept error: %v\n", err)
-			continue
-		}
+		select {
+		case <-shutdownChan:
+			return
+		default:
+			tcpListener.(*net.TCPListener).SetDeadline(time.Now().Add(time.Second))
+			conn, err := tcpListener.Accept()
+			if err != nil {
+				if opErr, ok := err.(*net.OpError); ok && opErr.Timeout() {
+					continue
+				}
+				return
+			}
 
-		tcpConnMutex.Lock()
-		if tcpConn != nil {
-			tcpConn.Close() // Close any previous connection
-		}
-		tcpConn = conn
-		tcpConnMutex.Unlock()
+			tcpConnMutex.Lock()
+			if tcpConn != nil {
+				tcpConn.Close() // Close any previous connection
+			}
+			tcpConn = conn
+			tcpConnMutex.Unlock()
 
-		go handleTCPConnection(conn)
+			go handleTCPConnection(conn)
+		}
 	}
 }
 
@@ -192,7 +236,7 @@ func handleTCPConnection(conn net.Conn) {
 			continue // Or handle the error more robustly
 		}
 
-		fmt.Printf("Received from TCP client: %s\n",message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
+		fmt.Printf("Received from TCP client: %s\n", message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
 
 		// Forward to all WebSocket clients
 		forwardToAllWebSockets(message)
@@ -315,11 +359,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				continue // Or handle the error more robustly
 			}
 
-			fmt.Printf("Received from WebSocket client: %s\n",message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
-
+			fmt.Printf("Received from WebSocket client: %s\n", message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
 
 			// Forward to TCP server
-			forwardToTCPServer(message)
+			forwardToRover(message)
 		}
 		if messageType == websocket.TextMessage {
 			var (
@@ -368,11 +411,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// forwardToTCPServer sends a protobuf message to the TCP server.
-func forwardToTCPServer(message *msgspb.Message) {
+// forwardToRover sends a protobuf message to the TCP server.
+func forwardToRover(message *msgspb.Message) {
+	// Forward to TCP
 	tcpConnMutex.Lock()
-	defer tcpConnMutex.Unlock()
-
 	if tcpConn != nil {
 		// Marshal the protobuf message
 		data, err := proto.Marshal(message)
@@ -398,8 +440,40 @@ func forwardToTCPServer(message *msgspb.Message) {
 			fmt.Println("Error writing message to TCP server:", err)
 			return
 		}
-	} else {
-		fmt.Println("No TCP connection available.")
+	}
+	tcpConnMutex.Unlock()
+
+	// Forward to Serial
+	if serialConn != nil {
+		if err := serialConn.WriteProto(message); err != nil {
+			fmt.Printf("Error writing to serial: %v\n", err)
+		}
+	}
+}
+
+// Add this new function to handle serial messages
+func handleSerialMessages() {
+	defer wg.Done()
+
+	for {
+		fmt.Printf("Serial handler running\n")
+		select {
+		case <-shutdownChan:
+			fmt.Println("Serial handler shutting down")
+			return
+		default:
+			message, err := serialConn.ReadProto()
+			if err != nil {
+				
+				fmt.Printf("Error reading from serial: %v\n", err)
+				time.Sleep(time.Second)
+				continue
+			}
+
+			fmt.Printf("Received from Serial: %s\n", message)
+			// Process the line here - you might want to parse it into a proto message
+			// or forward it directly to WebSocket clients
+		}
 	}
 }
 
