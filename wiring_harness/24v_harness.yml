@@ -1,0 +1,117 @@
+# This file represents the 24v wiring harness, including 12v power up to the fuse block
+# Render with wireviz
+connectors:
+  XT60MALE24: &XT60M24
+    type: XT-60
+    subtype: male
+    pinlabels: [+24v, GND]
+
+  XT60FEMALE24:
+    <<: *XT60M24
+    subtype: female
+
+  XT60MALE12: &XT60M12
+    type: XT-60
+    subtype: male
+    pinlabels: [+12v, GND]
+
+  XT60FEMALE12:
+    <<: *XT60M12
+    subtype: female
+
+  F:
+    style: simple
+    type: Ring Terminal
+    color: GY
+  
+  BUCK_CONVERTER:
+    type: Screw connector
+    pincount: 6
+    pinlabels: [+24v, TOGGLE, GND, +12v, TOGGLE, GND]
+
+  FUSE_BLOCK:
+    type: Screw connector
+    pincount: 2
+    pinlabels: [+12v, GND]
+
+cables:
+  POWER_CABLE: &POWER_CABLE
+    gauge: 14 AWG
+    colors: [RD, BK]
+    wirecount: 2
+    shield: false
+
+  POWER_WIRE_RD:
+    <<: *POWER_CABLE
+    colors: [RD]
+    wirecount: 1
+
+  POWER_WIRE_BK:
+    <<: *POWER_CABLE
+    colors: [BK]
+    wirecount: 1
+
+connections:
+  - # Splitter
+    - XT60MALE24.X1: [1, 2]
+    - POWER_CABLE.W1: [1, 2]
+    - XT60FEMALE24.X2: [1, 2]
+  - - XT60MALE24.X1: [1, 2]
+    - POWER_CABLE.W2: [1, 2]
+    - XT60FEMALE24.X3: [1, 2]
+    - <->
+    - XT60MALE24.X9: [1,2]
+    - POWER_CABLE.: [1,2]
+    - XT60FEMALE24.: [1,2]
+  -
+    - XT60MALE24.X9: [1,2]
+    - POWER_CABLE.: [1,2]
+    - XT60FEMALE24.: [1,2]
+
+
+  # Breaker
+  - - XT60MALE24.X4: [2]
+    - POWER_WIRE_BK.W3: [1]
+    - XT60FEMALE24.X5: [2]
+  - - XT60MALE24.X4: [1]
+    - POWER_WIRE_RD.W4: [1]
+    - F.: [1]
+    - <-> # Breaker should go in between these ring terminals
+    - F.: [1]
+    - POWER_WIRE_RD.W5: [1]
+    - XT60FEMALE24.X5: [1]
+
+  - #Plug Breaker into splitter
+    - XT60FEMALE24.X5: [1,2]
+    - <->
+    - XT60MALE24.X1: [1,2]
+
+  # Buck Converter
+  -
+    - XT60MALE24.X6: [1,2]
+    - POWER_CABLE.W6: [1,2]
+    - F.
+    - <->
+    - BUCK_CONVERTER: [1,3]
+  -
+    - XT60FEMALE12.X7: [1,2]
+    - POWER_CABLE.W7: [1,2]
+    - F.
+    - <->
+    - BUCK_CONVERTER: [4,6]
+  # 12v Distribution block
+  -
+    - XT60MALE12.X8: [1,2]
+    - POWER_CABLE.: [1,2]
+    - F.
+    - <->
+    - FUSE_BLOCK: [1,2]
+  - 
+    - XT60MALE12.X8: [1,2]
+    - <->
+    - XT60FEMALE12.X7: [1,2]
+
+  -
+    - XT60FEMALE24.X2: [1,2]
+    - <->
+    - XT60MALE24.X6: [1,2]
