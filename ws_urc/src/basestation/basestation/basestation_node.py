@@ -18,7 +18,7 @@ from . import msgs_pb2
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterDescriptor
 import threading
-import signal
+import base64
 
 class DataForwarder(Node):
 
@@ -48,9 +48,9 @@ class DataForwarder(Node):
         self.connect_retry_timer.cancel()
 
         self.cmd_vel_publisher = self.create_publisher(RosTwist, '/cmd_vel_manual', 10)
+        self.serial = open("/dev/ttyACM0", "rw")
         self.receive_thread = threading.Thread(target=self.receive_protobuf_messages)
         self.receive_thread.start()
-
         self.connect_to_server()
 
 
@@ -150,43 +150,72 @@ class DataForwarder(Node):
 
         self.send_protobuf_message(message)
 
+
+    #add some stuff to send and receive to do ham instead
     def send_protobuf_message(self, message):
-        try:
-            serialized_data = message.SerializeToString()
-            message_length = len(serialized_data)
-            packed_length = struct.pack('!I', message_length)
-            self.sock.sendall(packed_length + serialized_data)
-            self.get_logger().debug(f"Sent message of length: {message_length}")
-        except socket.error as e:
-            self.get_logger().error(f"Error sending data: {e}")
-            if self.sock:
-                self.sock.close()
-            self.sock = None
-            self.connect_retry_timer.reset()
+        serialized_data = message.SerializeToString()
+        message_length = len(serialized_data)
+        packed_length = struct.pack('!I', message_length)
 
-    def receive_protobuf_messages(self):
-        while  rclpy.ok():
-            if self.sock is None:
-                time.sleep(1)
-                continue
-
+        flag = True
+        if flag:
             try:
-                packed_length = self.sock.recv(4)
-                if not packed_length:
-                    continue
-                message_length = struct.unpack('!I', packed_length)[0]
-                serialized_data = self.sock.recv(message_length)
-                message = msgs_pb2.Message()
-                message.ParseFromString(serialized_data)
-                self.handle_received_message(message)
+                self.serial.write(base64.b64encode(packed_length + serialized_data) + "\n")
+                self.get_logger().debug(f"Sent message of length: {message_length}")
             except socket.error as e:
-                self.get_logger().error(f"Error receiving data: {e}")
+                self.get_logger().error(f"Error sending data: {e}")
+        else:
+            try:
+                self.sock.sendall(packed_length + serialized_data)
+                self.get_logger().debug(f"Sent message of length: {message_length}")
+            except socket.error as e:
+                self.get_logger().error(f"Error sending data: {e}")
+                if self.sock:
+                    self.sock.close()
                 self.sock = None
                 self.connect_retry_timer.reset()
+
+    
+    def receive_protobuf_messages(self):
+        while rclpy.ok():
+            flag = True
+            if flag:
+                line = self.serial.readline()
+                line : str
+                if "[PACKET RX]" in line:
+                    msg = line[line.find("[PACKET RX]")+11:]
+                    msg = base64.b64decode(msg)
+                    packed_length = msg[:4]
+                    message_length = struct.unpack('!I', packed_length)[0]
+                    serialized_data = msg[4:message_length+4]
+                    message = msgs_pb2.Message()
+                    message.ParseFromString(serialized_data)
+                    self.handle_received_message(msg)
+
+
+            else:
+                if self.sock is None:
+                    time.sleep(1)
+                    continue
+
+                try:
+                    packed_length = self.sock.recv(4)
+                    if not packed_length:
+                        continue
+                    message_length = struct.unpack('!I', packed_length)[0]
+                    serialized_data = self.sock.recv(message_length)
+                    message = msgs_pb2.Message()
+                    message.ParseFromString(serialized_data)
+                    self.handle_received_message(message)
+                except socket.error as e:
+                    self.get_logger().error(f"Error receiving data: {e}")
+                    self.sock = None
+                    self.connect_retry_timer.reset()
 
     def handle_received_message(self, message):
         if message.HasField('twist'):
             self.publish_twist_message(message.twist)
+        # if message is radio_change
 
     def publish_twist_message(self, twist_msg):
         twist = RosTwist()
