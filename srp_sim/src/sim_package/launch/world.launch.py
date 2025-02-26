@@ -1,4 +1,3 @@
-# aruco_marker_spawn.launch.py
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -11,13 +10,11 @@ import launch_ros.descriptions as descriptions
 from launch.substitutions import PathJoinSubstitution, Command, LaunchConfiguration, TextSubstitution
 import logging
 
-
 def generate_launch_description():
-    # Define the path to the ArUco marker SDF model
     pkg_share = get_package_share_directory('sim_package')
     default_rviz_config_path = os.path.join(pkg_share, 'config', 'urdf_config.rviz')
-
     models_dir = os.path.join(pkg_share, 'models')
+    rover_model = os.path.join(models_dir, 'rover/model.xacro')
  
     print(models_dir)
     # Set GAZEBO_MODEL_PATH environment variable
@@ -56,48 +53,39 @@ def generate_launch_description():
         output='screen'
     )
 
-    sdf = os.path.join(
-    pkg_share,
-    'models', 'rover', 'model.sdf')
-
-    doc = xacro.parse(open(sdf))
-    xacro.process_doc(doc)
-
-    robot_state_publisher =  Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            name='robot_state_publisher',
-            output='screen',
-            parameters=[{'use_sim_time': True,
-                         'robot_description': doc.toxml()}])
-    
-
-    camera_front_to_camera_link = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='camera_front_to_camera_link',
-        output='screen',
-        arguments=['0.0', '0.0', '0.0', '1.57079632679', '3.14159265359', '1.57079632679', 'rover/camera_link', 'rover/camera_link/camera_front']
+    robot_state_publisher_node = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[{'robot_description': Command(['xacro ', rover_model])}]
     )
 
-    worldflip = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='odom_to_tove',
-        output='screen',
-        arguments=['0.0', '0.0', '0.0', '0.0', '-1.57079632679', '0.0', 'odom', 'base_link']
+    spawn = Node( package='ros_gz_sim', executable='create', arguments=[ '-name', 'rover', '-topic', 'robot_description', ], output='screen', ) 
+
+
+    joint_state_publisher_node = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        parameters=[{'robot_description': Command(['xacro ', rover_model])}]
     )
-    
-    return LaunchDescription([
-               set_gazebo_model_path,
-        # worldflip,
+
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', LaunchConfiguration('rvizconfig')],
+    )
+
+    return launch.LaunchDescription([
+        launch.actions.DeclareLaunchArgument(name='model', default_value=models_dir,
+                                            description='Absolute path to robot urdf file'),
+        launch.actions.DeclareLaunchArgument(name='rvizconfig', default_value=default_rviz_config_path,
+                                            description='Absolute path to rviz config file'),
+        set_gazebo_model_path, 
         world_client,
         bridge,
-        robot_state_publisher,
-        camera_front_to_camera_link
+        spawn,
+        joint_state_publisher_node,
+        robot_state_publisher_node,
     ])
-
-
-    
-    
-

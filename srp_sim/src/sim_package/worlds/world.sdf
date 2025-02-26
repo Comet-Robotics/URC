@@ -16,11 +16,6 @@
         </include>
 
         <include>
-            <uri>
-            model://rover
-            </uri>
-        </include>
-        <include>
             <uri>model://falling_rock1</uri>
 <static>true</static>
             <name>falling_rock1</name>
@@ -64,7 +59,7 @@
         </include>
       
         <!-- Set physics parameters -->
-        <physics name="1ms" type="ignored">
+        <physics name="1ms" type="ode">
             <max_step_size>0.001</max_step_size>
             <real_time_factor>1.0</real_time_factor>
         </physics>
@@ -145,15 +140,17 @@
         <plugin filename="libignition-gazebo-imu-system.so"
                 name="ignition::gazebo::systems::Imu">
         </plugin>
+        <plugin
+            filename="ignition-gazebo-navsat-system"
+            name="ignition::gazebo::systems::NavSat">
+        </plugin>
         <spherical_coordinates>
-    <surface_model>EARTH_WGS84</surface_model>
-        <world_frame_orientation>ENU</world_frame_orientation>
-        <latitude_deg>-22.986687</latitude_deg>
-        <longitude_deg>-43.202501</longitude_deg>
-        <elevation>0</elevation>
-        <heading_deg>0</heading_deg>
-    </spherical_coordinates>
-
- 
+            <surface_model>EARTH_WGS84</surface_model>
+            <world_frame_orientation>ENU</world_frame_orientation>
+            <latitude_deg>-22.986687</latitude_deg>
+            <longitude_deg>-43.202501</longitude_deg>
+            <elevation>0</elevation>
+            <heading_deg>0</heading_deg>
+        </spherical_coordinates>
     </world>
 </sdf>
