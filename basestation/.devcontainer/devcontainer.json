@@ -1,0 +1,39 @@
+{
+  "name": "Ubuntu 22.04 with Protoc, Go, Python, Node, and pnpm",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {
+      "installZsh": true,
+      "username": "vscode",
+      "userUid": "1000",
+      "userGid": "1000"
+    },
+  
+ 
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "1.23"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.10"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"  // Or "16", "20", "latest", etc. Choose your desired Node version
+    }
+  },
+  "forwardPorts": [
+    "8000:8000",
+    "8080:8080"
+  ],
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y protobuf-compiler ffmpeg && npm install -g pnpm && cd ui && pnpm install && pip install -r ../fake-rover/requirements.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "protocolbuffers.protobuf",
+        "golang.go",
+        "ms-python.python",
+        "esbenp.prettier-vscode" // Optional: Add Prettier for code formatting
+      ]
+    }
+  }
+}

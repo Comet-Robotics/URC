@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package rover;
+option go_package = "rover-msgs/go/msgspb";
+
+message Message {
+  oneof data_type {
+    IMUData imu = 1;
+    GPSData gps = 2;
+    Twist twist = 3;
+  }
+}
+
+message Twist {
+  Vector3 linear = 1;   // Linear velocity
+  Vector3 angular = 2;  // Angular velocity
+}
+
+message GPSData {
+  double longitude = 1;
+  double latitude = 2;
+  double altitude = 3;
+  float ground_speed = 4;
+  uint32 satellites = 5;
+  uint32 mode_indicator = 6;
+  float separation = 7;
+  float true_course = 8;
+  float true_course_magnetic = 9;
+  float dilution = 10;
+  uint32 utc_time = 11;
+}
+
+message IMUData {
+  Header header = 1;
+
+  Quaternion orientation = 2;
+  repeated double orientation_covariance = 3; // Use repeated for fixed-size arrays (size 9)
+
+  Vector3 angular_velocity = 4;
+  repeated double angular_velocity_covariance = 5; // Use repeated for fixed-size arrays (size 9)
+
+  Vector3 linear_acceleration = 6;
+  repeated double linear_acceleration_covariance = 7; // Use repeated for fixed-size arrays (size 9)
+}
+
+
+
+message Quaternion {
+  double x = 1;  // X component
+  double y = 2;  // Y component
+  double z = 3;  // Z component
+  double w = 4;  // W component
+}
+
+message Vector3 {
+  double x = 1;  // X component
+  double y = 2;  // Y component
+  double z = 3;  // Z component
+}
+message Header {
+  uint32 seq = 1;               // Sequence ID
+  string stamp = 2;             // Timestamp in ISO 8601 format or seconds.nanoseconds (adapt as needed)
+  string frame_id = 3;          // Reference frame ID
+}

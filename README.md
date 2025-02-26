@@ -11,6 +11,7 @@ Issues: Once research is done we will create an issue for a topic and this is wh
 ## Instructions
 - Start up the simulation and press play. 
 
+
 - In another terminal, cd to rtab_package (such a dumb name we can definitely change this) which is in the ws_urc src folder, colcon build, source the install. 
 - To run, "ros2 launch rtab_package rtab.launch.py". 
   - This node takes care of all transforms needed for the Nav2 stack.
@@ -31,3 +32,8 @@ Issues: Once research is done we will create an issue for a topic and this is wh
   - Include "goal pose" to see the given goal
   - Go to panels, click on navigation2. It should say the navigation is active. 
   - To send actions to the robot, in rviz, select 2d goal pose and place it on the map. Click Start Waypoint Navigation in the nav2 panel to start navigation
+
+Install git 
+
+git clone <github_uri>
+

@@ -11,13 +11,21 @@ import shlex
 
 def launch_transcoder(ip_address,port=5000, fps=30):
 
-    ffmpeg_cmd = f"ffmpeg -y -f rawvideo -pixel_format bgr24 -video_size 640x480 -framerate {fps} -i - " \
-                     "-vcodec libvpx -vf \"drawtext=:text=\'%{localtime}\':x=10:y=10:fontsize=24:fontcolor=white\" -deadline 1 -g 10 -error-resilient 1 -auto-alt-ref 1 " \
-                      f"-f rtp rtp://{ip_address}:{port} -sdp_file stream.sdp" 
+    ffmpeg_cmd = (
+    f"ffmpeg -y -f rawvideo -pixel_format bgr24 -video_size 640x480 -framerate {fps} -i - "
+    f"-an "  # Disable audio (if no audio source)
+    f"-vcodec libx264 "
+    f"-preset ultrafast "  # Very fast encoding
+    f"-tune zerolatency "  # Optimize for low latency
+    f"-x264-params keyint={fps}:min-keyint={fps} " # Adjust keyframe interval
+    f"-vf \"drawtext=text='%{{localtime}}':x=10:y=10:fontsize=24:fontcolor=white\" "
+    f"-g {fps} " # GOP size = 1 second
+    f"-f rtp rtp://{ip_address}:{port} "
+)
                
 
         # Launch FFmpeg subprocess
-    return subprocess.Popen(shlex.split(ffmpeg_cmd), stdin=subprocess.PIPE,stderr=subprocess.PIPE)
+    return subprocess.Popen(shlex.split(ffmpeg_cmd), stdin=subprocess.PIPE)
 
 
 # Example usage
@@ -30,9 +38,9 @@ class ImageSubscriber(Node):
         
         # Retrieve parameters
         self.ip_address = self.get_parameter('ip').get_parameter_value().string_value
-        
+        self.get_logger().info(f"Streaming video to {self.ip_address}")
         self.rgb_transcoder = launch_transcoder(self.ip_address)
-        self.depth_transcoder = launch_transcoder(self.ip_address,port=5001)
+        self.depth_transcoder = launch_transcoder(self.ip_address,port=5001,fps=15)
         
         # Create a subscriber for the image topic
         self.subscription = self.create_subscription(
@@ -59,7 +67,7 @@ class ImageSubscriber(Node):
         except BrokenPipeError:
             self.get_logger().error("FFmpeg process has terminated.")
             self.rgb_transcoder = launch_transcoder(self.ip_address)
-            rclpy.shutdown()
+            raise SystemExit
 
     def image_depth_callback(self, msg):
         # Convert ROS Image message to OpenCV image
@@ -79,7 +87,7 @@ class ImageSubscriber(Node):
             self.get_logger().error("FFmpeg process has terminated.")
             self.depth_transcoder = launch_transcoder(self.ip_address,port=5001)
 
-            rclpy.shutdown()
+            raise SystemExit
 
 def main(args=None):
 
@@ -90,10 +98,11 @@ def main(args=None):
 
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except Exception as e:
         pass
     
-    node.destroy_node()
+    if 'node' in locals():
+        node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
