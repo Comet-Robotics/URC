@@ -177,55 +177,51 @@
     <link name="camera_link_optical"/>
 
     <gazebo reference="camera_link">
-        <sensor name="camera_front" type="rgbd_camera">
+        <sensor name="rgb_camera" type="camera">
             <ignition_frame_id>camera_link_optical</ignition_frame_id>
             <pose>0 0 0 0 0 0</pose>
-            <visualize>true</visualize>
             <camera>
                 <horizontal_fov>1.21126</horizontal_fov>
                 <image>
                     <width>640</width>
                     <height>480</height>
-                    <format>R8G8B8</format>
+                    <format>RGB_INT8</format>
                 </image>
                 <clip>
                     <near>0.1</near>
-                    <far>5</far>
+                    <far>100</far>
                 </clip>
-                <distortion>
-                    <k1>0.0</k1>
-                    <k2>0.0</k2>
-                    <k3>0.0</k3>
-                    <p1>0.0</p1>
-                    <p2>0.0</p2>
-                    <center>0.5 0.5</center>
-                </distortion>
-                <lens>
-                    <intrinsics>
-                        <fx>554.25469</fx>
-                        <fy>554.25469</fy>
-                        <cx>320.5</cx>
-                        <cy>240.5</cy>
-                        <s>0</s>
-                    </intrinsics>
-                </lens>
                 <noise>
                     <type>gaussian</type>
                     <mean>0</mean>
                     <stddev>0.007</stddev>
                 </noise>
-                <depth_camera>
-                    <clip>
-                        <near>0.1</near>
-                        <far>5</far>
-                    </clip>
-                </depth_camera>
             </camera>
             <always_on>1</always_on>
-            <update_rate>10</update_rate>
+            <update_rate>90</update_rate>
+            <visualize>false</visualize>
+        </sensor>
+        <sensor name="depth_camera" type="depth">
+            <ignition_frame_id>camera_link_optical</ignition_frame_id>
+            <pose>0 0 0 0 0 0</pose>
             <visualize>true</visualize>
-            <topic>rgbd_camera</topic>
-            <enable_metrics>true</enable_metrics>
+            <camera>
+                <horizontal_fov>1.487021</horizontal_fov>
+                <width>1280</width>
+                <height>720</height>
+                <clip>
+                    <near>0.1</near>
+                    <far>10</far>
+                </clip>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.100</stddev>
+                </noise>
+            </camera>
+            <always_on>1</always_on>
+            <update_rate>90</update_rate>
+            <visualize>0</visualize>
         </sensor>
     </gazebo>
 

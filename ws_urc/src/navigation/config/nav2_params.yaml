@@ -168,6 +168,7 @@ local_costmap:
         z_resolution: 0.05
         z_voxels: 16
         max_obstacle_height: 2.0
+        min_obstacle_height: 0.2
         mark_threshold: 0
         observation_sources: depth_scan
         depth_scan:
@@ -178,6 +179,7 @@ local_costmap:
           #   * Topic will be remapped to `/tb4/scan` without `local_costmap`.
           #   * Use global topic `/scan` if you do not wish the node namespace to apply
           topic: pointcloud
+          min_obstacle_height: 0.2
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -214,8 +216,9 @@ global_costmap:
           #   * Topic will be remapped to `/tb4/scan` without `global_costmap`.
           #   * Use global topic `/scan` if you do not wish the node namespace to apply
           topic: pointcloud
+          min_obstacle_height: 0.2
           max_obstacle_height: 2.0
-          clearing: True
+          clearing: False
           marking: True
           data_type: "PointCloud2"
           raytrace_max_range: 3.0

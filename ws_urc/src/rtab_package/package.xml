@@ -6,9 +6,7 @@
   <description>TODO: Package description</description>
   <maintainer email="kevinmsmith214@gmail.com">kevin</maintainer>
   <license>TODO: License declaration</license>
-
-  <depend>rtabmap_ros</depend>  
-  <depend>rtabmap_core</depend>  
+ 
 
   <depend>ament_cmake</depend>
   <depend>rclcpp</depend>
@@ -18,6 +16,7 @@
   <depend>geometry_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>tf2_geometry_msgs</depend>
+  <depend>opencv4</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

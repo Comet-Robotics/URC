@@ -13,40 +13,9 @@ def generate_launch_description():
         'config',
     )
 
-    ekf_config = os.path.join(config_path, 'ekf.yaml')
+    ekf_config = os.path.join(config_path, 'ukf.yaml')
     rtabmap_config = os.path.join(config_path, 'rtabmap_config.yaml')
     navsat_config = os.path.join(config_path, 'navsat_transform.yaml')
-
-    # Define paths for launch files
-    rtabmap_launch_path = os.path.join(
-        get_package_share_directory('rtabmap_launch'),
-        'launch',
-        'rtabmap.launch.py'
-    )
-
-    rtabmap_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(rtabmap_launch_path),
-        launch_arguments={
-            'use_sim_time': 'true',
-            'frame_id': 'base_link',
-            'Odom/Strategy': '1',
-            'rviz': 'true',  # Launch RViz with RTAB-Map
-            'rtabmap_viz': 'false',
-            'approx_sync': 'false',
-            'rgb_topic': '/image',
-            'depth_topic': '/depth_image',
-            'camera_info_topic': '/camera_info',
-            'publish_tf_odom': 'true',
-            'gps_topic': '/navsat',
-            'imu_topic': '/imu',
-            'wait_for_imu_to_init': 'true',
-            'use_sim_time': 'true',
-            'wait_for_transform': '0.5',
-            'KP/Strategy': '1',
-            'RGBD/OptimizeFromGraphEnd': 'true',
-            'rtabmap_args': '--delete_db_on_start'
-        }.items(),
-    )
 
 
     rgbd_odometry = Node(
@@ -57,7 +26,7 @@ def generate_launch_description():
         parameters=[{
             'frame_id': 'base_link',
             'odom_frame_id': 'odom',  
-            'publish_tf': True,
+            'publish_tf': False,
             'wait_for_transform': 0.5,
             'publish_null_when_lost': True,
             'approx_sync': False,
@@ -65,21 +34,23 @@ def generate_launch_description():
             'guess_from_tf': True,
             'Odom/FillInfoData': 'True',
             'Odom/ResetCountdown': '1',
-            'OdomF2M/MaxSize': '1000',
+            'Odom/Holonomic': 'False',
             'Odom/Strategy': '1',
             'rviz': True
         }],
         remappings=[
-            ('/rgb/image', '/image'),
-            ('/depth/image', '/depth_image'),
-            ('/rgb/camera_info', '/camera_info')
+            ('/rgb/image', '/rgb_image'),
+            ('/depth/image', '/depth_image/image_raw'),
+            ('/rgb/camera_info', '/rgb_camera_info'),
+            ('/depth/camera_info', '/depth_camera_info'),
+            ('/odom', '/rgbd_odom')
         ]
     )
 
     localization = Node(
         package="robot_localization",
-        executable="ekf_node",
-        name="ekf",
+        executable="ukf_node",
+        name="ukf",
         output="screen",
         parameters=[ekf_config],
     )
@@ -110,17 +81,20 @@ def generate_launch_description():
             'imu_topic': '/imu',
             'approx_sync': False,
             'use_sim_time': True,
+            'publish_tf_odom': False,
             'use_action_for_goal': True,
             'wait_for_transform': 0.5,
             'KP/DetectorStrategy': '6',
             'Mem/InitWMWithAllNodes': 'false',
             'RGBD/ForceOdom3DoF': 'False',
-            'RGBD/OptimizeFromGraphEnd': 'True'
+            'RGBD/OptimizeFromGraphEnd': 'True',
+            'Grid/MaxGroundHeight': '0.1'
         }],
         remappings=[
-            ('/rgb/image', '/image'),
-            ('/depth/image', '/depth_image'),
-            ('/rgb/camera_info', '/camera_info'),
+            ('/rgb/image', '/rgb_image'),
+            ('/depth/image', '/depth_image/image_raw'),
+            ('/rgb/camera_info', '/rgb_camera_info'),
+            ('/depth/camera_info', '/depth_camera_info'),
             ('/odom', '/odometry/filtered'),
             ('/imu', '/imu')
         ],
