@@ -15,9 +15,9 @@ Issues: Once research is done we will create an issue for a topic and this is wh
 - To run, "ros2 launch rtab_package rtab.launch.py". 
   - This node takes care of all transforms needed for the Nav2 stack.
   - rgbd odometry creates an odom -> base_link odometry message
-  - ekf robot_localization fuses the IMU odometry with the visual odometry and actually publishes the odom -> base_link transformation
+  - ukf robot_localization fuses the IMU odometry with the visual odometry and publishes the odom -> base_link transformation
   - rgbd-slam publishes the map -> odom frame
-  - Currently uses the Frame-to-Frame model, there are more computationally expensive but robust options out there
+  - RTAB-MAP frame to frame model
  
 - Then, cd to navigation, which is also in the ws_urc src folder. Colcon build, source the install.
   - Run with "ros2 launch navigation nav.launch.py"
@@ -29,4 +29,5 @@ Issues: Once research is done we will create an issue for a topic and this is wh
   - Include "odometry" topic, set ros2 topic to "odometry/filtered" to see the fused odometry
   - Include "/map" topic (this doesn't show up until nav2 is activated)
   - Include "goal pose" to see the given goal
-  - To send actions to the robot, in rviz, select 2d goal pose. Place this somewhere on the map, and the rover will attempt to navigate towards it. 
+  - Go to panels, click on navigation2. It should say the navigation is active. 
+  - To send actions to the robot, in rviz, select 2d goal pose and place it on the map. Click Start Waypoint Navigation in the nav2 panel to start navigation
