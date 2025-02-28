@@ -49,7 +49,7 @@ def serial_manager():
     with open(RADIODRIVER_SERIAL_PORT, "wb") as ser:
         logger.info(f"Serial port opened: {ser.name}")
         while True:
-            time.sleep(0.001)
+            time.sleep(SLEEP_TIME)
             while len(kiss_message_queue) > 0:
                 m = kiss_message_queue.pop(0)
                 logger.info("Writing message to serial")
@@ -60,7 +60,7 @@ def message_formatter():
     logger = logging.getLogger("MessageFormatter")
     logger.info("Starting message formatter...")
     while True:
-        time.sleep(0.001)
+        time.sleep(SLEEP_TIME)
         while len(messages) > 0:
             logger.info("Formatting message...")
             formatted_message = format_kiss_message(messages.pop(0))
@@ -77,6 +77,7 @@ def mock_message_receiver():
         fake_msg = json.dumps({"random": random.random(), "time": datetime.datetime.now().isoformat()})
         logger.info(f"Received message: {fake_msg}")
         messages.append(fake_msg)
+        time.sleep(SLEEP_TIME)
 
 class ListeningFor(enum.IntEnum):
     PAYLOAD_SIZE = 0
@@ -140,7 +141,7 @@ def unix_socket_message_receiver():
         time.sleep(SLEEP_TIME)
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(asctime)s: %(message)s',)
+    logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(asctime)s | %(name)s: %(message)s',)
     logger.info("--- STARTING RADIODRIVER PROXY ---")
 
     message_receiver_thread = threading.Thread(target=unix_socket_message_receiver)
