@@ -7,6 +7,7 @@ import sys
 import random
 import struct
 import os
+from enum import IntEnum
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,6 +21,12 @@ sys.path.append(parent_dir)
 
 from google.protobuf.message import Message
 import msgs_pb2 as rover
+
+class BaseStationConnectionMethod(IntEnum):
+    TCP = 0
+    HAM_LINK = 1
+
+CONNECT_MODE = BaseStationConnectionMethod.HAM_LINK
 
 # Constants
 RETRY_DELAY = 1  # seconds
@@ -199,8 +206,12 @@ def main():
         # Connect to TCP server with retry logic
         while running:
             try:
-                stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                stream.connect(("localhost", 8000))
+                if CONNECT_MODE == BaseStationConnectionMethod.TCP:
+                    stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    stream.connect(("localhost", 8000))
+                elif CONNECT_MODE == BaseStationConnectionMethod.HAM_LINK:
+                    stream = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                    stream.connect("/var/run/radiodriver-proxy.sock")
                 stream.setblocking(False)
                 break  # Connection successful, exit the loop
             except socket.error as e:
