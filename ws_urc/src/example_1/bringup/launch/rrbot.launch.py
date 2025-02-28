@@ -116,13 +116,14 @@ def generate_launch_description():
             on_exit=[joint_state_broadcaster_spawner],
         )
     )
-    joint_state_publisher_node = Node(
-        package="joint_state_publisher_gui",
-        executable="joint_state_publisher_gui",
-    )
 
+    position_control_gui_node = Node(
+        package="my_robot_gui",
+        executable="position_control_gui",
+        output="screen",
+    )
     nodes = [
-        joint_state_publisher_node ,
+        position_control_gui_node,
         control_node,
         robot_state_pub_node,
         robot_controller_spawner,
