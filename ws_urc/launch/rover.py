@@ -19,21 +19,21 @@ def generate_launch_description():
                 {"align_depth.enable": True},
             ]
         ),
-        Node(
-            package="gpsx",
-            executable='gps_node',
-            name='gps_node',
-            parameters=[
-                {"comm_port": "/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_186b31900bb6ed119254dc0ea8669f5d-if00-port0"},
-                {"comm_speed": 9600}
-            ]
-        ),
-        Node(
-            package='imu',
-            executable='imu_node',
-            name='imu_node'
-
-        ),
+         Node(
+             package="gpsx",
+             executable='gps_node',
+             name='gps_node',
+             parameters=[
+                 {"comm_port": "/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_186b31900bb6ed119254dc0ea8669f5d-if00-port0"},
+                 {"comm_speed": 9600}
+             ]
+         ),
+        #Node(
+        #    package='imu',
+        #    executable='imu_node',
+      #      name='imu_node'
+#
+ #       ),
     
    
         
@@ -67,7 +67,8 @@ def generate_launch_description():
             executable='basestation_node',
             name='basestation',
             parameters=[
-                {'ip': ip}
+                {'ip': ip},
+                {'serial_port':"/dev/serial/by-id/usb-Arduino_LLC_Arduino_Nano_Every_9232328551544B5932202020FF0E122E-if00"}
             ]
         
         ),

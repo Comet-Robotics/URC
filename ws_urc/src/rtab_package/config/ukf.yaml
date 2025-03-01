@@ -1,0 +1,40 @@
+ukf:
+  ros__parameters:
+    frequency: 20.0  
+    two_d_mode: false 
+    sensor_timeout: 0.1 
+    odom_frame: "odom"
+    base_link_frame: "base_link"
+    world_frame: "odom"  
+    debug: false
+
+    use_control: true
+    control_config: [true, false, false, false, false, true]
+
+    odom0: "/rgbd_odom"  # This is where rgbd_odometry publishes
+    odom0_config: [true, true, true,
+                  false, false, false,
+                  true, true, true,
+                  false, false, false,
+                  false, false, false]
+    imu0: '/imu'
+    imu0_config: [false, false, false, # X, Y position (not Z)
+                   true, true, true, # Roll, Pitch, Yaw (from IMU)
+                   false, false, false, # X, Y velocity
+                   true,  true,  true, # Angular velocity (IMU handles this)
+                   false, false, false]
+                   
+
+    odom0_differential: false
+    imu0_differential: false
+
+    odom0_pose_use_child_frame: true
+    imu0_pose_use_child_frame: true
+
+    imu0_remove_gravitational_acceleration: true
+
+    odom0_relative: true
+    imu0_relative: true
+
+    use_sim_time: true
+    publish_tf: true

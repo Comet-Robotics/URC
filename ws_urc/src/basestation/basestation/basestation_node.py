@@ -18,79 +18,170 @@ from . import msgs_pb2
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterDescriptor
 import threading
+from threading import Lock  
 import base64
+import serial  # Add this import
+
+
+class Connection:
+    def __init__(self, ip, port, serial_port, baud_rate,logger):
+        self.ip = ip
+        self.port = port
+        self.serial_port = serial_port
+        self.baud_rate = baud_rate
+        self.sock = None
+        self.serial = None
+        self.logger = logger
+    def get_connected(self):
+        return self.sock is not None or self.serial is not None
+    def connect_tcp(self):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((self.ip, self.port))
+            self.sock = sock
+    def connect_serial(self):
+            self.serial = serial.Serial(self.serial_port, self.baud_rate)
+            self.logger.info("Connected to serial port")
+
+    def send_serial(self, message):
+        serialized_data = message.SerializeToString()
+        encoded_data = base64.b64encode(serialized_data) + b'\n'
+        self.logger.info(f"Encoded Data {encoded_data}")
+
+        wrote = self.serial.write(encoded_data)
+        return wrote
+    
+    def send_tcp(self, message):    
+        
+        serialized_data = message.SerializeToString()
+        message_length = len(serialized_data)
+        packed_length = struct.pack('!I', message_length)
+        self.sock.sendall(packed_length + serialized_data)
+    
+    def recv_tcp(self):
+        
+        packed_length = self.sock.recv(4)
+        message_length = struct.unpack('!I', packed_length)[0]
+        serialized_data = self.sock.recv(message_length)
+        message = msgs_pb2.Message()
+        message.ParseFromString(serialized_data)
+        return message
+
+    def recv_serial(self):
+        line = str(self.serial.readline())
+        if "[PACKET RX]" in line:
+            msg = line[line.find("[PACKET RX]")+11:]
+            msg = base64.b64decode(msg)
+            message = msgs_pb2.Message()
+            message.ParseFromString(msg)
+            return message
+        pass
+    
+    def send(self, message):
+        if self.sock is not None:
+                try: 
+                    self.send_tcp(message)
+                except socket.error as e:
+                    self.sock = None
+
+        elif self.serial is not None:
+                try:
+                    self.send_serial(message)
+                except serial.SerialException as e:
+                    self.serial = None
+        else:
+            self.logger.info("No connection to server")
+
+
+
+
+    def receive(self):
+        message = None
+        if self.sock is not None :
+      
+            try:
+                message = self.recv_tcp()
+            except socket.error as e:
+                self.logger.error(f'Tcp connection lost: {e}')
+                self.sock = None
+        elif self.serial is not None:
+            
+            try:
+                message = self.recv_serial()
+            except serial.SerialException as e:
+                self.logger.error(f'Serial connection lost: {e}')
+                self.serial = None
+       
+      
+        return message
+            
+        
+        
+
+    def close(self):
+        self.sock.close()
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
 
 class DataForwarder(Node):
 
     def __init__(self):
         super().__init__('data_forwarder')
  
+        # Parameter declarations
         ip_descriptor = ParameterDescriptor(description='IP address of the server')
+        serial_port_descriptor = ParameterDescriptor(description='Serial port device path')
+        baud_rate_descriptor = ParameterDescriptor(description='Serial port baud rate')
+        
         self.declare_parameter('ip', '127.0.0.1', ip_descriptor)
+        self.declare_parameter('serial_port', '/dev/serial/by-id/', serial_port_descriptor)
+        self.declare_parameter('baud_rate', 115200, baud_rate_descriptor)
+        
         server_ip = self.get_parameter('ip').get_parameter_value().string_value
-        self.sock = None
+        serial_port = self.get_parameter('serial_port').get_parameter_value().string_value
+        baud_rate = self.get_parameter('baud_rate').get_parameter_value().integer_value
+
+        self.conn = Connection(server_ip, 8000, serial_port, baud_rate, self.get_logger())
+#        self.conn.connect_serial()
         self.imu_subscription = self.create_subscription(
             Imu,
             '/imu',
             self.imu_callback,
-            10)
+            100)
         self.gps_subscription = self.create_subscription(
             Gpsx,
             '/gpsx',
             self.gps_callback,
-            10)
+            500)
         self.imu_subscription
         self.gps_subscription
 
         self.server_address = (server_ip, 8000)
         self.server_ip = server_ip
         self.connect_retry_timer = self.create_timer(1.0, self.try_reconnect)
-        self.connect_retry_timer.cancel()
 
         self.cmd_vel_publisher = self.create_publisher(RosTwist, '/cmd_vel_manual', 10)
-        self.serial = open("/dev/ttyACM0", "rw")
-        self.receive_thread = threading.Thread(target=self.receive_protobuf_messages)
+            
+        self.receive_thread = threading.Thread(target=self.recieve_protobuf_messages)
         self.receive_thread.start()
-        self.connect_to_server()
 
-
-    def cleanup(self):
-        """Perform cleanup operations."""
-        self.turn_off_motors()
-        
-        if self.sock:
-            try:
-                self.sock.shutdown(socket.SHUT_RDWR)
-                self.sock.close()
-            except Exception as e:
-                self.get_logger().error(f"Error closing socket: {e}")
-        
-        if hasattr(self, 'connect_retry_timer') and not self.connect_retry_timer.is_canceled():
-            self.connect_retry_timer.cancel()
-        
-        self.get_logger().info("Cleanup completed")
-
-    def connect_to_server(self):
-        if self.sock:
-            self.sock.close()
-
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
-
-        try:
-            self.get_logger().info(f"Connecting to {self.server_address}")
-            self.sock.connect(self.server_address)
-            self.get_logger().info(f"Connected to {self.server_address}")
-            self.connect_retry_timer.cancel()
-        except socket.error as e:
-            self.get_logger().error(f"Connection failed: {e}")
-            self.sock = None
-            self.connect_retry_timer.reset()
 
     def try_reconnect(self):
-        self.get_logger().info("Attempting to reconnect...")
-        self.turn_off_motors()
-        self.connect_to_server()
+        if self.conn.sock is None:
+            
+            self.turn_off_motors()
+            self.get_logger().info("Attempting to reconnect...")
+            try:
+                self.conn.connect_tcp()
+            except socket.error as e:
+                self.get_logger().error(f'Failed to connect to server: {e}')
+                return
+        
 
     def turn_off_motors(self):
         twist = RosTwist()
@@ -104,9 +195,8 @@ class DataForwarder(Node):
         self.get_logger().info("Motors turned off, published zero Twist message to /cmd_vel_manual")
 
     def imu_callback(self, msg):
-        if self.sock is None:
+        if self.conn.get_connected() == False:
             return
-
         imu_data = msgs_pb2.IMUData()
 
         imu_data.header.seq = msg.header.stamp.nanosec
@@ -120,13 +210,12 @@ class DataForwarder(Node):
 
         message = msgs_pb2.Message()
         message.imu.CopyFrom(imu_data)
-
-        self.send_protobuf_message(message)
+        self.get_logger().info("Recieved IMU message")
+        self.conn.send(message)
 
     def gps_callback(self, msg):
-        if self.sock is None:
-            return
-
+        if self.conn.get_connected() == False:
+            return 
         gps_data = msgs_pb2.GPSData()
         
 
@@ -147,70 +236,23 @@ class DataForwarder(Node):
 
         message = msgs_pb2.Message()
         message.gps.CopyFrom(gps_data)
-
-        self.send_protobuf_message(message)
-
-
-    #add some stuff to send and receive to do ham instead
-    def send_protobuf_message(self, message):
-        serialized_data = message.SerializeToString()
-        message_length = len(serialized_data)
-        packed_length = struct.pack('!I', message_length)
-
-        flag = True
-        if flag:
-            try:
-                self.serial.write(base64.b64encode(packed_length + serialized_data) + "\n")
-                self.get_logger().debug(f"Sent message of length: {message_length}")
-            except socket.error as e:
-                self.get_logger().error(f"Error sending data: {e}")
-        else:
-            try:
-                self.sock.sendall(packed_length + serialized_data)
-                self.get_logger().debug(f"Sent message of length: {message_length}")
-            except socket.error as e:
-                self.get_logger().error(f"Error sending data: {e}")
-                if self.sock:
-                    self.sock.close()
-                self.sock = None
-                self.connect_retry_timer.reset()
-
-    
-    def receive_protobuf_messages(self):
-        while rclpy.ok():
-            flag = True
-            if flag:
-                line = self.serial.readline()
-                line : str
-                if "[PACKET RX]" in line:
-                    msg = line[line.find("[PACKET RX]")+11:]
-                    msg = base64.b64decode(msg)
-                    packed_length = msg[:4]
-                    message_length = struct.unpack('!I', packed_length)[0]
-                    serialized_data = msg[4:message_length+4]
-                    message = msgs_pb2.Message()
-                    message.ParseFromString(serialized_data)
-                    self.handle_received_message(msg)
+        self.get_logger().info("Recieved GPS message")
+        self.conn.send(message)
 
 
-            else:
-                if self.sock is None:
-                    time.sleep(1)
-                    continue
 
-                try:
-                    packed_length = self.sock.recv(4)
-                    if not packed_length:
-                        continue
-                    message_length = struct.unpack('!I', packed_length)[0]
-                    serialized_data = self.sock.recv(message_length)
-                    message = msgs_pb2.Message()
-                    message.ParseFromString(serialized_data)
-                    self.handle_received_message(message)
-                except socket.error as e:
-                    self.get_logger().error(f"Error receiving data: {e}")
-                    self.sock = None
-                    self.connect_retry_timer.reset()
+
+
+    def recieve_protobuf_messages(self):
+        while True:
+            message = self.conn.receive()
+            
+            if message is not None:
+                self.get_logger().info("Received message")
+                self.handle_received_message(message)
+            
+        pass
+
 
     def handle_received_message(self, message):
         if message.HasField('twist'):
@@ -245,13 +287,13 @@ class DataForwarder(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    try:
-        data_forwarder = DataForwarder()
-        rclpy.spin(data_forwarder)
-    except Exception as e:
-        if data_forwarder:
-            data_forwarder.destroy_node()
-        rclpy.shutdown()
+    
+    data_forwarder = DataForwarder()
+    rclpy.spin(data_forwarder)
+
+    if data_forwarder:
+        data_forwarder.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

@@ -25,7 +25,7 @@ def launch_transcoder(ip_address,port=5000, fps=30):
                
 
         # Launch FFmpeg subprocess
-    return subprocess.Popen(shlex.split(ffmpeg_cmd), stdin=subprocess.PIPE)
+    return subprocess.Popen(shlex.split(ffmpeg_cmd), stdin=subprocess.PIPE,stderr=subprocess.PIPE)
 
 
 # Example usage
