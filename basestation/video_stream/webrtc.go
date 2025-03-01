@@ -9,8 +9,8 @@ package video_stream
 
 import (
 	"errors"
-	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"os"
 	"time"
@@ -47,7 +47,7 @@ func StartRTPToWebRTC(port int, track_id string, shutdown chan struct{}) *webrtc
 		// Clean shutdown of listener
 		defer func() {
 			if err = listener.Close(); err != nil {
-				fmt.Printf("Error closing listener on port %d: %v\n", port, err)
+				slog.Error("Error closing listener", "port", port, "error", err)
 			}
 		}()
 
@@ -59,15 +59,15 @@ func StartRTPToWebRTC(port int, track_id string, shutdown chan struct{}) *webrtc
 				case <-timeoutCheck.C:
 					if time.Since(lastPacketTime) > 5*time.Second {
 						if isConnected { // Only log when state changes
-							fmt.Printf("Warning: No video received on port %d\n", port)
+							slog.Warn("No video received", "port", port)
 							isConnected = false
 						}
 					} else if !isConnected { // Video is back
-						fmt.Printf("Video connection restored on port %d\n", port)
+						slog.Info("Video connection restored", "port", port)
 						isConnected = true
 					}
 				case <-shutdown:
-					fmt.Printf("Shutting down timeout checker %d\n", port)
+					slog.Debug("Shutting down timeout checker", "port", port)
 					return
 				}
 			}
@@ -77,7 +77,7 @@ func StartRTPToWebRTC(port int, track_id string, shutdown chan struct{}) *webrtc
 		for {
 			select {
 			case <-shutdown:
-				fmt.Printf("Shutting down video stream on port %d\n", port)
+				slog.Debug("Shutting down video stream", "port", port)
 				return
 			default:
 				// Set a read deadline to prevent blocking forever
@@ -85,7 +85,7 @@ func StartRTPToWebRTC(port int, track_id string, shutdown chan struct{}) *webrtc
 				n, _, err := listener.ReadFrom(inboundRTPPacket)
 				if err != nil {
 					if !errors.Is(err, os.ErrDeadlineExceeded) {
-						fmt.Printf("Error reading from port %d: %v\n", port, err)
+						slog.Error("Error reading from UDP", "port", port, "error", err)
 					}
 					continue
 				}
@@ -96,7 +96,7 @@ func StartRTPToWebRTC(port int, track_id string, shutdown chan struct{}) *webrtc
 					if errors.Is(err, io.ErrClosedPipe) {
 						return
 					}
-					fmt.Printf("Error writing to video track: %v\n", err)
+					slog.Error("Error writing to video track", "error", err)
 				}
 			}
 		}

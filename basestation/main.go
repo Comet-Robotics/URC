@@ -6,8 +6,7 @@ import (
 	"basestation/video_stream"
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
-	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -58,6 +57,8 @@ var (
 var serialConn *serial.SerialConnection
 
 func main() {
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
+	slog.SetDefault(slog.New(handler))
 	// Create a channel to listen for OS signals
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -72,20 +73,19 @@ func main() {
 	videoStreams[depth_video.ID()] = depth_video
 
 	// Initialize serial connection (add this before starting the HTTP server)
-	serial, err := serial.NewSerialConnection("/dev/tty.usbmodem3401", 115200)
-	serialConn = serial
-	if err != nil {
-		fmt.Printf("Error opening serial port: %v\n", err)
-	} else {
-		defer serialConn.Close()
-	}
-	serial.SetReadTimeout(10 * time.Millisecond) // Set a read timeout of 10ms
-
-	// After initializing serial connection, start the serial handler
-	if serialConn != nil {
-		wg.Add(1)
-		go handleSerialMessages()
-	}
+	// serial, err := serial.NewSerialConnection("/dev/tty.usbmodem3301", 115200)
+	// serialConn = serial
+	// if err != nil {
+	// 	slog.Error("Error opening serial port", "error", err)
+	// } else {
+	// 	defer serialConn.Close()
+	// }
+	
+	// // After initializing serial connection, start the serial handler
+	// if serialConn != nil {
+	// 	wg.Add(1)
+	// 	go handleSerialMessages()
+	// }
 
 	// HTTP Server setup
 	http.Handle("/", spa.SpaHandler("ui/dist", "index.html"))
@@ -93,16 +93,16 @@ func main() {
 	http.HandleFunc("/ws", handleWebSocket)
 
 	go func() {
-		fmt.Println("HTTP server listening on :8080")
+		slog.Info("HTTP server listening on :8080")
 		if err := http.ListenAndServe(":8080", nil); err != nil {
-			fmt.Printf("HTTP server error: %v\n", err)
+			slog.Error("HTTP server error", "error", err)
 			sigChan <- syscall.SIGTERM // Signal other goroutines to shut down
 		}
 	}()
 
 	// Block until a signal is received
 	<-sigChan
-	fmt.Println("\nReceived shutdown signal. Cleaning up...")
+	slog.Info("\nReceived shutdown signal. Cleaning up...")
 
 	// Close TCP listener first to stop accepting new connections
 	if tcpListener != nil {
@@ -113,9 +113,9 @@ func main() {
 	close(shutdownChan)
 
 	// Wait for goroutines to finish
-	fmt.Println("Waiting for goroutines to finish...")
+	slog.Info("Waiting for goroutines to finish...")
 	wg.Wait()
-	fmt.Println("All goroutines finished")
+	slog.Info("All goroutines finished")
 
 	// Perform cleanup
 	tcpConnMutex.Lock()
@@ -136,8 +136,8 @@ func main() {
 		serialConn.Close()
 	}
 
-	fmt.Println("Shutdown complete.")
-	os.Exit(0)
+	slog.Info("Shutdown complete.")
+
 }
 
 func startTCPServer() {
@@ -145,11 +145,11 @@ func startTCPServer() {
 	var err error
 	tcpListener, err = net.Listen("tcp", ":8000") // Choose a different port
 	if err != nil {
-		fmt.Printf("TCP server error: %v\n", err)
+		slog.Error("TCP server error", "error", err)
 		return
 	}
 	defer tcpListener.Close()
-	fmt.Println("TCP server listening on :8000")
+	slog.Info("TCP server listening on :8000")
 
 	for {
 		select {
@@ -180,7 +180,7 @@ func startTCPServer() {
 func handleTCPConnection(conn net.Conn) {
 	// Get remote address when connection is established
 	remoteAddr := conn.RemoteAddr().(*net.TCPAddr).IP.String()
-
+	slog.Debug("TCP connection established", "addr", remoteAddr)
 	// Notify all WebSocket clients about new connection
 	status := RoverConnectionStatus{
 		RoverAddress: remoteAddr,
@@ -199,7 +199,7 @@ func handleTCPConnection(conn net.Conn) {
 			broadcastConnectionStatus(status)
 		}
 		tcpConnMutex.Unlock()
-		fmt.Println("TCP connection closed")
+		slog.Info("TCP connection closed")
 	}()
 
 	for {
@@ -207,36 +207,37 @@ func handleTCPConnection(conn net.Conn) {
 		lengthBytes := make([]byte, 4)
 		n, err := conn.Read(lengthBytes)
 		if err != nil {
-			fmt.Printf("TCP read error (length): %v\n", err)
+			slog.Error("TCP read error (length)", "error", err)
 			return
 		}
 		if n != 4 {
-			fmt.Printf("TCP read error (incomplete length): read %d bytes, expected 4\n", n)
+			slog.Error("TCP read error (incomplete length)", "bytes", n, "expected", 4)
 			return
 		}
 
 		messageLength := binary.BigEndian.Uint32(lengthBytes)
 
 		// Read the message body
+
 		messageBuffer := make([]byte, messageLength)
 		n, err = conn.Read(messageBuffer)
 		if err != nil {
-			fmt.Printf("TCP read error (message): %v\n", err)
+			slog.Error("TCP read error (message)", "error", err)
 			return
 		}
 		if uint32(n) != messageLength {
-			fmt.Printf("TCP read error (incomplete message): read %d bytes, expected %d\n", n, messageLength)
+			slog.Error("TCP read error (incomplete message)", "bytes", n, "expected", messageLength)
 			return
 		}
 
 		// Unmarshal the protobuf message
 		message := &msgspb.Message{}
 		if err := proto.Unmarshal(messageBuffer, message); err != nil {
-			log.Println("Failed to parse message:", err)
+			slog.Error("Failed to parse message", "error", err)
 			continue // Or handle the error more robustly
 		}
 
-		fmt.Printf("Received from TCP client: %s\n", message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
+		slog.Debug("Received from TCP client", "type", message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
 
 		// Forward to all WebSocket clients
 		forwardToAllWebSockets(message)
@@ -250,14 +251,14 @@ func forwardToAllWebSockets(message *msgspb.Message) {
 
 	msg, err := proto.Marshal(message)
 	if err != nil {
-		fmt.Printf("error marshaling proto message: %v", err)
+		slog.Error("Error marshaling proto message", "error", err)
 		return
 	}
 
 	for conn := range websocketConnections {
 		err := conn.WriteMessage(websocket.BinaryMessage, msg)
 		if err != nil {
-			fmt.Printf("error writing message to websocket: %v", err)
+			slog.Error("Error writing message to websocket", "error", err)
 			// Remove the connection if there's an error
 			delete(websocketConnections, conn)
 			conn.Close()
@@ -269,7 +270,7 @@ func forwardToAllWebSockets(message *msgspb.Message) {
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
+		slog.Error("WebSocket upgrade failed", "error", err)
 		return
 	}
 
@@ -287,7 +288,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	tcpConnMutex.Unlock()
 
 	if err = conn.WriteJSON(status); err != nil {
-		fmt.Printf("error writing connection status to websocket: %v", err)
+		slog.Error("Error writing connection status to websocket", "error", err)
 		delete(websocketConnections, conn)
 		conn.Close()
 		return
@@ -304,14 +305,13 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err = conn.WriteJSON(candidate.ToJSON()); err != nil {
-
-			fmt.Println("Error Writing to JSON", err)
+			slog.Error("Error writing to JSON", "error", err)
 			return
 		}
 	})
 
 	peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
-		fmt.Printf("ICE Connection State has changed: %s\n", connectionState.String())
+		slog.Info("ICE Connection State changed", "state", connectionState.String())
 	})
 
 	defer func() {
@@ -319,11 +319,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		delete(websocketConnections, conn) // Remove the connection when it's closed
 		websocketConnectionsMutex.Unlock()
 		conn.Close()
-		fmt.Println("WebSocket connection closed")
+		slog.Info("WebSocket connection closed")
 	}()
 
 	for track := range videoStreams {
-		fmt.Println("Adding Video Stream")
+		slog.Debug("Adding Video Stream")
 		rtpSender, err := peerConnection.AddTrack(videoStreams[track])
 		if err != nil {
 			panic(err)
@@ -338,12 +338,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		}()
 	}
 
-	fmt.Println("WebSocket connection established")
+	slog.Info("WebSocket connection established")
 
 	for {
 		messageType, p, err := conn.ReadMessage()
 		if err != nil {
-			log.Println(err)
+			slog.Error("Error reading WebSocket message", "error", err)
 			// Remove the connection if there's an error
 			websocketConnectionsMutex.Lock()
 			delete(websocketConnections, conn)
@@ -355,11 +355,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		if messageType == websocket.BinaryMessage {
 			message := &msgspb.Message{}
 			if err := proto.Unmarshal(p, message); err != nil {
-				log.Println("Failed to parse WebSocket message:", err)
+				slog.Error("Failed to parse WebSocket message", "error", err)
 				continue // Or handle the error more robustly
 			}
 
-			fmt.Printf("Received from WebSocket client: %s\n", message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
+			slog.Debug("Received from WebSocket client", "type", message.ProtoReflect().WhichOneof(message.ProtoReflect().Descriptor().Oneofs().ByName("data_type")).FullName())
 
 			// Forward to TCP server
 			forwardToRover(message)
@@ -374,7 +374,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			// Attempt to unmarshal as a SessionDescription. If the SDP field is empty
 			// assume it is not one.
 			case json.Unmarshal(p, &offer) == nil && offer.SDP != "":
-				fmt.Println("Received Offer")
+				slog.Info("Received Offer")
 				if err = peerConnection.SetRemoteDescription(offer); err != nil {
 					panic(err)
 				}
@@ -394,18 +394,17 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			// Attempt to unmarshal as a ICECandidateInit. If the candidate field is empty
 			// assume it is not one.
 			case json.Unmarshal(p, &candidate) == nil && candidate.Candidate != "":
-				fmt.Println("Adding Candidate")
+				slog.Info("Adding Candidate")
 				if err = peerConnection.AddICECandidate(candidate); err != nil {
 					panic(err)
 				}
 			default:
 				var msg map[string]interface{}
 				if err := json.Unmarshal(p, &msg); err != nil {
-					fmt.Println("Error unmarshalling JSON", err)
+					slog.Error("Error unmarshalling JSON", "error", err)
 					return
 				}
-				fmt.Println("Unknown Message", msg)
-
+				slog.Warn("Unknown Message", "msg", msg)
 			}
 		}
 	}
@@ -419,7 +418,7 @@ func forwardToRover(message *msgspb.Message) {
 		// Marshal the protobuf message
 		data, err := proto.Marshal(message)
 		if err != nil {
-			fmt.Println("Error marshaling proto message:", err)
+			slog.Error("Error marshaling proto message", "error", err)
 			return
 		}
 
@@ -430,14 +429,14 @@ func forwardToRover(message *msgspb.Message) {
 		// Write length prefix first
 		_, err = tcpConn.Write(lengthPrefix)
 		if err != nil {
-			fmt.Println("Error writing length prefix to TCP server:", err)
+			slog.Error("Error writing length prefix to TCP server", "error", err)
 			return
 		}
 
 		// Write message data
 		_, err = tcpConn.Write(data)
 		if err != nil {
-			fmt.Println("Error writing message to TCP server:", err)
+			slog.Error("Error writing message to TCP server", "error", err)
 			return
 		}
 	}
@@ -446,7 +445,7 @@ func forwardToRover(message *msgspb.Message) {
 	// Forward to Serial
 	if serialConn != nil {
 		if err := serialConn.WriteProto(message); err != nil {
-			fmt.Printf("Error writing to serial: %v\n", err)
+			slog.Error("Error writing to serial", "error", err)
 		}
 	}
 }
@@ -456,23 +455,20 @@ func handleSerialMessages() {
 	defer wg.Done()
 
 	for {
-		fmt.Printf("Serial handler running\n")
+		slog.Debug("Serial handler running")
 		select {
 		case <-shutdownChan:
-			fmt.Println("Serial handler shutting down")
+			slog.Info("Serial handler shutting down")
 			return
 		default:
 			message, err := serialConn.ReadProto()
 			if err != nil {
-				
-				fmt.Printf("Error reading from serial: %v\n", err)
-				time.Sleep(time.Second)
+				slog.Error("Error reading from serial", "error", err)
+			
 				continue
 			}
 
-			fmt.Printf("Received from Serial: %s\n", message)
-			// Process the line here - you might want to parse it into a proto message
-			// or forward it directly to WebSocket clients
+			slog.Debug("Received from Serial", "message", message)
 		}
 	}
 }
@@ -485,7 +481,7 @@ func broadcastConnectionStatus(status RoverConnectionStatus) {
 	for conn := range websocketConnections {
 		err := conn.WriteJSON(status)
 		if err != nil {
-			fmt.Printf("error writing connection status to websocket: %v", err)
+			slog.Error("Error writing connection status to websocket", "error", err)
 			delete(websocketConnections, conn)
 			conn.Close()
 		}

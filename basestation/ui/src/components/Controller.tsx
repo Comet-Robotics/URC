@@ -37,7 +37,7 @@ const Controller = ({ sendMovement }: ControllerProps) => {
             angular: { x: 0, y: 0, z: angularZ * angularSpeed },
         };
 
-        if (!twist ||  Math.abs(newTwist.linear!.x! - twist.linear!.x!) > 0.1 || Math.abs(newTwist.angular!.z! - twist.angular!.z! ) > 0.1) {
+        if (!twist ||  Math.abs(newTwist.linear!.x! - twist.linear!.x!) > 0.01 || Math.abs(newTwist.angular!.z! - twist.angular!.z! ) > 0.01) {
             setTwist(newTwist);
         }
         
@@ -61,7 +61,7 @@ const Controller = ({ sendMovement }: ControllerProps) => {
         let intervalId: NodeJS.Timeout | undefined;
 
         
-        intervalId = setInterval(handleGamepadInput, 20);
+        intervalId = setInterval(handleGamepadInput, 200);
         
 
         return () => {
@@ -88,7 +88,7 @@ const Controller = ({ sendMovement }: ControllerProps) => {
             </CardHeader>
             <CardContent>
                 <p>{gamePadDetected ? "Controller Detected" : "Controller Disconnected"}</p>
-                <p>Twist: {JSON.stringify(twist)}</p>
+                <p>Twist: {twist && JSON.stringify(twist)}</p>
                 <div className="space-y-4">
                     <div>
                         <p>Angular Speed: {angularSpeed}</p>
