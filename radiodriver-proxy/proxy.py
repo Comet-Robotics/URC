@@ -3,14 +3,19 @@ import enum
 import logging
 import time
 import socket
+import os
 logger = logging.getLogger(__name__)
 
 RADIODRIVER_SERIAL_PORT = '/dev/tty.debug-console'
 UNIX_SOCKET_PATH = '/var/run/radiodriver-proxy.sock'
 SLEEP_TIME = 0.001
 
-messages: list[bytes] = []
-kiss_message_queue: list[bytes] = []
+unframed_messages_to_tx: list[bytes] = []
+framed_messages_to_tx: list[bytes] = []
+
+serial_read_buffer = b''
+framed_messages_from_rx: list[bytes] = []
+unframed_messages_from_rx: list[bytes] = []
 
 class KISSChars(enum.Enum):
     FEND = 0xC0 # Frame End
@@ -45,38 +50,57 @@ def format_kiss_message(data: bytes, tnc_port: int = 0) -> bytes:
 
 def serial_manager():
     logger = logging.getLogger("SerialManager")
+    global framed_messages_to_tx, serial_read_buffer
     logger.info("Starting serial manager...")
     with open(RADIODRIVER_SERIAL_PORT, "wb") as ser:
+        # switching to nonblocking file reads so we can quickly switch over to tx if there is nothing to read - https://stackoverflow.com/a/66410605
+        os.set_blocking(ser.fileno(), False)
+        
         logger.info(f"Serial port opened: {ser.name}")
         while True:
             time.sleep(SLEEP_TIME)
-            while len(kiss_message_queue) > 0:
-                m = kiss_message_queue.pop(0)
+
+            while len(framed_messages_to_tx) > 0:
+                m = framed_messages_to_tx.pop(0)
                 logger.info("Writing message to serial")
                 ser.write(m)
                 logger.info("Message written to serial")
 
+            char = ser.read(1)
+            if len(char) > 0:
+                serial_read_buffer += char
+
+            
 def message_formatter():
     logger = logging.getLogger("MessageFormatter")
     logger.info("Starting message formatter...")
     while True:
         time.sleep(SLEEP_TIME)
-        while len(messages) > 0:
+        while len(unframed_messages_to_tx) > 0:
             logger.info("Formatting message...")
-            formatted_message = format_kiss_message(messages.pop(0))
+            formatted_message = format_kiss_message(unframed_messages_to_tx.pop(0))
             logger.info("Formatted message")
-            kiss_message_queue.append(formatted_message)
+            framed_messages_to_tx.append(formatted_message)
             logger.info("Message added to queue")
             
+        while len(serial_read_buffer) > 0:
+            pass
+            # TODO: Handle serial read buffer
+        
 
-def mock_message_receiver():
-    logger = logging.getLogger("MockMessageReceiver")
-    logger.info("Starting message receiver...")
+def mock_message_transport():
+    logger = logging.getLogger("MockMessageTransport")
+    logger.info("Starting message transport...")
     import json, datetime, random
     while True:
         fake_msg = json.dumps({"random": random.random(), "time": datetime.datetime.now().isoformat()})
-        logger.info(f"Received message: {fake_msg}")
-        messages.append(fake_msg)
+        logger.info(f"Message from process: {fake_msg}")
+        unframed_messages_to_tx.append(fake_msg.encode())
+
+        while len(unframed_messages_from_rx) > 0:
+            msg = unframed_messages_from_rx.pop(0)
+            logger.info(f"Message from radio: {msg}")
+            
         time.sleep(SLEEP_TIME)
 
 class ListeningFor(enum.IntEnum):
@@ -101,11 +125,11 @@ def receive_all(conn: socket.socket, size: int) -> bytes:
         bytes_recd += len(chunk)
     return b''.join(chunks)
 
-def unix_socket_message_receiver():
-    import socket, struct, os
+def unix_socket_message_transport():
+    import socket, struct
 
-    logger = logging.getLogger("UnixSocketMessageReceiver")
-    logger.info("Starting Unix socket message receiver...")
+    logger = logging.getLogger("UnixSocketMessageTransport")
+    logger.info("Starting Unix socket message transport...")
     os.unlink(UNIX_SOCKET_PATH)
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.bind(UNIX_SOCKET_PATH)
@@ -127,7 +151,7 @@ def unix_socket_message_receiver():
                 listening_for = ListeningFor.PAYLOAD
             elif listening_for == ListeningFor.PAYLOAD:
                 buf = receive_all(conn, expected_payload_size)
-                messages.append(buf)
+                unframed_messages_to_tx.append(buf)
                 logger.debug("Received message")
                 listening_for = ListeningFor.PAYLOAD_SIZE
         except ConnectionError as e:
@@ -144,8 +168,8 @@ def main():
     logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(asctime)s | %(name)s: %(message)s',)
     logger.info("--- STARTING RADIODRIVER PROXY ---")
 
-    message_receiver_thread = threading.Thread(target=unix_socket_message_receiver)
-    message_receiver_thread.start()
+    message_transport_thread = threading.Thread(target=unix_socket_message_transport)
+    message_transport_thread.start()
 
     serial_thread = threading.Thread(target=serial_manager)
     serial_thread.start()
