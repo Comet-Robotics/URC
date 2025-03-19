@@ -23,7 +23,7 @@ SLEEP_TIME = 1 if DEV else 0.001
 unframed_messages_to_tx: queue.SimpleQueue[bytes] = queue.SimpleQueue()
 
 # Queue of framed messages that are ready to be sent to the radio driver via serial. Queue is populated by the message formatter thread, consumed by the serial manager thread.
-framed_messages_to_tx: queue.SimpleQueue[bytes] = queue.SimpleQueue()
+framed_messages_to_tx: queue.SimpleQueue[bytearray] = queue.SimpleQueue()
 
 # Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message formatter thread and consumed by the message transport thread.
 unframed_messages_from_rx: queue.SimpleQueue[bytearray] = queue.SimpleQueue()
