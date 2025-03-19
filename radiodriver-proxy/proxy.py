@@ -15,11 +15,19 @@ RADIODRIVER_SERIAL_PORT = '/dev/tty.debug-console'
 UNIX_SOCKET_PATH = '/var/run/radiodriver-proxy.sock'
 SLEEP_TIME = 0.001
 
+# Queue of messages that need to be framed before being sent to the radio driver via serial. Queue is populated by the message transport thread and consumed by the message formatter thread.
 unframed_messages_to_tx: list[bytes] = []
+
+# Queue of framed messages that are ready to be sent to the radio driver via serial. Queue is populated by the message formatter thread, consumed by the serial manager thread.
 framed_messages_to_tx: list[bytearray] = []
 
+# Buffer used to store bytes as they are received from the serial port. Populated by the serial manager thread, consumed by the message formatter thread. Once a full message has been received, it is added to the framed_messages_from_rx queue.
 serial_read_buffer = b''
+
+# Queue of framed messages that have been received from the radio driver via serial. Queue is populated and consumed by the message formatter thread.
 framed_messages_from_rx: list[bytes] = []
+
+# Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message transport thread and consumed by the  message transport thread.
 unframed_messages_from_rx: list[bytes] = []
 
 class KISSChars(enum.Enum):
