@@ -74,6 +74,6 @@ TODOs
 - [x] Implement message TX over Unix socket for fake rover
 - [x] Handle unframing of messages received from radiodriver
 - [x] Use queue.SimpleQueue instead of arrays as queues :skull:
-- [ ] Use bytearray instead of bytes for buffer
+- [x] Use bytearray instead of bytes for buffer
 - [ ] Handle exit signals on proxy (should close serial connection, delete unix socket)
 - [ ] Test everything

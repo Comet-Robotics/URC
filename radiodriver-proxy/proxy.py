@@ -23,13 +23,13 @@ SLEEP_TIME = 1 if DEV else 0.001
 unframed_messages_to_tx: queue.SimpleQueue[bytes] = queue.SimpleQueue()
 
 # Queue of framed messages that are ready to be sent to the radio driver via serial. Queue is populated by the message formatter thread, consumed by the serial manager thread.
-framed_messages_to_tx: queue.SimpleQueue[bytearray] = queue.SimpleQueue()
+framed_messages_to_tx: queue.SimpleQueue[bytes] = queue.SimpleQueue()
 
 # Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message formatter thread and consumed by the message transport thread.
 unframed_messages_from_rx: queue.SimpleQueue[bytearray] = queue.SimpleQueue()
 
 # Buffer used to store bytes as they are received from the serial port. Populated by the serial manager thread, consumed by the message formatter thread. Once a full message has been received, it is added to the framed_messages_from_rx queue.
-serial_read_buffer = b''
+serial_read_buffer = bytearray()
 
 # Lock used to ensure that only one thread is accessing the serial_read_buffer at a time.
 serial_read_buffer_lock = threading.Lock()
@@ -88,7 +88,7 @@ def serial_manager():
             chars = ser.read()
             if chars and len(chars) > 0:
               with serial_read_buffer_lock:
-                serial_read_buffer += chars
+                serial_read_buffer.extend(chars)
 
 
 class KISSPacketParserStates(enum.Enum):
