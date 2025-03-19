@@ -50,7 +50,7 @@ sequenceDiagram
 
   BRadio ->> RRadio: Transmits `\xc0\x00Hi\xc0` via <br/> magic airwave stuff
 
-  RDriver ->> RRadio: Receives `\xc0\x00Hi\xc0` over SPI/UART (again idk which lol)
+  RDriver ->> RRadio: Receives `\xc0\x00Hi\xc0` over<br/>SPI/UART (again idk which lol)
   RSerial ->> RDriver: Receives `\xc0\x00Hi\xc0` over serial
   RMsg ->> RSerial: Pulls `\xc0\x00Hi\xc0` off shared queue of<br/> messages that need to be unframed
   RSocket ->> RMsg: Pulls `Hi` off shared queue of <br/> messages that have been unframed
@@ -66,14 +66,3 @@ sequenceDiagram
   end
   participant Rover 
 ```
-
----
-TODOs
-- [x] Receive messages from other processes to transmit with radiodriver via Unix socket
-- [x] Send received messages from radiodriver to other processes via Unix socket
-- [x] Implement message TX over Unix socket for fake rover
-- [x] Handle unframing of messages received from radiodriver
-- [x] Use queue.SimpleQueue instead of arrays as queues :skull:
-- [x] Use bytearray instead of bytes for buffer
-- [ ] Handle exit signals on proxy (should close serial connection, delete unix socket)
-- [ ] Test everything
