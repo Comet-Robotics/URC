@@ -8,24 +8,25 @@ import struct
 import json
 import datetime
 import random
+import queue
 
 logger = logging.getLogger(__name__)
 
-DEV = True
-RADIODRIVER_SERIAL_PORT = '/dev/tty.debug-console'
+DEV = False
+RADIODRIVER_SERIAL_PORT = '/dev/tty.Bluetooth-Incoming-Port'
 UNIX_SOCKET_PATH = '/var/run/radiodriver-proxy.sock'
 
 # slowing down so I can read the logs ;)
 SLEEP_TIME = 1 if DEV else 0.001
 
 # Queue of messages that need to be framed before being sent to the radio driver via serial. Queue is populated by the message transport thread and consumed by the message formatter thread.
-unframed_messages_to_tx: list[bytes] = []
+unframed_messages_to_tx: queue.SimpleQueue[bytes] = queue.SimpleQueue()
 
 # Queue of framed messages that are ready to be sent to the radio driver via serial. Queue is populated by the message formatter thread, consumed by the serial manager thread.
-framed_messages_to_tx: list[bytearray] = []
+framed_messages_to_tx: queue.SimpleQueue[bytearray] = queue.SimpleQueue()
 
 # Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message formatter thread and consumed by the message transport thread.
-unframed_messages_from_rx: list[bytearray] = []
+unframed_messages_from_rx: queue.SimpleQueue[bytearray] = queue.SimpleQueue()
 
 # Buffer used to store bytes as they are received from the serial port. Populated by the serial manager thread, consumed by the message formatter thread. Once a full message has been received, it is added to the framed_messages_from_rx queue.
 serial_read_buffer = b''
@@ -75,12 +76,14 @@ def serial_manager():
         logger.info(f"Serial port opened: {ser.name}")
         while True:
             time.sleep(SLEEP_TIME)
-
-            while len(framed_messages_to_tx) > 0:
-                m = framed_messages_to_tx.pop(0)
+            
+            try:
+              while m := framed_messages_to_tx.get_nowait():
                 logger.info("Writing message to serial")
                 ser.write(m)
                 logger.info("Message written to serial")
+            except queue.Empty:
+              logger.debug("Queue empty")
 
             chars = ser.read()
             if chars and len(chars) > 0:
@@ -130,7 +133,7 @@ def message_formatter():
               case KISSChars.FEND.value:
                 if len(unframed_message) > 0:
                   logger.debug("Adding message to unframed_messages_from_rx")
-                  unframed_messages_from_rx.append(unframed_message)
+                  unframed_messages_from_rx.put(unframed_message)
                 else:
                   logger.debug("Message is empty, ignoring")
                 serial_read_buffer = serial_read_buffer[char_index+1:]
@@ -145,15 +148,20 @@ def message_formatter():
                 unframed_message.append(KISSChars.FESC.value)
               case _:
                 logger.error("Unexpected character in EXPECTING_ESCAPED_CHAR state")
+   
     while True:
         time.sleep(SLEEP_TIME)
-        while len(unframed_messages_to_tx) > 0:
-            logger.info("Formatting message...")
-            formatted_message = format_kiss_message(unframed_messages_to_tx.pop(0))
-            logger.info("Formatted message")
-            framed_messages_to_tx.append(formatted_message)
-            logger.info("Message added to queue")
-            
+        
+        try:
+          while m := unframed_messages_to_tx.get_nowait():
+              logger.info("Formatting message...")
+              formatted_message = format_kiss_message(m)
+              logger.info("Formatted message")
+              framed_messages_to_tx.put(formatted_message)
+              logger.info("Message added to queue")
+        except queue.Empty:
+          logger.debug("Queue empty")
+          
         logger.debug("Taking serial buffer lock")
         with serial_read_buffer_lock:
           logger.debug("Serial buffer lock taken")
@@ -168,12 +176,13 @@ def mock_message_transport():
     while True:
         fake_msg = json.dumps({"random": random.random(), "time": datetime.datetime.now().isoformat()})
         logger.info(f"Message from process: {fake_msg}")
-        unframed_messages_to_tx.append(fake_msg.encode())
-
-        while len(unframed_messages_from_rx) > 0:
-            msg = unframed_messages_from_rx.pop(0)
-            logger.info(f"Message from radio: {msg}")
-            
+        unframed_messages_to_tx.put(fake_msg.encode())
+        
+        try:
+          while msg := unframed_messages_from_rx.get_nowait():
+              logger.info(f"Message from radio: {msg}")
+        except queue.Empty:
+          logger.debug("Queue empty")
         time.sleep(SLEEP_TIME)
 
 class ListeningFor(enum.IntEnum):
@@ -222,14 +231,16 @@ def unix_socket_message_transport():
                 listening_for = ListeningFor.PAYLOAD
             elif listening_for == ListeningFor.PAYLOAD:
                 buf = receive_all(conn, expected_payload_size)
-                unframed_messages_to_tx.append(buf)
+                unframed_messages_to_tx.put(buf)
                 logger.debug("Received message")
                 listening_for = ListeningFor.PAYLOAD_SIZE
-                
-            if len(unframed_messages_from_rx) > 0:
-                msg = unframed_messages_from_rx.pop(0)
-                conn.sendall(msg)
-                logger.debug("Message sent")
+              
+            try:  
+              if msg := unframed_messages_from_rx.get_nowait():
+                  conn.sendall(msg)
+                  logger.debug("Message sent")
+            except queue.Empty:
+              logger.debug("Queue empty")
         except ConnectionError as e:
             logger.error(f"Connection error: {e}")
             break  # Exit loop on connection error

@@ -72,14 +72,14 @@ func main() {
 	videoStreams[depth_video.ID()] = depth_video
 
 	// Initialize serial connection (add this before starting the HTTP server)
-	serial, err := serial.NewSerialConnection("/dev/tty.usbmodem3401", 115200)
-	serialConn = serial
-	if err != nil {
-		fmt.Printf("Error opening serial port: %v\n", err)
-	} else {
-		defer serialConn.Close()
-	}
-	serial.SetReadTimeout(10 * time.Millisecond) // Set a read timeout of 10ms
+	// serial, err := serial.NewSerialConnection("/dev/tty.debug-console", 115200)
+	// serialConn = serial
+	// if err != nil {
+	// 	fmt.Printf("Error opening serial port: %v\n", err)
+	// } else {
+	// 	defer serialConn.Close()
+	// }
+	// serial.SetReadTimeout(10 * time.Millisecond) // Set a read timeout of 10ms
 
 	// After initializing serial connection, start the serial handler
 	if serialConn != nil {

@@ -7,6 +7,16 @@ To send a message via radio, other processes simply write an integer representin
 
 When the radio driver receives a message from the radio, it sends the message back to this proxy over serial. Then, the proxy will unframe the message, and send it to the receiving process via Unix socket. The receiving process will listen for data on the Unix socket at `/var/run/radiodriver-proxy.sock`, again consisting of an integer, representing the size of the message in bytes, followed by the message data.
 
+## Testing
+To test, you'll want to be on a Unix-based system due to the proxy's dependence on Unix sockets, so the steps here will assume you're on a Unix-based system. Windows 11 and some Windows 10 versions [should support Unix sockets](https://devblogs.microsoft.com/commandline/af_unix-comes-to-windows/), though I haven't tested this so your mileage may vary. You might need to edit the socket path to point to a location that would exist on a Windows system. 
+
+The proxy requires elevated permissions to run due to the location of the Unix socket, so start the proxy like so:
+```
+sudo python proxy.py
+```
+then run the base station
+then run the fake rover as sudo so it can connect to the socket
+
 ## Design
 The proxy runs 3 threads which each take care of 1-2 tasks in order to prevent issues with blocking. The threads pass data on to each other using through a number of shared queues. 
 
@@ -62,7 +72,8 @@ TODOs
 - [x] Receive messages from other processes to transmit with radiodriver via Unix socket
 - [x] Send received messages from radiodriver to other processes via Unix socket
 - [x] Implement message TX over Unix socket for fake rover
-- [ ] Handle unframing of messages received from radiodriver
-- [ ] Use queue.SimpleQueue instead of arrays as queues :skull:
-- [ ] Handle exit signals on proxy
+- [x] Handle unframing of messages received from radiodriver
+- [x] Use queue.SimpleQueue instead of arrays as queues :skull:
+- [ ] Use bytearray instead of bytes for buffer
+- [ ] Handle exit signals on proxy (should close serial connection, delete unix socket)
 - [ ] Test everything
