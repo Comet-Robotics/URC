@@ -4,6 +4,11 @@ import logging
 import time
 import socket
 import os
+import struct
+import json
+import datetime
+import random
+
 logger = logging.getLogger(__name__)
 
 RADIODRIVER_SERIAL_PORT = '/dev/tty.debug-console'
@@ -11,7 +16,7 @@ UNIX_SOCKET_PATH = '/var/run/radiodriver-proxy.sock'
 SLEEP_TIME = 0.001
 
 unframed_messages_to_tx: list[bytes] = []
-framed_messages_to_tx: list[bytes] = []
+framed_messages_to_tx: list[bytearray] = []
 
 serial_read_buffer = b''
 framed_messages_from_rx: list[bytes] = []
@@ -24,7 +29,7 @@ class KISSChars(enum.Enum):
     TFESC = 0xDD # Transposed Frame Escape
 
 
-def format_kiss_message(data: bytes, tnc_port: int = 0) -> bytes:
+def format_kiss_message(data: bytes, tnc_port: int = 0) -> bytearray:
     tnc_port_valid = tnc_port >= 0 and tnc_port <= 9
     if not tnc_port_valid:
         raise ValueError("TNC Port must be between 0 and 9")
@@ -91,7 +96,6 @@ def message_formatter():
 def mock_message_transport():
     logger = logging.getLogger("MockMessageTransport")
     logger.info("Starting message transport...")
-    import json, datetime, random
     while True:
         fake_msg = json.dumps({"random": random.random(), "time": datetime.datetime.now().isoformat()})
         logger.info(f"Message from process: {fake_msg}")
@@ -126,8 +130,6 @@ def receive_all(conn: socket.socket, size: int) -> bytes:
     return b''.join(chunks)
 
 def unix_socket_message_transport():
-    import socket, struct
-
     logger = logging.getLogger("UnixSocketMessageTransport")
     logger.info("Starting Unix socket message transport...")
     os.unlink(UNIX_SOCKET_PATH)
@@ -171,8 +173,8 @@ def main():
     message_transport_thread = threading.Thread(target=unix_socket_message_transport)
     message_transport_thread.start()
 
-    serial_thread = threading.Thread(target=serial_manager)
-    serial_thread.start()
+    serial_manager_thread = threading.Thread(target=serial_manager)
+    serial_manager_thread.start()
 
     message_formatter_thread = threading.Thread(target=message_formatter)
     message_formatter_thread.start()
