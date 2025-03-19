@@ -64,7 +64,5 @@ TODOs
 - [x] Implement message TX over Unix socket for fake rover
 - [ ] Handle unframing of messages received from radiodriver
 - [ ] Use queue.SimpleQueue instead of arrays as queues :skull:
-- [ ] Implement message RX over Unix socket for base station
-- [ ] Implement message TX over Unix socket for base station
 - [ ] Handle exit signals on proxy
 - [ ] Test everything

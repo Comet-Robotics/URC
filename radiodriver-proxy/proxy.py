@@ -8,7 +8,6 @@ import struct
 import json
 import datetime
 import random
-from typing import NamedTuple
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +21,14 @@ unframed_messages_to_tx: list[bytes] = []
 # Queue of framed messages that are ready to be sent to the radio driver via serial. Queue is populated by the message formatter thread, consumed by the serial manager thread.
 framed_messages_to_tx: list[bytearray] = []
 
-# Queue of lines that have been received from the radio driver via serial. Each line should begin with '[PACKET RX]', then the bytes of the framed message, and ending with a number indicating the number of bytes in the message before it was framed. Queue is populated by the serial manager thread and consumed by the message formatter thread.
-lines_read_from_driver: list[bytes] = []
-LINE_PREFIX = b'[PACKET RX]'
-
-# Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message transport thread and consumed by the message transport thread.
+# Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message formatter thread and consumed by the message transport thread.
 unframed_messages_from_rx: list[bytes] = []
+
+# Buffer used to store bytes as they are received from the serial port. Populated by the serial manager thread, consumed by the message formatter thread. Once a full message has been received, it is added to the framed_messages_from_rx queue.
+serial_read_buffer = b''
+
+# Lock used to ensure that only one thread is accessing the serial_read_buffer at a time.
+serial_read_buffer_lock = threading.Lock()
 
 class KISSChars(enum.Enum):
     FEND = 0xC0 # Frame End
@@ -62,7 +63,7 @@ def format_kiss_message(data: bytes, tnc_port: int = 0) -> bytearray:
 
 def serial_manager():
     logger = logging.getLogger("SerialManager")
-    global framed_messages_to_tx
+    global framed_messages_to_tx, serial_read_buffer, serial_read_buffer_lock
     logger.info("Starting serial manager...")
     with open(RADIODRIVER_SERIAL_PORT, "wb") as ser:
         # switching to nonblocking file reads so we can quickly switch over to tx if there is nothing to read - https://stackoverflow.com/a/66410605
@@ -78,18 +79,33 @@ def serial_manager():
                 ser.write(m)
                 logger.info("Message written to serial")
 
-            logger.info("Reading line")
-            line = ser.readline()
-            if len(line) > 0:
-              logger.debug(f"Line read: {line}")
-              lines_read_from_driver.append(line)
-            else:
-              logger.debug("No line read")
+            chars = ser.read()
+            if len(chars) > 0:
+              with serial_read_buffer_lock:
+                serial_read_buffer += chars
 
             
 def message_formatter():
+    global serial_read_buffer, serial_read_buffer_lock
     logger = logging.getLogger("MessageFormatter")
     logger.info("Starting message formatter...")
+    
+    def parse_serial_read_buffer():
+      global serial_read_buffer, serial_read_buffer_lock
+      logger.info("Parsing serial read buffer...")
+      fend_indexes: list[int] = []
+      for char_index, char in enumerate(serial_read_buffer):
+        match char:
+          case KISSChars.FEND.value:
+            fend_indexes.append(char_index)
+            back_to_back_fends_exist = len(fend_indexes) > 1 and fend_indexes[-1] - fend_indexes[-2] == 1
+            if back_to_back_fends_exist:
+              serial_read_buffer = serial_read_buffer[fend_indexes[-1]:]
+              logger.debug("Removed empty frame from serial read buffer.")
+              parse_serial_read_buffer()
+          # TODO: handle the other chars correctly
+            
+              
     while True:
         time.sleep(SLEEP_TIME)
         while len(unframed_messages_to_tx) > 0:
@@ -99,38 +115,16 @@ def message_formatter():
             framed_messages_to_tx.append(formatted_message)
             logger.info("Message added to queue")
             
+        logger.debug("Taking serial buffer lock")
+        with serial_read_buffer_lock:
+          logger.debug("Serial buffer lock taken")
+          if len(serial_read_buffer) == 0:
+            logger.debug("No data in serial buffer")
+            break
+          parse_serial_read_buffer()
+        logger.debug("Lock released")  
+            
 
-        line = lines_read_from_driver.pop(0)
-        
-        try:
-          parsed_line = parse_data_and_length_from_line(line)
-          unframed_messages_from_rx.append(parsed_line.data)
-        except ValueError as e:
-          logger.error(f"Error parsing line: {e}")
-
-
-class ParsedLine(NamedTuple):
-  data: bytes
-  length: int
-      
-def parse_data_and_length_from_line(line: bytes) -> ParsedLine:
-  if line.startswith(LINE_PREFIX):
-    stripped_line = line[len(LINE_PREFIX):]
-  else:
-    raise ValueError("Line does not start with expected prefix", LINE_PREFIX, line)
-    
-  unframed_data = b''
-  while len(stripped_line) > 0:
-    # TODO: unframing. raise an exception if the data is badly formed. break out out the loop when we reach the end of the data.
-    pass
-  
-  expected_data_length = int(stripped_line)
-  if len(unframed_data) != expected_data_length:
-    raise ValueError("Expected data length does not match actual data length", expected_data_length, len(unframed_data))
-  
-  return ParsedLine(data=unframed_data, length=expected_data_length)
-    
-  
 
 def mock_message_transport():
     logger = logging.getLogger("MockMessageTransport")
