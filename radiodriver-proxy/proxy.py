@@ -27,7 +27,7 @@ serial_read_buffer = b''
 # Queue of framed messages that have been received from the radio driver via serial. Queue is populated and consumed by the message formatter thread.
 framed_messages_from_rx: list[bytes] = []
 
-# Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message transport thread and consumed by the  message transport thread.
+# Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message transport thread and consumed by the message transport thread.
 unframed_messages_from_rx: list[bytes] = []
 
 class KISSChars(enum.Enum):
@@ -164,6 +164,11 @@ def unix_socket_message_transport():
                 unframed_messages_to_tx.append(buf)
                 logger.debug("Received message")
                 listening_for = ListeningFor.PAYLOAD_SIZE
+                
+            if len(unframed_messages_from_rx) > 0:
+                msg = unframed_messages_from_rx.pop(0)
+                conn.sendall(msg)
+                logger.debug("Message sent")
         except ConnectionError as e:
             logger.error(f"Connection error: {e}")
             break  # Exit loop on connection error

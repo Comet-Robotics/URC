@@ -60,8 +60,9 @@ sequenceDiagram
 ---
 TODOs
 - [x] Receive messages from other processes to transmit with radiodriver via Unix socket
-- [ ] Send received messages from radiodriver to other processes via Unix socket
+- [x] Send received messages from radiodriver to other processes via Unix socket
 - [x] Implement message TX over Unix socket for fake rover
+- [ ] Handle unframing of messages received from radiodriver
 - [ ] Implement message RX over Unix socket for base station
 - [ ] Implement message TX over Unix socket for base station
 - [ ] Handle exit signals on proxy
