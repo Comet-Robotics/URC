@@ -11,9 +11,12 @@ import random
 
 logger = logging.getLogger(__name__)
 
+DEV = True
 RADIODRIVER_SERIAL_PORT = '/dev/tty.debug-console'
 UNIX_SOCKET_PATH = '/var/run/radiodriver-proxy.sock'
-SLEEP_TIME = 0.001
+
+# slowing down so I can read the logs ;)
+SLEEP_TIME = 1 if DEV else 0.001
 
 # Queue of messages that need to be framed before being sent to the radio driver via serial. Queue is populated by the message transport thread and consumed by the message formatter thread.
 unframed_messages_to_tx: list[bytes] = []
@@ -22,7 +25,7 @@ unframed_messages_to_tx: list[bytes] = []
 framed_messages_to_tx: list[bytearray] = []
 
 # Queue of messages that have been unframed by the message formatter thread. Queue is populated by the message formatter thread and consumed by the message transport thread.
-unframed_messages_from_rx: list[bytes] = []
+unframed_messages_from_rx: list[bytearray] = []
 
 # Buffer used to store bytes as they are received from the serial port. Populated by the serial manager thread, consumed by the message formatter thread. Once a full message has been received, it is added to the framed_messages_from_rx queue.
 serial_read_buffer = b''
@@ -65,7 +68,7 @@ def serial_manager():
     logger = logging.getLogger("SerialManager")
     global framed_messages_to_tx, serial_read_buffer, serial_read_buffer_lock
     logger.info("Starting serial manager...")
-    with open(RADIODRIVER_SERIAL_PORT, "wb") as ser:
+    with open(RADIODRIVER_SERIAL_PORT, "w+b") as ser:
         # switching to nonblocking file reads so we can quickly switch over to tx if there is nothing to read - https://stackoverflow.com/a/66410605
         os.set_blocking(ser.fileno(), False)
         
@@ -80,32 +83,68 @@ def serial_manager():
                 logger.info("Message written to serial")
 
             chars = ser.read()
-            if len(chars) > 0:
+            if chars and len(chars) > 0:
               with serial_read_buffer_lock:
                 serial_read_buffer += chars
 
+
+class KISSPacketParserStates(enum.Enum):
+  EXPECTING_INITIAL_FEND = 0
+  EXPECTING_COMMAND = 1
+  EXPECTING_DATA_OR_FINAL_FEND = 2
+  EXPECTING_ESCAPED_CHAR = 3
+
             
 def message_formatter():
-    global serial_read_buffer, serial_read_buffer_lock
+    global serial_read_buffer_lock
     logger = logging.getLogger("MessageFormatter")
     logger.info("Starting message formatter...")
     
     def parse_serial_read_buffer():
-      global serial_read_buffer, serial_read_buffer_lock
+      global serial_read_buffer
+      EXPECTED_COMMAND = 0x00
       logger.info("Parsing serial read buffer...")
-      fend_indexes: list[int] = []
+      unframed_message = bytearray()
+      state = KISSPacketParserStates.EXPECTING_INITIAL_FEND
+      
       for char_index, char in enumerate(serial_read_buffer):
-        match char:
-          case KISSChars.FEND.value:
-            fend_indexes.append(char_index)
-            back_to_back_fends_exist = len(fend_indexes) > 1 and fend_indexes[-1] - fend_indexes[-2] == 1
-            if back_to_back_fends_exist:
-              serial_read_buffer = serial_read_buffer[fend_indexes[-1]:]
-              logger.debug("Removed empty frame from serial read buffer.")
-              parse_serial_read_buffer()
-          # TODO: handle the other chars correctly
-            
-              
+        match state:
+          case KISSPacketParserStates.EXPECTING_INITIAL_FEND:
+            if char == KISSChars.FEND.value:
+              state = KISSPacketParserStates.EXPECTING_COMMAND
+            else:
+              logger.error("Unexpected character in EXPECTING_INITIAL_FEND state")
+              serial_read_buffer = serial_read_buffer[char_index+1:]
+              break
+          case KISSPacketParserStates.EXPECTING_COMMAND:
+            if char == EXPECTED_COMMAND:
+              state = KISSPacketParserStates.EXPECTING_DATA_OR_FINAL_FEND
+            else:
+              logger.error("Unexpected character in EXPECTING_COMMAND state")
+              serial_read_buffer = serial_read_buffer[char_index+1:]
+              break
+          case KISSPacketParserStates.EXPECTING_DATA_OR_FINAL_FEND:
+            match char:
+              case KISSChars.FESC.value:
+                state = KISSPacketParserStates.EXPECTING_ESCAPED_CHAR
+              case KISSChars.FEND.value:
+                if len(unframed_message) > 0:
+                  logger.debug("Adding message to unframed_messages_from_rx")
+                  unframed_messages_from_rx.append(unframed_message)
+                else:
+                  logger.debug("Message is empty, ignoring")
+                serial_read_buffer = serial_read_buffer[char_index+1:]
+                break
+              case _:
+                unframed_message.append(char)
+          case KISSPacketParserStates.EXPECTING_ESCAPED_CHAR:
+            match char:
+              case KISSChars.TFEND.value:
+                unframed_message.append(KISSChars.FEND.value)
+              case KISSChars.TFESC.value:
+                unframed_message.append(KISSChars.FESC.value)
+              case _:
+                logger.error("Unexpected character in EXPECTING_ESCAPED_CHAR state")
     while True:
         time.sleep(SLEEP_TIME)
         while len(unframed_messages_to_tx) > 0:
@@ -118,9 +157,6 @@ def message_formatter():
         logger.debug("Taking serial buffer lock")
         with serial_read_buffer_lock:
           logger.debug("Serial buffer lock taken")
-          if len(serial_read_buffer) == 0:
-            logger.debug("No data in serial buffer")
-            break
           parse_serial_read_buffer()
         logger.debug("Lock released")  
             
