@@ -1,15 +1,19 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "URC Hermes",
+  name: "La Princesa Rover | SRP",
   description:
     "UTD URC Control Software",
-  mainNav: [
+  
+  /*commented out dash from navigation bar > 
+  there's only one pages why do we need that ?? - zee */
+  
+    /*mainNav: [
     {
       title: "Dash",
       href: "/",
     },
-  ],
+  ],*/
   links: {
    
   },
