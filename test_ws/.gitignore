@@ -1,4 +1,4 @@
 install/
 log/
 build/
-.vscode/
+src/tracking/.vscode/
