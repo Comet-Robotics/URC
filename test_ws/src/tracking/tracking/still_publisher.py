@@ -5,7 +5,6 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-from foxglove_msgs.msg import ImageAnnotations
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import numpy as np
