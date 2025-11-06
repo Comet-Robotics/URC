@@ -1,5 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "/home/danwalkr79/ros_ws/install/custom_interfaces/lib/python3.10/site-packages"
-    ]
-}
