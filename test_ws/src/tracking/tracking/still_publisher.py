@@ -11,6 +11,10 @@ import cv2
 import numpy as np
 import os
 
+from ament_index_python.packages import get_package_share_directory
+
+pkg_share = get_package_share_directory('tracking')
+
 class ImagePublisher(Node):
     def __init__(self, Hz=1):
         super().__init__("image_publisher")
@@ -21,7 +25,7 @@ class ImagePublisher(Node):
         self.get_logger().info('Camera publisher started.')
 
     def timer_callback(self):
-        img_path = os.path.expanduser("~/ros_ws/src/tracking/img/Human_faces.jpg")
+        img_path = os.path.join(pkg_share, 'img', 'Human_faces.jpg')
         img = cv2.imread(img_path)        
 
         # Convert form OpenCV image (numpy array) to Image Message

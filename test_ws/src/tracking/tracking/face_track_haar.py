@@ -10,12 +10,15 @@ import os
 import numpy as np
 
 from custom_interfaces.msg import BoundingBox, Detections
+from ament_index_python.packages import get_package_share_directory
+
+pkg_share = get_package_share_directory('tracking')
 
 class TrackingNode(Node):
     def __init__(self):
         super().__init__("face_track_haar")
         # Haar cascade classifier. 
-        self.face_cascade = cv2.CascadeClassifier(os.path.expanduser('~/ros_ws/src/tracking/models/haarcascade_frontalface_default.xml'))
+        self.face_cascade = cv2.CascadeClassifier(os.path.join(pkg_share, 'models', 'haarcascade_frontalface_default.xml'))
 
         self.sub = self.create_subscription(Image, "camera/image_raw", self.detect_face, 10)
         self.pub = self.create_publisher(Detections, "camera/detections", 10)
