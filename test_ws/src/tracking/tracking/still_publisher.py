@@ -1,7 +1,3 @@
-# In order to get video from webcam, run this
-# "C:\Program Files\VideoLAN\VLC\vlc.exe" dshow:// :dshow-vdev="ACER HD User Facing" :dshow-size=1280x720 :sout="#transcode{vcodec=MJPG,vb=4000,scale=1}:http{mux=mpjpeg,dst=:8080/video}" :no-sout-all :sout-keep
-#           Replace with the name of your camera/capture device ^^^^^^^^^^^^^^^^^^^
-
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
