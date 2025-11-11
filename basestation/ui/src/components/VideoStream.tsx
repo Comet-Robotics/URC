@@ -1,3 +1,5 @@
+// Establishes the video stream - JC
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Select,
@@ -244,8 +246,12 @@ const StartStream = ({send_json,message}:{send_json: (msg: RTCSessionDescription
   const streamIds = Array.from(remoteStreams.keys());
   const bothStreamsReady = streamIds.length >= 2 && connectionState == "connected" &&streamIds.every(id => remoteStreams.get(id) !== undefined);
   const singleStreamReady = selectedVideo !== "both" && connectionState == "connected"&& selectedVideo !== null && remoteStreams.get(selectedVideo) !== undefined;
+
+  // The actual component rendering - JC
+  // Changed the layout to better fit the new UI design - JC
+
   return (
-    <Card className='col-span-3 row-span-2'>
+    <Card className='col-span-2 row-span-3'>
       <CardHeader className="flex flex-row justify-between items-center">
         <CardTitle>Streams</CardTitle>
         <div className="flex items-center space-x-2">

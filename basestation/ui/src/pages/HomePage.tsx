@@ -2,6 +2,7 @@ import React from "react";
 import VideoStream from "../components/VideoStream";
 import Telemetry from "../components/Telemetry";
 import Controller from "../components/Controller";
+import Battery from "../components/battery"; // Gets the Battery Component
 import {  useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket"
 import { decodeMessage, GPSData, IMUData, Message, Twist, encodeMessage } from "@/types/binding";
@@ -86,6 +87,7 @@ export default function HomePage() {
     <section className="grid xl:grid-cols-4 row-span-4 grid-cols-3 gap-4 p-4">
       <VideoStream   send_json={(value) => {sendMessage(JSON.stringify(value));}} message={message}  />
       <Connection roverAddress={roverAddress} />
+      <Battery batteryLevel={50} />
 
       <Controller sendMovement={handleMovement} />
       <Telemetry gps={gps} imu={imu} />
