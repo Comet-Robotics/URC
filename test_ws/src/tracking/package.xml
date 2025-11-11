@@ -3,28 +3,31 @@
 <package format="3">
   <name>tracking</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Tracking nodes for computer vision using ROS 2</description>
   <maintainer email="danwalkr79@todo.todo">danwalkr79</maintainer>
   <license>Apache-2.0</license>
 
+  <!-- Test dependencies -->
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
   <test_depend>python3-pytest</test_depend>
 
+  <!-- Runtime dependencies -->
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>foxglove_msgs</exec_depend>
+  <exec_depend>builtin_interfaces</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>custom_interfaces</exec_depend>
 
-  <depend>sensor_msgs</depend>
-
-  <build_depend>rosidl_default_generators</build_depend>
-  <build_depend>rosidl_default_runtime</build_depend>
-  <exec_depend>rosidl_default_runtime</exec_depend>
-  <member_of_group>rosidl_interface_packages</member_of_group>
+  <!-- Python libraries -->
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>python3-opencv</exec_depend>
 
-
+  <!-- Export -->
   <export>
     <build_type>ament_python</build_type>
   </export>
