@@ -3,9 +3,9 @@
 <package format="3">
   <name>action_drivetrain_interface</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="you@example.com">urc</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Use these interfaces to direct the robot drivetrain by implementing actions that properly make use of the action message types.</description>
+  <maintainer email="cometrobotics@utdallas.edu">comet robotics</maintainer>
+  <license></license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
