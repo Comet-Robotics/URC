@@ -1,10 +1,10 @@
 "use client"
 
-export default function Page() {
+export function Home() {
   return (
   <>
   <h1>Solis Rover Project</h1>
-  <p>science.tsx</p>
+  <p>home.tsx</p>
   </>
 )
 }
