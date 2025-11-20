@@ -47,5 +47,5 @@ Use these interfaces to direct the robot drivetrain by implementing actions that
 Add this package to your ROS2 package using the following:
 
 ```xml
-<exec_depend>action_drivetrain_interface<exec_depend>
+<depend>action_drivetrain_interface<depend>
 ```
