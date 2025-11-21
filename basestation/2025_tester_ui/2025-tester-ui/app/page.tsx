@@ -10,8 +10,6 @@ function App() {
   return (
     <Router>
       <Routes>
-          {/* <h1>Solis Rover Project</h1>
-          <p>homepage.tsx</p> */}
         <Route path="/" element={<Home/>}/>
         <Route path="/science-payload" element={<Science/>}/>
         <Route path="/gyroscope" element={<Gyroscope/>}/>

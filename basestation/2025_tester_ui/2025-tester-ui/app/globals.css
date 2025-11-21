@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.header{
+  padding: 50px;
+  text-align: center;
+  background: #87b2c5;
+  font-family:'Times New Roman', Times, serif;
+  font-size: 100px;
+}
