@@ -1,3 +1,8 @@
 install/
 log/
 build/
+
+# VS Code C++ IntelliSense cache
+.vscode/browse.vc.db*
+.vscode/*.db
+.vscode/*.db-*
