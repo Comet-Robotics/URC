@@ -3,11 +3,10 @@
 <package format="3">
   <name>rtab_package</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="kevinmsmith214@gmail.com">kevin</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Fuses real-time Odometry and SLAM data to produce robot localization</description>
+  <maintainer email="cometrobotics@utdallas.edum">comet robotics</maintainer>
+  <license>TODO: License</license>
  
-
   <depend>ament_cmake</depend>
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
