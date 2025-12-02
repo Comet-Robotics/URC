@@ -6,7 +6,7 @@ export default function Page() {
   return (
   <>
   <Nav />
-  <h1>Solis Rover Project</h1>
+  <h1 className = "header">Solis Rover Project</h1>
   <p>science.tsx</p>
   </>
 )

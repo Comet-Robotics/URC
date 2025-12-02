@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Orbitron:wght@400..900&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@300..700&family=Stack+Sans+Headline:wght@200..700&display=swap');
+
 @import "tailwindcss";
 
 :root {
@@ -25,10 +27,17 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.header{
-  padding: 50px;
+nav{
   text-align: center;
-  background: #87b2c5;
-  font-family:'Times New Roman', Times, serif;
-  font-size: 100px;
+  background-color: rgb(230, 167, 95);
+}
+
+.header{
+  padding: 10px;
+  text-align: center;
+  background-color: rgba(255, 86, 86, 0.722); /* For browsers that do not support gradients */
+  background-image: linear-gradient(to bottom, rgb(230, 167, 95),rgba(255, 86, 86, 0.722));
+  font-family:"Silkscreen", sans-serif;
+  text-shadow: 2px 2px 8px #391212;
+  font-size: 90px;
 }
