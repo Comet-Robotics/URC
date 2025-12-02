@@ -5,8 +5,10 @@ import numpy as np
 from math import factorial
 
 import rclpy
+import os
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
+from ament_index_python.packages import get_package_share_directory
 
 from custom_interfaces.msg import Spectrometer
 
@@ -44,7 +46,8 @@ def readcal(width):
 	errors = 0
 	try:
 		print("Loading calibration data...")
-		file = open('config/caldata.txt', 'r')
+		pkg_share = get_package_share_directory('spectrometer_publisher')
+		file = open(os.path.join(pkg_share, 'config', 'caldata.txt'), 'r')
 	except:
 		errors = 1
 
