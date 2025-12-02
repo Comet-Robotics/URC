@@ -25,11 +25,29 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(255, 86, 86);
 }
 
-nav{
+h1{
+  font-size: 50px;
+  padding-top: 15px;
+  font-family:"Stack Sans Headline", sans-serif;
+}
+
+h2{
+  font-size: 30px;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+Nav{
+  padding-top:25px;
+  padding-bottom:25px;
   text-align: center;
   background-color: rgb(230, 167, 95);
+}
+
+hr{
+  color: rgba(166, 86, 25, 0.781) ;
 }
 
 .header{
@@ -37,7 +55,11 @@ nav{
   text-align: center;
   background-color: rgba(255, 86, 86, 0.722); /* For browsers that do not support gradients */
   background-image: linear-gradient(to bottom, rgb(230, 167, 95),rgba(255, 86, 86, 0.722));
-  font-family:"Silkscreen", sans-serif;
-  text-shadow: 2px 2px 8px #391212;
-  font-size: 90px;
+  /* font-family: "Space Grotesk", sans-serif; */
+}
+
+.navItems{
+  padding: 100px;
+  font-family:"Stack Sans Headline", sans-serif;
+  font-weight:400;
 }

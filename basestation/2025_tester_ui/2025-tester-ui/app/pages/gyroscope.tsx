@@ -6,8 +6,12 @@ export default function Page() {
   return (
   <>
   <Nav />
-  <h1 className = "header">Solis Rover Project</h1>
+  <div className = "header">
+    <h1> La Princesa Rover </h1>
+      <h2> Gyroscope </h2>
   <p>gyroscope.tsx</p>
+  </div>
+  
   </>
 )
 }

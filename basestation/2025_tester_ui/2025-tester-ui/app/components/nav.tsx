@@ -10,9 +10,9 @@ export function Nav() {
 
         {/* Navigation links */}
 
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/science-payload">Science Payload</NavLink>
-        <NavLink to="/gyroscope">Gyroscope</NavLink>
+        <NavLink to="/" className={"navItems"} >Home</NavLink>
+        <NavLink to="/science-payload" className={"navItems"}>Science Payload</NavLink>
+        <NavLink to="/gyroscope" className={"navItems"}>Gyroscope</NavLink>
     </nav>
   );
 }   
