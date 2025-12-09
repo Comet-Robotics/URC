@@ -1,4 +1,6 @@
-// Card stuff here. we're gonna need some stuff for this
+// Card stuff here. we're gonna need some stuff for this - JC
+
+// Card header - JC
 
 export function CardHeader() {
     return (
@@ -8,6 +10,8 @@ export function CardHeader() {
     );
 }
 
+// Card content - JC
+
 export function CardContent() {
     return (
         <div className="card-content">
@@ -15,6 +19,8 @@ export function CardContent() {
         </div>
     );
 }
+
+// Card footer - JC
 
 export function CardFooter() {
     return (
@@ -24,9 +30,14 @@ export function CardFooter() {
     );
 }
 
+// Main Card component - JC
+
 export function Card() {
     return (
         <div className="card">
+            <CardHeader />
+            <CardContent />
+            <CardFooter />
         </div>
     );
 }
