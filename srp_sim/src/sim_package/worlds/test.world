@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <sdf version="1.9">
 
-    <world name="world_demo">
+    <world name="world1"> <!-- Note that the cameras are hard coded to only work with worlds name 'world1' -->
       <scene>
       <ambient>.4 .4 .4</ambient>
       <sky></sky>
     </scene>
 
-		<plugin
+	<plugin
 	  filename="gz-sim-physics-system"
 	  name="gz::sim::systems::Physics">
 	</plugin>
@@ -19,11 +19,28 @@
 		filename="gz-sim-user-commands-system"
 		name="gz::sim::systems::UserCommands">
         </plugin>
+	<plugin filename="gz-sim-imu-system"
+			name="gz::sim::systems::Imu">
+	</plugin>
+	<plugin
+		filename="gz-sim-navsat-system"
+		name="gz::sim::systems::NavSat">
+	</plugin>
+
+	<spherical_coordinates>
+            <surface_model>EARTH_WGS84</surface_model>
+            <world_frame_orientation>ENU</world_frame_orientation>
+            <latitude_deg>-22.986687</latitude_deg>
+            <longitude_deg>-43.202501</longitude_deg>
+            <elevation>0</elevation>
+            <heading_deg>0</heading_deg>
+        </spherical_coordinates>
+	<!-->
         <plugin
 		filename="BasicSystem"
 		name="sim_package::BasicSystem">
         </plugin>
-        
+	-->
         <light name="sun" type="directional">
 	      <cast_shadows>true</cast_shadows>
 	      <pose>0 0 10 0 0 0</pose>
@@ -64,6 +81,31 @@
 		</visual>
 	      </link>
 		
+	</model>
+	<model name="block">
+		<pose>1 1 1 0 0 0</pose>
+		<static>true</static>
+		<link name="link">
+			<collision name="collision">
+				<geometry>
+					<box>
+						<size>1 1 2</size>
+					</box>
+				</geometry>
+			</collision>
+			<visual name="visual">
+				<geometry>
+					<box>
+						<size>1 1 2</size>
+					</box>
+				</geometry>
+				<material>
+					<ambient>.0.0 0.0 0.8 1</ambient>
+					<diffuse>0.0 0.0 0.8 1</diffuse>
+					<specular>0.0 0.0 0.8 1</specular>
+				</material>
+			</visual>
+		</link>
 	</model>
     </world>
 </sdf>
