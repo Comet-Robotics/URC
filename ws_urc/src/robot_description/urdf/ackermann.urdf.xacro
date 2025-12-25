@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="ackermann_controller" params="wheel_separation wheel_radius wheelbase">
+    <gazebo>
+      <plugin
+        filename="gz-sim-ackermann-steering-system"
+        name="gz::sim::systems::AckermannSteering">
+        <topic>cmd_vel</topic>
+        <child_frame_id>base_footprint</child_frame_id>
+        <odom_topic>odom/unfiltered</odom_topic>
+        
+        <!-- Front steering joints (only front steering is supported) -->
+        <left_steering_joint>front_left_steering_joint</left_steering_joint>
+        <right_steering_joint>front_right_steering_joint</right_steering_joint>
+        
+        <!-- All driven wheel joints (front, middle, rear) -->
+        <left_joint>front_left_wheel_joint</left_joint>
+        <right_joint>front_right_wheel_joint</right_joint>
+        <left_joint>middle_left_wheel_joint</left_joint>
+        <right_joint>middle_right_wheel_joint</right_joint>
+        <left_joint>rear_left_wheel_joint</left_joint>
+        <right_joint>rear_right_wheel_joint</right_joint>
+        
+        <!-- Vehicle parameters -->
+        <wheel_separation>${wheel_separation}</wheel_separation>
+        <wheel_radius>${wheel_radius}</wheel_radius>
+        <wheelbase>${wheelbase}</wheelbase>
+        <kingpin_width>0.0</kingpin_width>
+        
+        <!-- Steering limits (±45 degrees) -->
+        <steering_limit>0.785</steering_limit>
+        
+        <odom_publish_frequency>50</odom_publish_frequency>
+      </plugin>
+    </gazebo>
+
+    <gazebo>
+      <plugin filename="gz-sim-joint-state-publisher-system"
+        name="gz::sim::systems::JointStatePublisher">
+        <topic>joint_states</topic>
+        <update_rate>50</update_rate>
+        
+        <!-- All wheel joints -->
+        <joint_name>front_left_wheel_joint</joint_name>
+        <joint_name>front_right_wheel_joint</joint_name>
+        <joint_name>middle_left_wheel_joint</joint_name>
+        <joint_name>middle_right_wheel_joint</joint_name>
+        <joint_name>rear_left_wheel_joint</joint_name>
+        <joint_name>rear_right_wheel_joint</joint_name>
+        
+        <!-- Front steering joints -->
+        <joint_name>front_left_steering_joint</joint_name>
+        <joint_name>front_right_steering_joint</joint_name>
+        
+        <!-- Rear steering joints (passive, not controlled) -->
+        <joint_name>rear_left_steering_joint</joint_name>
+        <joint_name>rear_right_steering_joint</joint_name>
+      </plugin>    
+    </gazebo>
+  </xacro:macro>
+</robot>

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
-CHOOSE_ROS_DISTRO=humble
+CHOOSE_ROS_DISTRO=jazzy
 INSTALL_PACKAGE=ros-base
-TARGET_OS=jammy
+TARGET_OS=noble
 
 # Check OS version
 if ! which lsb_release > /dev/null ; then
