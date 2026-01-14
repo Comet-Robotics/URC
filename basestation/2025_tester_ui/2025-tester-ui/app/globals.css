@@ -96,3 +96,11 @@ hr{
   font-family:"Stack Sans Headline", sans-serif;
   font-weight:400;
 }
+
+.notifications{
+  position: fixed;
+  float: right;
+  width: 25%;
+  height: 100vh;
+  display: none;
+}
