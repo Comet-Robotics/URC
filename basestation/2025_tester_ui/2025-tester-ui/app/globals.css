@@ -25,7 +25,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family:"Stack Sans Headline", sans-serif;
-  background-color: #b1cbfb;
+  background-color: #d6e5ff;
 }
 
 button{
@@ -56,7 +56,7 @@ Nav{
   padding-top:25px;
   padding-bottom:25px;
   text-align: center;
-  background-color: #99e1f3;
+  background-color: #c3d9f1;
 }
 
 hr{
@@ -81,13 +81,15 @@ hr{
   margin-left: auto; 
   margin-right: 50px;
   border-radius: 8px;
+  border-width: 0.75px;
+  border-color: #3b36b7;
 }
 
 .header{
   padding: 10px;
   text-align: center;
-  background-color: rgba(251, 137, 137, 0.722); /* For browsers that do not support gradients */
-  background-image: linear-gradient(to bottom, rgb(153, 225, 243),rgba(177, 203, 251));
+  background-color: rgba(231, 227, 227, 0.722); /* For browsers that do not support gradients */
+  background-image: linear-gradient(to bottom, rgb(195, 236, 246),rgb(216, 228, 250));
   /* font-family: "Space Grotesk", sans-serif; */
 }
 
