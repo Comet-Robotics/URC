@@ -80,6 +80,12 @@ hr{
   font: black;
 }
 
+.big-block{
+  max-width: fit-content;
+  display: flex;
+  margin: auto;
+}
+
 .block{
   background-color: rgb(241, 245, 255);
   padding: 25px;
@@ -87,8 +93,7 @@ hr{
   max-height: 500px;
   max-width: 350px;
   text-align: center;
-  margin-left: auto; 
-  margin-right: 50px;
+  align-self :center;
   border-radius: 8px;
   border-width: 0.75px;
   border-color: #3b36b7;
