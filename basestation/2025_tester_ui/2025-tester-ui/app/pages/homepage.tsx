@@ -17,7 +17,9 @@ return (
   <>
 
   <Nav />
-  <button></button>
+  <div className = "big-block">
+    <button className="block"> hi </button>
+  </div>
 
   <hr/>
   <div className = "header">
