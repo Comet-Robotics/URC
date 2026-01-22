@@ -1,12 +1,24 @@
 "use client"
 
 import { Nav } from "../components/nav";
-import { Card } from "../components/card";
+import { Notifications } from "../components/notifications";
+import { View } from 'react-native';
+
+let state = {
+  isVisible: false
+};
+
+function toggleVisibility(){
+  !state.isVisible;
+};
 
 export function Home() {
 return (
   <>
+
   <Nav />
+  <button></button>
+
   <hr/>
   <div className = "header">
     <h1> La Princesa Rover </h1>
