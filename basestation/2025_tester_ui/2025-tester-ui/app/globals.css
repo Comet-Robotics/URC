@@ -26,30 +26,36 @@ body {
   color: var(--foreground);
   font-family:"Stack Sans Headline", sans-serif;
   background-color: #d6e5ff;
+  font: black;
 }
 
 button{
   border: 1px black;
+  font: black;
 }
 
 h1{
   font-size: 50px;
   padding-top: 15px;
   font-family:"Stack Sans Headline", sans-serif;
+  font: black;
 }
 
 h2{
   font-size: 30px;
   font-family: "Space Grotesk", sans-serif;
+  font: black;
 }
 
 h3{
   font-weight: bold;
   font-family: "Stack Sans Headline", sans-serif;
+  font: black;
 }
 
 p{
   font-family: "Stack Sans Headline", sans-serif;
+  font: black;
 }
 
 Nav{
@@ -57,10 +63,12 @@ Nav{
   padding-bottom:25px;
   text-align: center;
   background-color: #c3d9f1;
+  font: black;
 }
 
 hr{
   color: rgba(34, 25, 166, 0.781) ;
+  font: black;
 }
 
 .centering-block{
@@ -69,6 +77,7 @@ hr{
   align-self: right;
   margin-left: auto; 
   margin-right: 0;
+  font: black;
 }
 
 .block{
@@ -83,6 +92,7 @@ hr{
   border-radius: 8px;
   border-width: 0.75px;
   border-color: #3b36b7;
+  font: black;
 }
 
 .header{
@@ -90,6 +100,7 @@ hr{
   text-align: center;
   background-color: rgba(231, 227, 227, 0.722); /* For browsers that do not support gradients */
   background-image: linear-gradient(to bottom, rgb(195, 236, 246),rgb(216, 228, 250));
+  font: black;
   /* font-family: "Space Grotesk", sans-serif; */
 }
 
@@ -97,6 +108,7 @@ hr{
   padding: 100px;
   font-family:"Stack Sans Headline", sans-serif;
   font-weight:400;
+  font: black;
 }
 
 .notifications{
@@ -105,4 +117,5 @@ hr{
   width: 25%;
   height: 100vh;
   display: none;
+  font: black;
 }
