@@ -8,6 +8,7 @@
   <xacro:include filename="$(find robot_description)/urdf/sensors/generic_laser.urdf.xacro" />
   <xacro:include filename="$(find robot_description)/urdf/sensors/depth_sensor.urdf.xacro" />
   <xacro:include filename="$(find robot_description)/urdf/ackermann.urdf.xacro" />
+  <xacro:include filename="$(find robot_description)/urdf/sensors/gps.urdf.xacro" />
 
   <xacro:base 
     length="${base_length}" 
@@ -102,6 +103,10 @@
   <xacro:depth_sensor>
     <xacro:insert_block name="depth_sensor_pose" />
   </xacro:depth_sensor>
+
+  <xacro:gps_sensor>
+    <xacro:insert_block name="gps_pose" />
+  </xacro:gps_sensor>
 
   <xacro:ackermann_controller
     wheel_separation="${wheel_pos_y * 2}"

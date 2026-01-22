@@ -31,17 +31,29 @@ def generate_launch_description():
         [FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py']
     )
 
-    ekf_config_path = PathJoinSubstitution(
-        [FindPackageShare("robot_simulation"), "config", "ekf.yaml"]
-    )
+    # ekf_config_path = PathJoinSubstitution(
+    #     [FindPackageShare("robot_simulation"), "config", "ekf.yaml"]
+    # )
 
     robot_base = 'srp'  # Change robot base here if needed
     urdf_path = PathJoinSubstitution(
         [FindPackageShare("robot_description"), "urdf", f"{robot_base}.urdf.xacro"]
     )
+
+    ros_gz_bridge_config_path = PathJoinSubstitution(
+        [FindPackageShare("robot_simulation"), "config", "ros_gz_bridge.yaml"]
+    )
     
     world_path = PathJoinSubstitution(
         [FindPackageShare("robot_simulation"), "worlds", "playground.sdf"]
+    )
+
+    ekf_config = PathJoinSubstitution(
+        [FindPackageShare("robot_simulation"), "config", "ekf.yaml"]
+    )
+
+    ekf_launch_path = PathJoinSubstitution(
+        [FindPackageShare('robot_simulation'), 'launch', 'ekf_localization.launch.py']
     )
 
     description_launch_path = PathJoinSubstitution(
@@ -62,10 +74,16 @@ def generate_launch_description():
         ),
 
         DeclareLaunchArgument(
-            name='odom_topic', 
-            default_value='/odom',
-            description='EKF out odometry topic'
+            name="ekf_config",
+            default_value=ekf_config,
+            description="Path to ekf config file",
         ),
+
+        # DeclareLaunchArgument(
+        #     name='odom_topic', 
+        #     default_value='/odom',
+        #     description='EKF out odometry topic'
+        # ),
         
         DeclareLaunchArgument(
             name='world', 
@@ -129,18 +147,22 @@ def generate_launch_description():
         Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
-            arguments=[
-                "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-                "/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist",
-                "/odom/unfiltered@nav_msgs/msg/Odometry[gz.msgs.Odometry",
-                "/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU",
-                "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
-                "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
-                "/camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
-                "/camera/image@sensor_msgs/msg/Image[gz.msgs.Image",
-                "/camera/depth_image@sensor_msgs/msg/Image[gz.msgs.Image",
-                "/camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
-            ],
+            # arguments=[
+            #     the old and functional stuff
+            #     "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock", # inside
+            #     "/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist", #inside byt only Ros to Gazebo not biderectional
+            #     "/odom/unfiltered@nav_msgs/msg/Odometry[gz.msgs.Odometry", #inside
+            #     "/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU", #inside
+            #     "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model", #inside
+            #     "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
+            #     "/camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
+            #     "/camera/image@sensor_msgs/msg/Image[gz.msgs.Image",
+            #     "/camera/depth_image@sensor_msgs/msg/Image[gz.msgs.Image",
+            #     "/camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
+            # ],
+            parameters=[{
+                'config_file': ros_gz_bridge_config_path
+            }],
             remappings=[
                 ('/camera/camera_info', '/camera/color/camera_info'),
                 ('/camera/image', '/camera/color/image_raw'),
@@ -155,16 +177,24 @@ def generate_launch_description():
             name='command_timeout'
         ),
 
-        Node(
-            package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node',
-            output='screen',
-            parameters=[
-                {'use_sim_time': use_sim_time}, 
-                ekf_config_path
-            ],
-            remappings=[("odometry/filtered", LaunchConfiguration("odom_topic"))]
+        # Node(
+        #     package='robot_localization',
+        #     executable='ekf_node',
+        #     name='ekf_filter_node',
+        #     output='screen',
+        #     parameters=[
+        #         {'use_sim_time': use_sim_time}, 
+        #         ekf_config_path
+        #     ],
+        #     remappings=[("odometry/filtered", LaunchConfiguration("odom_topic"))]
+        # ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(ekf_launch_path),
+            launch_arguments={
+                'use_sim_time': str(use_sim_time),
+                'ekf_config': LaunchConfiguration('ekf_config')
+            }.items()
         ),
 
         IncludeLaunchDescription(

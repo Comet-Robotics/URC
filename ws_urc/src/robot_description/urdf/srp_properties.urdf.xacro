@@ -30,4 +30,8 @@
   <xacro:property name="depth_sensor_pose">
     <origin xyz="-0.065 0 0.255" rpy="0 0 0"/>
   </xacro:property>
+
+  <xacro:property name="gps_pose">
+    <origin xyz="0.1 0 0.2" rpy="0 0 0"/>
+  </xacro:property>
 </robot>

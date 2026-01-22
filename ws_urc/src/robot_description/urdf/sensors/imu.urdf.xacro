@@ -5,7 +5,9 @@
     <joint name="imu_to_base_link" type="fixed">
       <parent link="base_link"/>
       <child link="imu_link"/>
+      <!-- Might be error here if imu heading doesn't align with base_link -->
       <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- we assume the robot is equipped with an IMU that can accurately measure absolute orientation following the ENU convention, meaning it will output zero yaw when facing east and +90 degrees when facing north. -->
     </joint>
   
     <gazebo>

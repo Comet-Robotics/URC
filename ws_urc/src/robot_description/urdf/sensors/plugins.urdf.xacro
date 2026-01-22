@@ -7,4 +7,11 @@
     </plugin>
   </gazebo>
 
+  <gazebo>
+    <plugin
+      filename="gz-sim-navsat-system"
+      name="gz::sim::systems::NavSat">
+    </plugin>
+  </gazebo>
+
 </robot>
