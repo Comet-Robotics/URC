@@ -14,9 +14,9 @@ return (
   <p>homepage.tsx</p>
   </div>
 
-  <div>
+  <div className = "big-block">
       <div className = "block">
-        <button> battery life </button>
+        <h3> battery life </h3>
       </div>
 
       <div className = "block">
@@ -25,6 +25,28 @@ return (
 
       <div className = "block">
         <h3>controller data</h3>
+      </div>
+  </div>
+
+  <div className = "big-block">
+      <div className = "block">
+        <h3> battery life </h3>
+        <hr/>
+        <p>current percent: </p>
+        <p>time remaining: </p>
+      </div>
+
+      <div className = "block">
+        <h3> connection status </h3>
+        <hr/>
+        <p> strength: </p>
+      </div>
+
+      <div className = "block">
+        <h3>controller data</h3>
+        <hr/>
+         <p>current battery: </p>
+        <p>connection strength: </p>
       </div>
   </div>
   
