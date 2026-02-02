@@ -29,10 +29,12 @@ body {
   color: black;
 }
 
-/* button{
+
+button{
   border: 1px black;
   font: black;
-} */
+  align-self: inline;
+}
 
 h1{
   font-size: 50px;
@@ -116,6 +118,7 @@ hr{
   font: black;
 }
 
+
 .notifications{
   position: fixed;
   float: right;
@@ -123,4 +126,9 @@ hr{
   height: 100vh;
   display: none;
   font: black;
+}
+
+.notifs{
+  display: inline;
+  padding-left: 75px;
 }

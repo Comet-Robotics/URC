@@ -17,11 +17,9 @@ return (
   <>
 
   <Nav />
-  <div className = "big-block">
-    <button className="block"> hi </button>
-  </div>
 
   <hr/>
+
   <div className = "header">
     <h1> La Princesa Rover </h1>
       <h2> Solis Rover Project | 2025 - 26 </h2>
@@ -40,6 +38,7 @@ return (
       <div className = "block">
         <h3>controller data</h3>
       </div>
+
   </div>
 
   <div className = "big-block">
