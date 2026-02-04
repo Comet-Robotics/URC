@@ -1,0 +1,16 @@
+# This is an user meta for pico/pico2 to override the default in common.meta, which
+# enables atomic ops functions in micro-ros/rcutils. But pico-sdk has build-in
+# atomic ops, so they conflict and result in link errors.
+#
+# https://github.com/micro-ROS/micro_ros_platformio/blob/main/metas/common.meta#L25
+# https://github.com/micro-ROS/rcutils/blob/kilted/CMakeLists.txt#L8
+#
+{
+    "names": {
+        "rcutils": {
+            "cmake-args": [
+                "-DRCUTILS_NO_64_ATOMIC=OFF"
+            ]
+        }
+    }
+}
