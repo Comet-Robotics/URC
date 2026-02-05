@@ -29,7 +29,14 @@ return (
   <p>homepage.tsx</p>
   </div>
 
-  <div className = "big-block">
+<div className = "stream-align">
+  <div className="video-stream-div"></div>
+  <div className="video-stream-div"></div>
+  <div className="video-stream-div"></div>
+</div>
+
+  
+  {/* <div className = "big-block">
       <div className = "block">
         <h3> battery life </h3>
       </div>
@@ -64,7 +71,7 @@ return (
          <p>current battery: </p>
         <p>connection strength: </p>
       </div>
-  </div>
+  </div> */}
 
   </>
 )

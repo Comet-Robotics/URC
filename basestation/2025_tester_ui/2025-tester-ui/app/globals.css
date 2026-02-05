@@ -29,7 +29,6 @@ body {
   color: black;
 }
 
-
 button{
   border: 1px black;
   font: black;
@@ -131,4 +130,40 @@ hr{
 .notifs{
   display: inline;
   padding-left: 75px;
+}
+
+.video-stream-div{
+  width:100%;
+
+  align-self: center;
+  display: inline-block;
+
+  background-color: rgb(241, 245, 255);
+  padding: 25px;
+  margin: 10px;
+  height: 50vh;
+  max-width: 100%;
+  border-radius: 8px;
+  border-width: 0.75px;
+  border-color: #3b36b7;
+  font: black;
+
+  background-image: url('https://i.postimg.cc/4xw11Z1d/placeholder-kaidou.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  /* max-height: px; */
+  max-width: 600px;
+
+  text-align: center;
+
+}
+
+.stream-align{
+  display: flex;
+  margin: auto;
+  align-content: center;
+  align-self: center;
+  text-align: center;
 }
