@@ -7,13 +7,6 @@ import { View } from 'react-native';
 // video stream
 import { FoxgloveViewer } from "@foxglove/embed-react";
 
-let state = {
-  isVisible: false
-};
-
-function toggleVisibility(){
-  !state.isVisible;
-};
 
 export function Home() {
 return (

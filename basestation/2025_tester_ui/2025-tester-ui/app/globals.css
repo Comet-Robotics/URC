@@ -81,6 +81,12 @@ hr{
   font: black;
 }
 
+.battery-popup{
+  background-color: white;
+  width: 50px;
+  height: 25px;
+}
+
 .big-block{
   max-width: fit-content;
   display: flex;
@@ -117,13 +123,12 @@ hr{
   font: black;
 }
 
-
 .notifications{
-  position: fixed;
+  background-color: #3f479d8b;
+  margin-top: 25px;
   float: right;
   width: 25%;
   height: 100vh;
-  display: none;
   font: black;
 }
 
