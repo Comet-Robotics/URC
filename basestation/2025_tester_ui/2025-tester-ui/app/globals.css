@@ -120,11 +120,11 @@ hr{
 
 
 .notifications{
-  position: fixed;
+  background-color: #3f479d8b;
+  margin-top: 25px;
   float: right;
   width: 25%;
   height: 100vh;
-  display: none;
   font: black;
 }
 
