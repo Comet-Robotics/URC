@@ -3,7 +3,7 @@
 export function Notifications() {
   return (
     <div className="notifications">
-      {/* Notification items would go here */}
+      <h2>Notifications</h2>
     </div>
   );
 }
