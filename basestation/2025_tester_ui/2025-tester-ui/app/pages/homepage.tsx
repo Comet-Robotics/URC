@@ -4,6 +4,9 @@ import { Nav } from "../components/nav";
 import { Notifications } from "../components/notifications";
 import { View } from 'react-native';
 
+// video stream
+import { FoxgloveViewer } from "@foxglove/embed-react";
+
 let state = {
   isVisible: false
 };
@@ -62,7 +65,7 @@ return (
         <p>connection strength: </p>
       </div>
   </div>
-  
+
   </>
 )
 }
