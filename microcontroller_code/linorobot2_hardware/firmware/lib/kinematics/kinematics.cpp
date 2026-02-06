@@ -27,6 +27,7 @@ Kinematics::Kinematics(base robot_base, int motor_max_rpm, float max_rpm_ratio,
     max_rpm_ =  ((motor_power_max_voltage / motor_operating_voltage) * motor_max_rpm) * max_rpm_ratio;
 }
 
+//todo: this system is based off of tangential drive/skid steer so change to work with ackerman front and back wheel steering
 Kinematics::rpm Kinematics::calculateRPM(float linear_x, float linear_y, float angular_z)
 {
 
@@ -80,20 +81,28 @@ Kinematics::rpm Kinematics::calculateRPM(float linear_x, float linear_y, float a
     rpm.motor2 = x_rpm + y_rpm + tan_rpm;
     rpm.motor2 = constrain(rpm.motor2, -max_rpm_, max_rpm_);
 
-    //rear-left motor
-    rpm.motor3 = x_rpm + y_rpm - tan_rpm;
+    //mid-left motor POSSIBLE ERROR CUZ NO X RPM
+    rpm.motor3 = x_rpm - tan_rpm;
     rpm.motor3 = constrain(rpm.motor3, -max_rpm_, max_rpm_);
 
-    //rear-right motor
-    rpm.motor4 = x_rpm - y_rpm + tan_rpm;
+    //mid-right motor
+    rpm.motor4 = x_rpm + tan_rpm;
     rpm.motor4 = constrain(rpm.motor4, -max_rpm_, max_rpm_);
+
+    //rear-left motor
+    rpm.motor5 = x_rpm + y_rpm - tan_rpm;
+    rpm.motor5 = constrain(rpm.motor5, -max_rpm_, max_rpm_);
+
+    //rear-right motor
+    rpm.motor6 = x_rpm - y_rpm + tan_rpm;
+    rpm.motor6 = constrain(rpm.motor6, -max_rpm_, max_rpm_);
 
     return rpm;
 }
 
 Kinematics::rpm Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
-    if(base_platform_ == DIFFERENTIAL_DRIVE || base_platform_ == SKID_STEER)
+    if(base_platform_ == DIFFERENTIAL_DRIVE || base_platform_ == SKID_STEER || base_platform_ == ACKERMANN)
     {
         linear_y = 0;
     }
@@ -101,7 +110,7 @@ Kinematics::rpm Kinematics::getRPM(float linear_x, float linear_y, float angular
     return calculateRPM(linear_x, linear_y, angular_z);;
 }
 
-Kinematics::velocities Kinematics::getVelocities(float rpm1, float rpm2, float rpm3, float rpm4)
+Kinematics::velocities Kinematics::getVelocities(float rpm1, float rpm2, float rpm3, float rpm4, float rpm5, float rpm6)
 {
     Kinematics::velocities vel;
     float average_rps_x;
@@ -113,20 +122,28 @@ Kinematics::velocities Kinematics::getVelocities(float rpm1, float rpm2, float r
         rpm3 = 0.0;
         rpm4 = 0.0;
     }
- 
+
+    if(base_platform_ != ACKERMANN)
+    {
+        rpm5 = 0.0;
+        rpm6 = 0.0;
+    }  
+    
+    
     //convert average revolutions per minute to revolutions per second
-    average_rps_x = ((float)(rpm1 + rpm2 + rpm3 + rpm4) / total_wheels_) / 60.0; // RPM
+    average_rps_x = ((float)(rpm1 + rpm2 + rpm3 + rpm4 + rpm5 + rpm6) / total_wheels_) / 60.0; // RPM
     vel.linear_x = average_rps_x * wheel_circumference_; // m/s
 
+    //POSSIBLE BUG HERE ASSUMING MOTOR 3 AND 4 ARE ONLY FOR x MOVEMENT
     //convert average revolutions per minute in y axis to revolutions per second
-    average_rps_y = ((float)(-rpm1 + rpm2 + rpm3 - rpm4) / total_wheels_) / 60.0; // RPM
+    average_rps_y = ((float)(-rpm1 + rpm2 + rpm5 - rpm6) / total_wheels_) / 60.0; // RPM
     if(base_platform_ == MECANUM)
         vel.linear_y = average_rps_y * wheel_circumference_; // m/s
     else
         vel.linear_y = 0;
 
     //convert average revolutions per minute to revolutions per second
-    average_rps_a = ((float)(-rpm1 + rpm2 - rpm3 + rpm4) / total_wheels_) / 60.0;
+    average_rps_a = ((float)(-rpm1 + rpm2 - rpm3 + rpm4 - rpm5 + rpm6) / total_wheels_) / 60.0;
     vel.angular_z =  (average_rps_a * wheel_circumference_) / (wheels_y_distance_ / 2.0); //  rad/s
 
     return vel;
@@ -138,6 +155,7 @@ int Kinematics::getTotalWheels(base robot_base)
     {
         case DIFFERENTIAL_DRIVE:    return 2;
         case SKID_STEER:            return 4;
+        case ACKERMANN:            return 6;
         case MECANUM:               return 4;
         default:                    return 2;
     }

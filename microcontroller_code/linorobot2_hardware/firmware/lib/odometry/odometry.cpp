@@ -28,6 +28,26 @@ void Odometry::update(float vel_dt, float linear_vel_x, float linear_vel_y, floa
     float delta_heading = angular_vel_z * vel_dt; //radians
     float cos_h = cos(heading_);
     float sin_h = sin(heading_);
+
+    //weird formula to account for axis rotation
+
+    /*
+    desired coordinate system:
+         FRONT
+            ^ +x
+            |
+            |
+            |
+    +y <----|
+
+    classical cartesian coordinate system:
+         FRONT
+            ^ +y
+            |
+            |
+            |
+            |---------> +x
+    */
     float delta_x = (linear_vel_x * cos_h - linear_vel_y * sin_h) * vel_dt; //m
     float delta_y = (linear_vel_x * sin_h + linear_vel_y * cos_h) * vel_dt; //m
     const float pose_cov[6] = POSE_COV;

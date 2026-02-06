@@ -173,19 +173,21 @@ class Encoder
 public:
 	Encoder(uint8_t pin1, uint8_t pin2, int counts_per_rev, bool invert=false) {
 		uint8_t temp_pin = pin1;
-		if(invert)
-		{
-			pin1 = pin2;
-			pin2 = temp_pin;
-		}
+		
+		//ONLY 1 PIN FOR ENCODER FOR ESC
+		// if(invert)
+		// {
+		// 	pin1 = pin2;
+		// 	pin2 = temp_pin;
+		// }
+
+		invert_ = invert;
 		#ifdef INPUT_PULLUP
 		pinMode(pin1, INPUT_PULLUP);
 		pinMode(pin2, INPUT_PULLUP);
-		#else
+		#else //changed
 		pinMode(pin1, INPUT);
-		digitalWrite(pin1, HIGH);
-		pinMode(pin2, INPUT);
-		digitalWrite(pin2, HIGH);
+		//pin2 not valid for riorand
 		#endif
 
 		counts_per_rev_ = counts_per_rev;	
@@ -205,7 +207,7 @@ public:
 		encoder.state = s;
 #ifdef ENCODER_USE_INTERRUPTS
 		interrupts_in_use = attach_interrupt(pin1, &encoder);
-		interrupts_in_use += attach_interrupt(pin2, &encoder);
+		// interrupts_in_use += attach_interrupt(pin2, &encoder);
 #endif
 		//update_finishup();  // to force linker to include the code (does not work)
 	}
@@ -213,23 +215,16 @@ public:
 
 #ifdef ENCODER_USE_INTERRUPTS
 	inline int32_t read() {
-		if (interrupts_in_use < 2) {
-			noInterrupts();
-			update(&encoder);
-		} else {
-			noInterrupts();
-		}
+
+		noInterrupts();
+		update(&encoder);
 		int32_t ret = encoder.position;
 		interrupts();
 		return ret;
 	}
 	inline int32_t readAndReset() {
-		if (interrupts_in_use < 2) {
-			noInterrupts();
-			update(&encoder);
-		} else {
-			noInterrupts();
-		}
+		noInterrupts();
+		update(&encoder);
 		int32_t ret = encoder.position;
 		encoder.position = 0;
 		interrupts();
@@ -277,6 +272,7 @@ private:
 	unsigned long prev_update_time_;
     long prev_encoder_ticks_;
 	Encoder_internal_state_t encoder;
+	bool invert_;
 #ifdef ENCODER_USE_INTERRUPTS
 	uint8_t interrupts_in_use;
 #endif
@@ -420,25 +416,25 @@ public:
 		"L%=end:"				"\n"
 		: : "x" (arg) : "r22", "r23", "r24", "r25", "r30", "r31");
 #else
-		uint8_t p1val = DIRECT_PIN_READ(arg->pin1_register, arg->pin1_bitmask);
-		uint8_t p2val = DIRECT_PIN_READ(arg->pin2_register, arg->pin2_bitmask);
-		uint8_t state = arg->state & 3;
-		if (p1val) state |= 4;
-		if (p2val) state |= 8;
-		arg->state = (state >> 2);
-		switch (state) {
-			case 1: case 7: case 8: case 14:
-				arg->position++;
-				return;
-			case 2: case 4: case 11: case 13:
-				arg->position--;
-				return;
-			case 3: case 12:
-				arg->position += 2;
-				return;
-			case 6: case 9:
-				arg->position -= 2;
-				return;
+		// uint8_t p1val = DIRECT_PIN_READ(arg->pin1_register, arg->pin1_bitmask);
+		// uint8_t p2val = DIRECT_PIN_READ(arg->pin2_register, arg->pin2_bitmask);
+		// uint8_t state = arg->state & 3;
+		// if (p1val) state |= 4;
+		// if (p2val) state |= 8;
+		// arg->state = (state >> 2);
+		// switch (state) {
+		// 	case 1: case 7: case 8: case 14:
+		// 		arg->position++;
+		// 		return;
+		// 	case 2: case 4: case 11: case 13:
+		// 		arg->position--;
+		// 		return;
+		// 	case 3: case 12:
+		// 		arg->position += 2;
+		// 		return;
+		// 	case 6: case 9:
+		// 		arg->position -= 2;
+		// 		return;
 		}
 #endif
 	}

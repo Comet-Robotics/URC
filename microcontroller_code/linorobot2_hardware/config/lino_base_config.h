@@ -20,15 +20,16 @@
 
 //uncomment the base you're building
 // #define LINO_BASE DIFFERENTIAL_DRIVE       // 2WD and Tracked robot w/ 2 motors
-#define LINO_BASE SKID_STEER            // 6WD robot
-// #define LINO_BASE ACKERMANN            // Ackermann steering robot
+// #define LINO_BASE SKID_STEER            // 6WD robot
+#define LINO_BASE ACKERMANN            // Ackermann steering robot
 // #define LINO_BASE MECANUM               // Mecanum drive robot
 
 //uncomment the motor driver you're using
 // #define USE_GENERIC_2_IN_MOTOR_DRIVER      // Motor drivers with 2 Direction Pins(INA, INB) and 1 PWM(ENABLE) pin ie. L298, L293, VNH5019
 // #define USE_GENERIC_1_IN_MOTOR_DRIVER   // Motor drivers with 1 Direction Pin(INA) and 1 PWM(ENABLE) pin.
 // #define USE_BTS7960_MOTOR_DRIVER        // BTS7970 Motor Driver
-#define USE_ESC_MOTOR_DRIVER            // Motor ESC for brushless motors
+// #define USE_ESC_MOTOR_DRIVER            // Motor ESC for brushless motors
+#define USE_RIORAND_ESC_MOTOR_DRIVER       // Riorand ESC for brushless motors
 
 //uncomment the IMU you're using
 #define USE_GY85_IMU
@@ -50,7 +51,7 @@
 /*
 ROBOT ORIENTATION
          FRONT
-    MOTOR1  MOTOR2  (2WD/ACKERMANN)
+    MOTOR1  MOTOR2  (2WD/DIFF DRIVE)
     MOTOR3  MOTOR4  (4WD/MECANUM)
     MOTOR5  MOTOR6  (6WD Ackermann Rover system)  
          BACK
@@ -70,24 +71,25 @@ ROBOT ORIENTATION
 #define COUNTS_PER_REV6 90              // wheel6 encoder's no of ticks per rev
 #define WHEEL_DIAMETER 0.152                // wheel's diameter in meters
 #define LR_WHEELS_DISTANCE 0.851            // distance between left and right wheels
+#define FRONT_BACK_WHEEL_DISTANCE 0.444
 #define PWM_BITS 10                          // PWM Resolution of the microcontroller
 #define PWM_FREQUENCY 20000                 // PWM Frequency 20 kHz is max listed on riorand esc (50 Hz - 20 kHz)
 
 // INVERT ENCODER COUNTS
 #define MOTOR1_ENCODER_INV false 
-#define MOTOR2_ENCODER_INV false 
+#define MOTOR2_ENCODER_INV true 
 #define MOTOR3_ENCODER_INV false 
-#define MOTOR4_ENCODER_INV false
+#define MOTOR4_ENCODER_INV true
 #define MOTOR5_ENCODER_INV false
-#define MOTOR6_ENCODER_INV false
+#define MOTOR6_ENCODER_INV true
 
 // INVERT MOTOR DIRECTIONS
 #define MOTOR1_INV false
-#define MOTOR2_INV false
+#define MOTOR2_INV true
 #define MOTOR3_INV false
-#define MOTOR4_INV false
+#define MOTOR4_INV true
 #define MOTOR5_INV false
-#define MOTOR6_INV false
+#define MOTOR6_INV true
 
 // ENCODER PINS
 #define MOTOR1_ENCODER_A 14
@@ -174,28 +176,28 @@ ROBOT ORIENTATION
 
 #ifdef USE_ESC_MOTOR_DRIVER
   #define MOTOR1_PWM 1 //Pin no 21 is not a PWM pin on Teensy 4.x. You can use pin no 1 instead.
-  #define MOTOR1_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR1_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR1_IN_A 18 
+  #define MOTOR1_IN_B -1 
 
   #define MOTOR2_PWM 5
-  #define MOTOR2_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR2_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR2_IN_A 23 
+  #define MOTOR2_IN_B -1 
 
   #define MOTOR3_PWM 22 
-  #define MOTOR3_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR3_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR3_IN_A 19 
+  #define MOTOR3_IN_B -1 
 
   #define MOTOR4_PWM 4
-  #define MOTOR4_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR4_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR4_IN_A 22 
+  #define MOTOR4_IN_B -1 
 
   #define MOTOR5_PWM 33
-  #define MOTOR5_IN_A -1 //DON'T TOUCH THIS! This is just a
-  #define MOTOR5_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR5_IN_A 20
+  #define MOTOR5_IN_B -1 
 
   #define MOTOR6_PWM 32
-  #define MOTOR6_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR6_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR6_IN_A 21 
+  #define MOTOR6_IN_B -1 
 
   //using riorand esc calibration values
 

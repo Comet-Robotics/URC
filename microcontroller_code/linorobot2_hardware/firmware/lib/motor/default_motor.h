@@ -280,19 +280,20 @@ class RioRandEsc: public MotorInterface
     private:
         int pwm_pin_;
         int dir_pin_;
+        bool invert_;
 
     protected:
         void forward(int pwm) override
         {
             if (pwm_pin_ < 0) return;
-            digitalWrite(dir_pin_, HIGH);
+            digitalWrite(dir_pin_, invert_ ? LOW : HIGH);
             analogWrite(pwm_pin_, abs(pwm));
         }
 
         void reverse(int pwm) override
         {
             if (pwm_pin_ < 0) return;
-            digitalWrite(dir_pin_, LOW);
+            digitalWrite(dir_pin_, invert_ ? HIGH : LOW);
             analogWrite(pwm_pin_, abs(pwm));
         }
 
@@ -300,7 +301,8 @@ class RioRandEsc: public MotorInterface
         RioRandEsc(float pwm_frequency, int pwm_bits, bool invert, int pwm_pin, int dir_pin, int unused=-1): 
             MotorInterface(invert),
             pwm_pin_(pwm_pin),
-            dir_pin_(dir_pin)
+            dir_pin_(dir_pin),
+            invert_(invert)
         {
             if (pwm_pin_ < 0) return;
             pinMode(dir_pin_, OUTPUT);
@@ -316,7 +318,7 @@ class RioRandEsc: public MotorInterface
             analogWrite(pwm_pin_, abs(0));
         }
 
-        void brake() override
+        void brake() override //todo: update brake to turn on brake pin IFF pwm pin is half speed
         {
             if (pwm_pin_ < 0) return;
             analogWrite(pwm_pin_, 0);
