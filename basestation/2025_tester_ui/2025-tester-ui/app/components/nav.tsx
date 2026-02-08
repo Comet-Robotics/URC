@@ -10,6 +10,7 @@ import NetworkWifiIcon from '@mui/icons-material/NetworkWifi';
 
 import { Notifications } from '../components/notifications';
 import { BatteryPopup } from '../components/batteryPopup';
+import {WifiPopup} from "../components/wifiPopup";
 import { useState } from 'react';
 
 // icons documentation: https://mui.com/material-ui/icons/
@@ -20,6 +21,7 @@ export function Nav() {
 
   const [isNotifs, setIsNotifs] = useState(false);
   const [isBatPop, setIsBatPop] = useState(false);
+  const [isWifiPop, setIsWifiPop] = useState(false);
 
   return (
     <nav>
@@ -32,11 +34,12 @@ export function Nav() {
         <div className="notifs">
           <IconButton aria-label="notifs" onClick={() => setIsNotifs(!isNotifs)}><NotificationsIcon /></IconButton>
           <IconButton aria-label="battery" onClick={() => setIsBatPop(!isBatPop)}><Battery90Icon /></IconButton>
-          <IconButton aria-label="connection"><NetworkWifiIcon /></IconButton>
+          <IconButton aria-label="connection" onClick={() => setIsWifiPop(!isWifiPop)}><NetworkWifiIcon /></IconButton>
         </div>
 
         {isNotifs && <Notifications />}
         {isBatPop && <BatteryPopup />}
+        {isWifiPop && <WifiPopup />}
     </nav>
   );
 }   

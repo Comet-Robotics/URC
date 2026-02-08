@@ -85,8 +85,10 @@ hr{
 
 .battery-popup{
   background-color: white;
-  width: 50px;
-  height: 25px;
+  width: 200px;
+  height: 100px;
+  position: absolute;
+  left: 1000;
 }
 
 .big-block{
@@ -173,4 +175,12 @@ hr{
   align-content: center;
   align-self: center;
   text-align: center;
+}
+
+.wifi-popup{
+  background-color: white;
+  width: 200px;
+  height: 100px;
+  position: absolute;
+  left: 1025;
 }
