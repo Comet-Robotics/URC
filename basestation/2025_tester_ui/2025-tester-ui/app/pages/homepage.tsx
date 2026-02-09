@@ -22,6 +22,8 @@ return (
   <p>homepage.tsx</p>
   </div>
 
+<h3 className="video-title">Video Streams</h3>
+
 <div className = "stream-align">
   <div className="video-stream-div"></div>
   <div className="video-stream-div"></div>
