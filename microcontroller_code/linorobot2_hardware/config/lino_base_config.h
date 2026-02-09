@@ -91,6 +91,10 @@ ROBOT ORIENTATION
 #define MOTOR5_INV false
 #define MOTOR6_INV true
 
+#define LEFT_DIRECTION 14
+#define RIGHT_DIRECTION 13
+
+
 // ENCODER PINS
 #define MOTOR1_ENCODER_A 14
 #define MOTOR1_ENCODER_B 15 
@@ -206,28 +210,29 @@ ROBOT ORIENTATION
 #endif
 
 #ifdef USE_RIORAND_ESC_MOTOR_DRIVER
-  #define MOTOR1_PWM 1 //Pin no 21 is not a PWM pin on Teensy 4.x. You can use pin no 1 instead.
-  #define MOTOR1_IN_A 18 
+
+  #define MOTOR1_PWM 2 //Pin no 21 is not a PWM pin on Teensy 4.x. You can use pin no 1 instead.
+  #define MOTOR1_IN_A 23 
   #define MOTOR1_IN_B -1 
 
-  #define MOTOR2_PWM 5
-  #define MOTOR2_IN_A 23 
+  #define MOTOR2_PWM 3
+  #define MOTOR2_IN_A 22 
   #define MOTOR2_IN_B -1 
 
-  #define MOTOR3_PWM 22 
-  #define MOTOR3_IN_A 19 
+  #define MOTOR3_PWM 4
+  #define MOTOR3_IN_A 21 
   #define MOTOR3_IN_B -1 
 
-  #define MOTOR4_PWM 4
-  #define MOTOR4_IN_A 22 
+  #define MOTOR4_PWM 5
+  #define MOTOR4_IN_A 20 
   #define MOTOR4_IN_B -1 
 
-  #define MOTOR5_PWM 33
-  #define MOTOR5_IN_A 20
+  #define MOTOR5_PWM 6
+  #define MOTOR5_IN_A 19
   #define MOTOR5_IN_B -1 
 
-  #define MOTOR6_PWM 32
-  #define MOTOR6_IN_A 21 
+  #define MOTOR6_PWM 7
+  #define MOTOR6_IN_A 18 
   #define MOTOR6_IN_B -1 
 
   //using riorand esc calibration values

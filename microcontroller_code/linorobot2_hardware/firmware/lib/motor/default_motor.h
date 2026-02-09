@@ -299,14 +299,14 @@ class RioRandEsc: public MotorInterface
         }
 
     public:
-        RioRandEsc(float pwm_frequency, int pwm_bits, bool invert, int pwm_pin, int dir_pin, int unused=-1): 
+        RioRandEsc(float pwm_frequency, int pwm_bits, bool invert, int pwm_pin, int dir_pin, int unused=-1, int unused2=-1): 
             MotorInterface(invert),
             pwm_pin_(pwm_pin),
             dir_pin_(dir_pin),
             invert_(invert)
         {
             if (pwm_pin_ < 0) return;
-            pinMode(dir_pin_, OUTPUT);
+            // pinMode(dir_pin_, OUTPUT);  Temporarily disable for 2-pin direction mode (1 for left and 1 for right)
             pinMode(pwm_pin_, OUTPUT);
 
             if(pwm_frequency > 0)
