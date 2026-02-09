@@ -172,44 +172,32 @@ class Encoder
 {
 public:
 	Encoder(uint8_t pin1, uint8_t pin2, int counts_per_rev, bool invert=false) {
-		uint8_t temp_pin = pin1;
-		
-		//ONLY 1 PIN FOR ENCODER FOR ESC
-		// if(invert)
-		// {
-		// 	pin1 = pin2;
-		// 	pin2 = temp_pin;
-		// }
-
+		// RioRand ESC: pin1 = speed pulse pin
+		// pin2 is ignored - direction set via setDirection() method
+		// Direction: forward=increment, backward=decrement
+		// invert reverses the increment/decrement behavior
 		invert_ = invert;
-		#ifdef INPUT_PULLUP
-		pinMode(pin1, INPUT_PULLUP);
-		pinMode(pin2, INPUT_PULLUP);
-		#else //changed
-		pinMode(pin1, INPUT);
-		//pin2 not valid for riorand
-		#endif
+		
+		pinMode(pin1, INPUT);  // Speed/pulse pin
+		// pin2 not used
 
 		counts_per_rev_ = counts_per_rev;	
 
 		encoder.pin1_register = PIN_TO_BASEREG(pin1);
 		encoder.pin1_bitmask = PIN_TO_BITMASK(pin1);
-		encoder.pin2_register = PIN_TO_BASEREG(pin2);
-		encoder.pin2_bitmask = PIN_TO_BITMASK(pin2);
+		encoder.pin2_register = nullptr;  // Not used
+		encoder.pin2_bitmask = 0;          // Not used
 		encoder.position = 0;
-		// allow time for a passive R-C filter to charge
-		// through the pullup resistors, before reading
-		// the initial state
-		delayMicroseconds(2000);
-		uint8_t s = 0;
-		if (DIRECT_PIN_READ(encoder.pin1_register, encoder.pin1_bitmask)) s |= 1;
-		if (DIRECT_PIN_READ(encoder.pin2_register, encoder.pin2_bitmask)) s |= 2;
-		encoder.state = s;
+		// State bits: bit 0 = invert flag, bit 1 = direction (0=forward, 1=backward)
+		encoder.state = (invert ? 1 : 0);  // Default: forward direction
+		
+		// Small delay for signal stabilization
+		delayMicroseconds(100);
+		
 #ifdef ENCODER_USE_INTERRUPTS
+		// Attach interrupt on CHANGE for RioRand ESC pulse counting
 		interrupts_in_use = attach_interrupt(pin1, &encoder);
-		// interrupts_in_use += attach_interrupt(pin2, &encoder);
 #endif
-		//update_finishup();  // to force linker to include the code (does not work)
 	}
 
 
@@ -265,6 +253,19 @@ public:
 		prev_encoder_ticks_ = encoder_ticks;
 
 		return ((delta_ticks / counts_per_rev_) / dtm);
+	}
+	
+	// Set motor direction for encoder counting
+	// Call this from your motor controller when direction changes
+	// forward=true: normal counting | forward=false: reverse direction
+	void setDirection(bool forward) {
+		noInterrupts();
+		if (forward) {
+			encoder.state &= ~(1 << 1);  // Clear bit 1 (forward)
+		} else {
+			encoder.state |= (1 << 1);   // Set bit 1 (backward)
+		}
+		interrupts();
 	}
 
 private:
@@ -330,113 +331,21 @@ public:
 	// update() is not meant to be called from outside Encoder,
 	// but it is public to allow static interrupt routines.
 	// DO NOT call update() directly from sketches.
+	// 
+	// Simplified for RioRand ESC: pulse counting on CHANGE with external direction
 	static void update(Encoder_internal_state_t *arg) {
-#if defined(__AVR__)
-		// The compiler believes this is just 1 line of code, so
-		// it will inline this function into each interrupt
-		// handler.  That's a tiny bit faster, but grows the code.
-		// Especially when used with ENCODER_OPTIMIZE_INTERRUPTS,
-		// the inline nature allows the ISR prologue and epilogue
-		// to only save/restore necessary registers, for very nice
-		// speed increase.
-		asm volatile (
-			"ld	r30, X+"		"\n\t"
-			"ld	r31, X+"		"\n\t"
-			"ld	r24, Z"			"\n\t"	// r24 = pin1 input
-			"ld	r30, X+"		"\n\t"
-			"ld	r31, X+"		"\n\t"
-			"ld	r25, Z"			"\n\t"  // r25 = pin2 input
-			"ld	r30, X+"		"\n\t"  // r30 = pin1 mask
-			"ld	r31, X+"		"\n\t"	// r31 = pin2 mask
-			"ld	r22, X"			"\n\t"	// r22 = state
-			"andi	r22, 3"			"\n\t"
-			"and	r24, r30"		"\n\t"
-			"breq	L%=1"			"\n\t"	// if (pin1)
-			"ori	r22, 4"			"\n\t"	//	state |= 4
-		"L%=1:"	"and	r25, r31"		"\n\t"
-			"breq	L%=2"			"\n\t"	// if (pin2)
-			"ori	r22, 8"			"\n\t"	//	state |= 8
-		"L%=2:" "ldi	r30, lo8(pm(L%=table))"	"\n\t"
-			"ldi	r31, hi8(pm(L%=table))"	"\n\t"
-			"add	r30, r22"		"\n\t"
-			"adc	r31, __zero_reg__"	"\n\t"
-			"asr	r22"			"\n\t"
-			"asr	r22"			"\n\t"
-			"st	X+, r22"		"\n\t"  // store new state
-			"ld	r22, X+"		"\n\t"
-			"ld	r23, X+"		"\n\t"
-			"ld	r24, X+"		"\n\t"
-			"ld	r25, X+"		"\n\t"
-			"ijmp"				"\n\t"	// jumps to update_finishup()
-			// TODO move this table to another static function,
-			// so it doesn't get needlessly duplicated.  Easier
-			// said than done, due to linker issues and inlining
-		"L%=table:"				"\n\t"
-			"rjmp	L%=end"			"\n\t"	// 0
-			"rjmp	L%=plus1"		"\n\t"	// 1
-			"rjmp	L%=minus1"		"\n\t"	// 2
-			"rjmp	L%=plus2"		"\n\t"	// 3
-			"rjmp	L%=minus1"		"\n\t"	// 4
-			"rjmp	L%=end"			"\n\t"	// 5
-			"rjmp	L%=minus2"		"\n\t"	// 6
-			"rjmp	L%=plus1"		"\n\t"	// 7
-			"rjmp	L%=plus1"		"\n\t"	// 8
-			"rjmp	L%=minus2"		"\n\t"	// 9
-			"rjmp	L%=end"			"\n\t"	// 10
-			"rjmp	L%=minus1"		"\n\t"	// 11
-			"rjmp	L%=plus2"		"\n\t"	// 12
-			"rjmp	L%=minus1"		"\n\t"	// 13
-			"rjmp	L%=plus1"		"\n\t"	// 14
-			"rjmp	L%=end"			"\n\t"	// 15
-		"L%=minus2:"				"\n\t"
-			"subi	r22, 2"			"\n\t"
-			"sbci	r23, 0"			"\n\t"
-			"sbci	r24, 0"			"\n\t"
-			"sbci	r25, 0"			"\n\t"
-			"rjmp	L%=store"		"\n\t"
-		"L%=minus1:"				"\n\t"
-			"subi	r22, 1"			"\n\t"
-			"sbci	r23, 0"			"\n\t"
-			"sbci	r24, 0"			"\n\t"
-			"sbci	r25, 0"			"\n\t"
-			"rjmp	L%=store"		"\n\t"
-		"L%=plus2:"				"\n\t"
-			"subi	r22, 254"		"\n\t"
-			"rjmp	L%=z"			"\n\t"
-		"L%=plus1:"				"\n\t"
-			"subi	r22, 255"		"\n\t"
-		"L%=z:"	"sbci	r23, 255"		"\n\t"
-			"sbci	r24, 255"		"\n\t"
-			"sbci	r25, 255"		"\n\t"
-		"L%=store:"				"\n\t"
-			"st	-X, r25"		"\n\t"
-			"st	-X, r24"		"\n\t"
-			"st	-X, r23"		"\n\t"
-			"st	-X, r22"		"\n\t"
-		"L%=end:"				"\n"
-		: : "x" (arg) : "r22", "r23", "r24", "r25", "r30", "r31");
-#else
-		// uint8_t p1val = DIRECT_PIN_READ(arg->pin1_register, arg->pin1_bitmask);
-		// uint8_t p2val = DIRECT_PIN_READ(arg->pin2_register, arg->pin2_bitmask);
-		// uint8_t state = arg->state & 3;
-		// if (p1val) state |= 4;
-		// if (p2val) state |= 8;
-		// arg->state = (state >> 2);
-		// switch (state) {
-		// 	case 1: case 7: case 8: case 14:
-		// 		arg->position++;
-		// 		return;
-		// 	case 2: case 4: case 11: case 13:
-		// 		arg->position--;
-		// 		return;
-		// 	case 3: case 12:
-		// 		arg->position += 2;
-		// 		return;
-		// 	case 6: case 9:
-		// 		arg->position -= 2;
-		// 		return;
+		// Read direction from state: bit 1 = direction (0=forward, 1=backward)
+		uint8_t direction = (arg->state >> 1) & 1;
+		uint8_t invert = arg->state & 1;  // Invert flag stored in bit 0
+		
+		// Logic: if direction XOR invert, decrement; else increment
+		// dir=0(fwd), inv=0: increment | dir=1(bwd), inv=0: decrement
+		// dir=0(fwd), inv=1: decrement | dir=1(bwd), inv=1: increment
+		if (direction ^ invert) {
+			arg->position--;
+		} else {
+			arg->position++;
 		}
-#endif
 	}
 private:
 /*

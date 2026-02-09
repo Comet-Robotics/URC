@@ -79,16 +79,22 @@ Encoder motor1_encoder(MOTOR1_ENCODER_A, MOTOR1_ENCODER_B, COUNTS_PER_REV1, MOTO
 Encoder motor2_encoder(MOTOR2_ENCODER_A, MOTOR2_ENCODER_B, COUNTS_PER_REV2, MOTOR2_ENCODER_INV);
 Encoder motor3_encoder(MOTOR3_ENCODER_A, MOTOR3_ENCODER_B, COUNTS_PER_REV3, MOTOR3_ENCODER_INV);
 Encoder motor4_encoder(MOTOR4_ENCODER_A, MOTOR4_ENCODER_B, COUNTS_PER_REV4, MOTOR4_ENCODER_INV);
+Encoder motor5_encoder(MOTOR5_ENCODER_A, MOTOR5_ENCODER_B, COUNTS_PER_REV5, MOTOR5_ENCODER_INV);
+Encoder motor6_encoder(MOTOR6_ENCODER_A, MOTOR6_ENCODER_B, COUNTS_PER_REV6, MOTOR6_ENCODER_INV);
 
 Motor motor1_controller(PWM_FREQUENCY, PWM_BITS, MOTOR1_INV, MOTOR1_PWM, MOTOR1_IN_A, MOTOR1_IN_B);
 Motor motor2_controller(PWM_FREQUENCY, PWM_BITS, MOTOR2_INV, MOTOR2_PWM, MOTOR2_IN_A, MOTOR2_IN_B);
 Motor motor3_controller(PWM_FREQUENCY, PWM_BITS, MOTOR3_INV, MOTOR3_PWM, MOTOR3_IN_A, MOTOR3_IN_B);
 Motor motor4_controller(PWM_FREQUENCY, PWM_BITS, MOTOR4_INV, MOTOR4_PWM, MOTOR4_IN_A, MOTOR4_IN_B);
+Motor motor5_controller(PWM_FREQUENCY, PWM_BITS, MOTOR5_INV, MOTOR5_PWM, MOTOR5_IN_A, MOTOR5_IN_B);
+Motor motor6_controller(PWM_FREQUENCY, PWM_BITS, MOTOR6_INV, MOTOR6_PWM, MOTOR6_IN_A, MOTOR6_IN_B);
 
 PID motor1_pid(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
 PID motor2_pid(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
 PID motor3_pid(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
 PID motor4_pid(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
+PID motor5_pid(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
+PID motor6_pid(PWM_MIN, PWM_MAX, K_P, K_I, K_D);
 
 Kinematics kinematics(
     Kinematics::LINO_BASE, 
@@ -307,19 +313,40 @@ void moveBase()
     float current_rpm2 = motor2_encoder.getRPM();
     float current_rpm3 = motor3_encoder.getRPM();
     float current_rpm4 = motor4_encoder.getRPM();
+    float current_rpm5 = motor5_encoder.getRPM();
+    float current_rpm6 = motor6_encoder.getRPM();
 
     // the required rpm is capped at -/+ MAX_RPM to prevent the PID from having too much error
     // the PWM value sent to the motor driver is the calculated PID based on required RPM vs measured RPM
-    motor1_controller.spin(motor1_pid.compute(req_rpm.motor1, current_rpm1));
-    motor2_controller.spin(motor2_pid.compute(req_rpm.motor2, current_rpm2));
-    motor3_controller.spin(motor3_pid.compute(req_rpm.motor3, current_rpm3));
-    motor4_controller.spin(motor4_pid.compute(req_rpm.motor4, current_rpm4));
+
+    double pwm1 = motor1_pid.compute(req_rpm.motor1, current_rpm1);
+    double pwm2 = motor2_pid.compute(req_rpm.motor2, current_rpm2);
+    double pwm3 = motor3_pid.compute(req_rpm.motor3, current_rpm3);
+    double pwm4 = motor4_pid.compute(req_rpm.motor4, current_rpm4);
+    double pwm5 = motor5_pid.compute(req_rpm.motor5, current_rpm5);
+    double pwm6 = motor6_pid.compute(req_rpm.motor6, current_rpm6);
+
+    motor1_encoder.setDirection(pwm1 >= 0);
+    motor2_encoder.setDirection(pwm2 >= 0);
+    motor3_encoder.setDirection(pwm3 >= 0);
+    motor4_encoder.setDirection(pwm4 >= 0);
+    motor5_encoder.setDirection(pwm5 >= 0);
+    motor6_encoder.setDirection(pwm6 >= 0);
+
+    motor1_controller.spin(pwm1);
+    motor2_controller.spin(pwm2);
+    motor3_controller.spin(pwm3);
+    motor4_controller.spin(pwm4);
+    motor5_controller.spin(pwm5);
+    motor6_controller.spin(pwm6);
 
     Kinematics::velocities current_vel = kinematics.getVelocities(
         current_rpm1, 
         current_rpm2, 
         current_rpm3, 
-        current_rpm4
+        current_rpm4,
+        current_rpm5,
+        current_rpm6
     );
 
     unsigned long now = millis();

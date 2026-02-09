@@ -39,5 +39,10 @@
     #define Motor ESC
 #endif
 
+#ifdef USE_RIORAND_ESC_MOTOR_DRIVER
+    // pass your built in class to Motor macro
+    #define Motor ESC
+#endif
+
 
 #endif

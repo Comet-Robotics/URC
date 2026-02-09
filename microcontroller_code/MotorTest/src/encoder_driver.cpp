@@ -40,7 +40,7 @@ void initMotorSpeedReader() {
   // for(int i = 0; i < MOTOR_COUNT; i++) {
   //   pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT);
   // }
-  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, RISING);  // Try RISING instead of CHANGE
+  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, CHANGE);  // Try RISING instead of CHANGE
   // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[1]), motorSpeedISR2, CHANGE);
   // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[2]), motorSpeedISR3, CHANGE);
   // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[3]), motorSpeedISR4, CHANGE);
