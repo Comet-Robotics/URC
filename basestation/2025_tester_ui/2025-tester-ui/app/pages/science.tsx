@@ -1,6 +1,7 @@
 "use client"
 
 import { Nav } from "../components/nav";
+import { Footer } from "../components/footer"
 
 export default function Page() {
   return (
@@ -18,6 +19,7 @@ export default function Page() {
 </div>
   </div>
   
+    <Footer />
   </>
 )
 }

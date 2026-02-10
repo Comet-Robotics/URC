@@ -3,7 +3,8 @@
 export function Footer(){
     return(
         <div className = "footer">
-            <p>Time Remaining: ...</p>
+            <p>Current Mission: _____</p>
+            <p>Time Remaining: 00:00</p>
         </div>
     )
 }
