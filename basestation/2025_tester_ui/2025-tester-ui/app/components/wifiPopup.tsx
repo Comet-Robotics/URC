@@ -6,7 +6,7 @@ let connectStatus;
 function checkConnection(){
     let cStatus;
 
-    if(connection < 25){
+    if(connection >= 0 && connection < 25){
         cStatus = "weak";
     } else if(connection >= 25 && connection < 50){
         cStatus = "intermediate";

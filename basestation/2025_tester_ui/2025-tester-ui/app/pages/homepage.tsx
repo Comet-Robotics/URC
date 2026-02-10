@@ -1,8 +1,6 @@
 "use client"
 
 import { Nav } from "../components/nav";
-import { Notifications } from "../components/notifications";
-import { View } from 'react-native';
 
 // video stream
 import { FoxgloveViewer } from "@foxglove/embed-react";

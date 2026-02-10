@@ -14,7 +14,6 @@ import {WifiPopup} from "../components/wifiPopup";
 import { useState } from 'react';
 
 // icons documentation: https://mui.com/material-ui/icons/
-
 // The function that renders the Navbar
 
 export function Nav() {
@@ -25,7 +24,6 @@ export function Nav() {
 
   return (
     <nav>
-
         {/* Navigation links */}
 
         <NavLink to="/" className={"navItems"} >Home</NavLink>
