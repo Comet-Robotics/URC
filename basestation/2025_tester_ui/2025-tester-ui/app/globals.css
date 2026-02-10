@@ -181,6 +181,33 @@ p{
 
 }
 
+.hyperspec{
+  width:100%;
+
+  align-self: center;
+  display: inline-block;
+
+  background-color: rgb(241, 245, 255);
+  padding: 25px;
+  margin: 10px;
+  height: 75vh;
+  border-radius: 8px;
+  border-width: 0.75px;
+  border-color: #3b36b7;
+  font: black;
+
+  background-image: url('https://i.postimg.cc/4xw11Z1d/placeholder-kaidou.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  /* max-height: px; */
+  max-width: 75%;
+
+  text-align: center;
+
+}
+
 .wifi-popup{
   background-color: white;
   width: 200px;
