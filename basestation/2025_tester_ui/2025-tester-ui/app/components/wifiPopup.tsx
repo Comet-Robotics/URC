@@ -3,6 +3,8 @@
 let connection = 100;
 let connectStatus;
 
+// Checks the connection and gives a status
+
 function checkConnection(){
     let cStatus;
 

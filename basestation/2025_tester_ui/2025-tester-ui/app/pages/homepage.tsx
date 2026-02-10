@@ -8,29 +8,30 @@ import { FoxgloveViewer } from "@foxglove/embed-react";
 
 
 export function Home() {
-return (
-  <>
 
-    <Nav />
+  // Returns the actual chompage component
 
-    <hr/>
+  return (
+    <>
+      <Nav />
 
-    <div className = "header">
-      <h1> La Princesa Rover </h1>
-        <h2> Solis Rover Project | 2025 - 26 </h2>
-    <p>homepage.tsx</p>
-    </div>
+      <hr/>
 
-    <h3 className="video-title">Video Streams</h3>
+      <div className = "header">
+        <h1> La Princesa Rover </h1>
+          <h2> Solis Rover Project | 2025 - 26 </h2>
+      <p>homepage.tsx</p>
+      </div>
 
-    <div className = "stream-align">
-      <div className="video-stream-div"></div>
-      <div className="video-stream-div"></div>
-      <div className="video-stream-div"></div>
-    </div>
+      <h3 className="video-title">Video Streams</h3>
 
-    <Footer />
+      <div className = "stream-align">
+        <div className="video-stream-div"></div>
+        <div className="video-stream-div"></div>
+        <div className="video-stream-div"></div>
+      </div>
 
-  </>
-)
+      <Footer />
+    </>
+  )
 }
