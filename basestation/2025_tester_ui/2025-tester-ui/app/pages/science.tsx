@@ -12,9 +12,9 @@ export default function Page() {
   <Nav />
   <hr/>
   <div className = "header">
-    <h1> La Princesa Rover </h1>
-      <h2> Science Payload </h2>
-  <p>science.tsx</p>
+    <h1 className="homepage-header"> La Princesa Rover </h1>
+      <h2 className="homepage-subheader"> Science Payload </h2>
+</div>
 
 <h3 className="video-title">Hyperspectral Camera</h3>
   <div className = "stream-align">
@@ -27,7 +27,7 @@ export default function Page() {
     />
   </div>
 </div>
-  </div>
+  
   
     <Footer />
   </>

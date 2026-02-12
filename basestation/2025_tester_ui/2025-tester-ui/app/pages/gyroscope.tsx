@@ -8,9 +8,8 @@ export default function Page() {
   <Nav />
   <hr/>
   <div className = "header">
-    <h1> La Princesa Rover </h1>
-      <h2> Gyroscope </h2>
-      <p>gyroscope.tsx</p>
+    <h1 className = "homepage-header"> La Princesa Rover </h1>
+      <h2 className = "homepage-subheader"> Gyroscope </h2>
   </div>
 
   <div className="centering-block">

@@ -21,9 +21,8 @@ export function Home() {
       <hr/>
 
       <div className = "header">
-        <h1> La Princesa Rover </h1>
-          <h2> Solis Rover Project | 2025 - 26 </h2>
-      <p>homepage.tsx</p>
+        <h1 className = "homepage-header"> La Princesa Rover </h1>
+          <h2 className = "homepage-subheader"> Solis Rover Project</h2>
       </div>
 
       <h3 className="video-title">Video Streams</h3>
@@ -39,7 +38,7 @@ export function Home() {
         </div>
         <div className="video-stream-div">
           <HyperspectralVideoStream 
-            streamId="Camera 2 - Lidar" 
+            streamId="Camera 2 - Lidar Camera" 
             streamUrl={CAMERA_STREAMS.camera2}
             width={640}
             height={480}

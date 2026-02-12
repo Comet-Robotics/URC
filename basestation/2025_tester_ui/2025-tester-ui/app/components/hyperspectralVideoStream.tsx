@@ -245,10 +245,10 @@ const HyperspectralVideoStream: React.FC<HyperspectralVideoStreamProps> = ({
 
       {/* Error state */}
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-red-900/80 text-white">
+        <div className="absolute inset-0 flex items-center justify-center bg-blue-900/80 text-white">
           <div className="text-center">
             <div className="text-lg font-semibold mb-2">Connection Error</div>
-            <div className="text-sm text-red-200">{error}</div>
+            <div className="text-sm text-blue-200">{error}</div>
           </div>
         </div>
       )}
