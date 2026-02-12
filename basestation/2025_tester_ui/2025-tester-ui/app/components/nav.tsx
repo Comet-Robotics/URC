@@ -1,6 +1,6 @@
 // The Navbar Component
 
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 import { IconButton } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Battery90Icon from '@mui/icons-material/Battery90';
@@ -26,9 +26,9 @@ export function Nav() {
     <nav>
         {/* Navigation links */}
 
-        <NavLink to="/" className={"navItems"} >Home</NavLink>
-        <NavLink to="/science-payload" className={"navItems"}>Science Payload</NavLink>
-        <NavLink to="/gyroscope" className={"navItems"}>Gyroscope</NavLink>
+        <Link href="/" className={"navItems"} >Home</Link>
+        <Link href="/science" className={"navItems"}>Science Payload</Link>
+        <Link href="/gyroscope" className={"navItems"}>Gyroscope</Link>
         <div className="notifs">
           <IconButton aria-label="notifs" onClick={() => setIsNotifs(!isNotifs)}><NotificationsIcon /></IconButton>
           <IconButton aria-label="battery" onClick={() => setIsBatPop(!isBatPop)}><Battery90Icon /></IconButton>
