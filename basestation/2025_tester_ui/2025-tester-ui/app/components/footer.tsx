@@ -36,8 +36,8 @@ export function Footer(){
 
     return(
         <div className = "footer">
-            <p>Current Mission: [Insert Mission Here]</p>
-            <p>Time Remaining: {hrsString}:{minsString}:{secsString}</p>
+            <p className="footer-text"><strong>Current Mission:</strong> [Insert Mission Here]</p>
+            <p className="footer-text"><strong>Time Remaining:</strong> {hrsString}:{minsString}:{secsString}</p>
             <div className="btnContain">
                 <button className="btnStart">Start</button>
                 <button className="btnPause">Stop</button>
