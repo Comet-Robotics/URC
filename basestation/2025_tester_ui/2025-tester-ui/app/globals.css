@@ -60,12 +60,19 @@ h3{
   font: black;
 }
 
-Nav{
-  padding-top:25px;
-  padding-bottom:25px;
-  text-align: center;
+nav{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
   background-color: #c3d9f1;
   font: black;
+}
+
+.nav-links{
+  display: flex;
+  gap: 40px;
+  align-items: center;
 }
 
 p{
@@ -76,9 +83,13 @@ p{
 .battery-popup{
   background-color: white;
   width: 200px;
-  height: 100px;
-  position: absolute;
-  left: 1000;
+  position: relative;
+  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 16px;
+  text-align: center;
 }
 
 .big-block{
@@ -129,24 +140,66 @@ p{
 }
 
 .navItems{
-  padding: 100px;
+  padding: 10px 20px;
   font-family:"Stack Sans Headline", sans-serif;
   font-weight:400;
   font: black;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.navItems:hover{
+  opacity: 0.8;
 }
 
 .notifications{
-  background-color: #3f479d8b;
-  margin-top: 25px;
-  float: right;
-  width: 25%;
-  height: 100vh;
+  background-color: white;
+  position: fixed;
+  right: 0;
+  top: 65px;
+  width: 400px;
+  height: calc(100vh - 65px - 50px);
+  overflow-y: auto;
+  z-index: 999;
+  box-shadow: -2px 0 12px rgba(0,0,0,0.1);
+  border-left: 1px solid rgba(0,0,0,0.08);
   font: black;
+  padding: 20px;
 }
 
 .notifs{
-  display: inline;
-  padding-left: 75px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+}
+
+.notifications-icon-container{
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.utility-icons-container{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+}
+
+.icon-button-container{
+  display: flex;
+  align-items: center;
+}
+
+.utility-popups{
+  position: absolute;
+  bottom: -110px;
+  right: 0;
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
 }
 
 .stream-align{
@@ -218,7 +271,11 @@ p{
 .wifi-popup{
   background-color: white;
   width: 200px;
-  height: 100px;
-  position: absolute;
-  left: 1025;
+  position: relative;
+  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 16px;
+  text-align: center;
 }

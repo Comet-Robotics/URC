@@ -25,19 +25,35 @@ export function Nav() {
   return (
     <nav>
         {/* Navigation links */}
-
-        <Link href="/" className={"navItems"} >Home</Link>
-        <Link href="/science" className={"navItems"}>Science Payload</Link>
-        <Link href="/gyroscope" className={"navItems"}>Gyroscope</Link>
+        <div className="nav-links">
+          <Link href="/" className={"navItems"} >Home</Link>
+          <Link href="/science" className={"navItems"}>Science Payload</Link>
+          <Link href="/gyroscope" className={"navItems"}>Gyroscope</Link>
+        </div>
+        
         <div className="notifs">
-          <IconButton aria-label="notifs" onClick={() => setIsNotifs(!isNotifs)}><NotificationsIcon /></IconButton>
-          <IconButton aria-label="battery" onClick={() => setIsBatPop(!isBatPop)}><Battery90Icon /></IconButton>
-          <IconButton aria-label="connection" onClick={() => setIsWifiPop(!isWifiPop)}><NetworkWifiIcon /></IconButton>
+          <div className="notifications-icon-container">
+            <IconButton aria-label="notifs" onClick={() => setIsNotifs(!isNotifs)}><NotificationsIcon /></IconButton>
+          </div>
+          
+          <div className="utility-icons-container">
+            <div className="icon-button-container">
+              <IconButton aria-label="battery" onClick={() => setIsBatPop(!isBatPop)}><Battery90Icon /></IconButton>
+            </div>
+            <div className="icon-button-container">
+              <IconButton aria-label="connection" onClick={() => setIsWifiPop(!isWifiPop)}><NetworkWifiIcon /></IconButton>
+            </div>
+          </div>
+          
+          {(isBatPop || isWifiPop) && (
+            <div className="utility-popups">
+              {isBatPop && <BatteryPopup />}
+              {isWifiPop && <WifiPopup />}
+            </div>
+          )}
         </div>
 
         {isNotifs && <Notifications />}
-        {isBatPop && <BatteryPopup />}
-        {isWifiPop && <WifiPopup />}
     </nav>
   );
 }   
