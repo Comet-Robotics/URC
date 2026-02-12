@@ -154,6 +154,7 @@ p{
 }
 
 .notifications{
+  margin-top: 11px;
   background-color: white;
   position: fixed;
   right: 0;
