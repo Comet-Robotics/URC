@@ -15,21 +15,23 @@
 #ifndef PICO2_CONFIG_H
 #define PICO2_CONFIG_H
 
-#define LED_PIN LED_BUILTIN //used for debugging status
+#define LED_PIN 8 //used for debugging status
 
 //uncomment the base you're building
-#define LINO_BASE DIFFERENTIAL_DRIVE       // 2WD and Tracked robot w/ 2 motors
-// #define LINO_BASE SKID_STEER            // 4WD robot
+// #define LINO_BASE DIFFERENTIAL_DRIVE       // 2WD and Tracked robot w/ 2 motors
+// #define LINO_BASE SKID_STEER            // 6WD robot
+#define LINO_BASE ACKERMANN            // Ackermann steering robot
 // #define LINO_BASE MECANUM               // Mecanum drive robot
 
 //uncomment the motor driver you're using
 // #define USE_GENERIC_2_IN_MOTOR_DRIVER      // Motor drivers with 2 Direction Pins(INA, INB) and 1 PWM(ENABLE) pin ie. L298, L293, VNH5019
 // #define USE_GENERIC_1_IN_MOTOR_DRIVER   // Motor drivers with 1 Direction Pin(INA) and 1 PWM(ENABLE) pin.
-#define USE_BTS7960_MOTOR_DRIVER        // BTS7970 Motor Driver using A4950 (<40V) module or DRV8833 (<10V)
+// #define USE_BTS7960_MOTOR_DRIVER        // BTS7970 Motor Driver
 // #define USE_ESC_MOTOR_DRIVER            // Motor ESC for brushless motors
+#define USE_RIORAND_ESC_MOTOR_DRIVER       // Riorand ESC for brushless motors
 
 //uncomment the IMU you're using
-// #define USE_GY85_IMU
+#define USE_GY85_IMU
 // #define USE_MPU6050_IMU
 // #define USE_MPU9150_IMU
 // #define USE_MPU9250_IMU
@@ -40,15 +42,6 @@
 // #define USE_AK09918_MAG
 // #define USE_QMC5883L_MAG
 // #define MAG_BIAS { 0, 0, 0 }
-// #define IMU_TWEAK {}
-// #define MAG_TWEAK {}
-
-#define ACCEL_COV { 0.01, 0.01, 0.01 }
-#define GYRO_COV { 0.001, 0.001, 0.001 }
-#define ORI_COV { 0.01, 0.01, 0.01 }
-#define MAG_COV { 1e-12, 1e-12, 1e-12 }
-#define POSE_COV { 0.001, 0.001, 0.001, 0.001, 0.001, 0.001 }
-#define TWIST_COV { 0.001, 0.001, 0.001, 0.003, 0.003, 0.003 }
 
 #define K_P 0.6                             // P constant
 #define K_I 0.8                             // I constant
@@ -57,57 +50,74 @@
 /*
 ROBOT ORIENTATION
          FRONT
-    MOTOR1  MOTOR2  (2WD/ACKERMANN)
+    MOTOR1  MOTOR2  (2WD/DIFF DRIVE)
     MOTOR3  MOTOR4  (4WD/MECANUM)
+    MOTOR5  MOTOR6  (6WD Ackermann Rover system)  
          BACK
 */
 
 //define your robot' specs here
-#define MOTOR_MAX_RPM 150                   // motor's max RPM
-#define MAX_RPM_RATIO 0.85                  // max RPM allowed for each MAX_RPM_ALLOWED = MOTOR_MAX_RPM * MAX_RPM_RATIO
-#define MOTOR_OPERATING_VOLTAGE 12          // motor's operating voltage (used to calculate max RPM)
-#define MOTOR_POWER_MAX_VOLTAGE 12          // max voltage of the motor's power source (used to calculate max RPM)
-#define MOTOR_POWER_MEASURED_VOLTAGE 12     // current voltage reading of the power connected to the motor (used for calibration)
-#define COUNTS_PER_REV1 900                 // wheel1 encoder's no of ticks per rev
-#define COUNTS_PER_REV2 900                 // wheel2 encoder's no of ticks per rev
-#define COUNTS_PER_REV3 900                 // wheel3 encoder's no of ticks per rev
-#define COUNTS_PER_REV4 900                 // wheel4 encoder's no of ticks per rev
-#define WHEEL_DIAMETER 0.0560               // wheel's diameter in meters
-#define LR_WHEELS_DISTANCE 0.224            // distance between left and right wheels
-#define PWM_BITS 10                         // PWM Resolution of the microcontroller
-#define PWM_FREQUENCY 20000                 // PWM Frequency
+#define MOTOR_MAX_RPM 600                   // motor's max RPM          
+#define MAX_RPM_RATIO 0.85                  // max RPM allowed for each MAX_RPM_ALLOWED = MOTOR_MAX_RPM * MAX_RPM_RATIO          
+#define MOTOR_OPERATING_VOLTAGE 36          // motor's operating voltage (used to calculate max RPM)
+#define MOTOR_POWER_MAX_VOLTAGE 36          // max voltage of the motor's power source (used to calculate max RPM)
+#define MOTOR_POWER_MEASURED_VOLTAGE 36     // current voltage reading of the power connected to the motor (used for calibration)
+#define COUNTS_PER_REV1 90              // wheel1 encoder's no of ticks per rev
+#define COUNTS_PER_REV2 90              // wheel2 encoder's no of ticks per rev
+#define COUNTS_PER_REV3 90              // wheel3 encoder's no of ticks per rev
+#define COUNTS_PER_REV4 90              // wheel4 encoder's no of ticks per rev
+#define COUNTS_PER_REV5 90              // wheel5 encoder's no of ticks per rev
+#define COUNTS_PER_REV6 90              // wheel6 encoder's no of ticks per rev
+#define WHEEL_DIAMETER 0.152                // wheel's diameter in meters
+#define LR_WHEELS_DISTANCE 0.851            // distance between left and right wheels
+#define FRONT_BACK_WHEEL_DISTANCE 0.444
+#define PWM_BITS 10                          // PWM Resolution of the microcontroller
+#define PWM_FREQUENCY 20000                 // PWM Frequency 20 kHz is max listed on riorand esc (50 Hz - 20 kHz)
 
 // INVERT ENCODER COUNTS
-#define MOTOR1_ENCODER_INV false
-#define MOTOR2_ENCODER_INV false
-#define MOTOR3_ENCODER_INV false
-#define MOTOR4_ENCODER_INV false
+#define MOTOR1_ENCODER_INV false 
+#define MOTOR2_ENCODER_INV true 
+#define MOTOR3_ENCODER_INV false 
+#define MOTOR4_ENCODER_INV true
+#define MOTOR5_ENCODER_INV false
+#define MOTOR6_ENCODER_INV true
 
 // INVERT MOTOR DIRECTIONS
 #define MOTOR1_INV false
-#define MOTOR2_INV false
+#define MOTOR2_INV true
 #define MOTOR3_INV false
-#define MOTOR4_INV false
+#define MOTOR4_INV true
+#define MOTOR5_INV false
+#define MOTOR6_INV true
+
+#define LEFT_DIRECTION 14
+#define RIGHT_DIRECTION 13
+
 
 // ENCODER PINS
-// Note: encoder pins must be consecutive (e.g. 2 and 3, 10 and 11 etc.)
-#define MOTOR1_ENCODER_A  6
-#define MOTOR1_ENCODER_B  7
+#define MOTOR1_ENCODER_A 14
+#define MOTOR1_ENCODER_B 15 
 
-#define MOTOR2_ENCODER_A 10
-#define MOTOR2_ENCODER_B 11
+#define MOTOR2_ENCODER_A 11
+#define MOTOR2_ENCODER_B 12 
 
-#define MOTOR3_ENCODER_A 20
-#define MOTOR3_ENCODER_B 21
+#define MOTOR3_ENCODER_A 17
+#define MOTOR3_ENCODER_B 16 
 
-#define MOTOR4_ENCODER_A 2
-#define MOTOR4_ENCODER_B 3
+#define MOTOR4_ENCODER_A 9
+#define MOTOR4_ENCODER_B 10
+
+#define MOTOR5_ENCODER_A 7
+#define MOTOR5_ENCODER_B 8
+
+#define MOTOR6_ENCODER_A 5
+#define MOTOR6_ENCODER_B 6
 
 // MOTOR PINS
 #ifdef USE_GENERIC_2_IN_MOTOR_DRIVER
   #define MOTOR1_PWM 21 //Pin no 21 is not a PWM pin on Teensy 4.x, you can swap it with pin no 1 instead.
   #define MOTOR1_IN_A 20
-  #define MOTOR1_IN_B 1
+  #define MOTOR1_IN_B 1 
 
   #define MOTOR2_PWM 5
   #define MOTOR2_IN_A 6
@@ -123,7 +133,7 @@ ROBOT ORIENTATION
 
   #define PWM_MAX pow(2, PWM_BITS) - 1
   #define PWM_MIN -PWM_MAX
-#endif
+#endif 
 
 #ifdef USE_GENERIC_1_IN_MOTOR_DRIVER
   #define MOTOR1_PWM 21 //Pin no 21 is not a PWM pin on Teensy 4.x, you can use pin no 1 instead.
@@ -144,49 +154,92 @@ ROBOT ORIENTATION
 
   #define PWM_MAX pow(2, PWM_BITS) - 1
   #define PWM_MIN -PWM_MAX
-#endif
+#endif 
 
 #ifdef USE_BTS7960_MOTOR_DRIVER
   #define MOTOR1_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR1_IN_A 12
-  #define MOTOR1_IN_B 13
+  #define MOTOR1_IN_A 21 // Pin no 21 is not a PWM pin on Teensy 4.x, you can use pin no 1 instead.
+  #define MOTOR1_IN_B 20 // Pin no 20 is not a PWM pin on Teensy 4.x, you can use pin no 0 instead.
 
   #define MOTOR2_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR2_IN_A 14
-  #define MOTOR2_IN_B 15
+  #define MOTOR2_IN_A 5
+  #define MOTOR2_IN_B 6
 
   #define MOTOR3_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR3_IN_A 16
-  #define MOTOR3_IN_B 17
+  #define MOTOR3_IN_A 22
+  #define MOTOR3_IN_B 23
 
   #define MOTOR4_PWM -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR4_IN_A 18
-  #define MOTOR4_IN_B 19
+  #define MOTOR4_IN_A 4
+  #define MOTOR4_IN_B 3
 
   #define PWM_MAX pow(2, PWM_BITS) - 1
   #define PWM_MIN -PWM_MAX
 #endif
 
 #ifdef USE_ESC_MOTOR_DRIVER
-  #define MOTOR1_PWM 21 //Pin no 21 is not a PWM pin on Teensy 4.x. You can use pin no 1 instead.
-  #define MOTOR1_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR1_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR1_PWM 1 //Pin no 21 is not a PWM pin on Teensy 4.x. You can use pin no 1 instead.
+  #define MOTOR1_IN_A 18 
+  #define MOTOR1_IN_B -1 
 
   #define MOTOR2_PWM 5
-  #define MOTOR2_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR2_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR2_IN_A 23 
+  #define MOTOR2_IN_B -1 
 
-  #define MOTOR3_PWM 22
-  #define MOTOR3_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR3_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR3_PWM 22 
+  #define MOTOR3_IN_A 19 
+  #define MOTOR3_IN_B -1 
 
   #define MOTOR4_PWM 4
-  #define MOTOR4_IN_A -1 //DON'T TOUCH THIS! This is just a placeholder
-  #define MOTOR4_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
+  #define MOTOR4_IN_A 22 
+  #define MOTOR4_IN_B -1 
+
+  #define MOTOR5_PWM 33
+  #define MOTOR5_IN_A 20
+  #define MOTOR5_IN_B -1 
+
+  #define MOTOR6_PWM 32
+  #define MOTOR6_IN_A 21 
+  #define MOTOR6_IN_B -1 
+
+  //using riorand esc calibration values
 
   #define PWM_MAX 400
   #define PWM_MIN -PWM_MAX
 #endif
+
+#ifdef USE_RIORAND_ESC_MOTOR_DRIVER
+
+  #define MOTOR1_PWM 2 //Pin no 21 is not a PWM pin on Teensy 4.x. You can use pin no 1 instead.
+  #define MOTOR1_IN_A -1 
+  #define MOTOR1_IN_B -1 
+
+  #define MOTOR2_PWM 3
+  #define MOTOR2_IN_A -1 
+  #define MOTOR2_IN_B -1 
+
+  #define MOTOR3_PWM 4
+  #define MOTOR3_IN_A -1 
+  #define MOTOR3_IN_B -1 
+
+  #define MOTOR4_PWM 5
+  #define MOTOR4_IN_A -1 
+  #define MOTOR4_IN_B -1 
+
+  #define MOTOR5_PWM 6
+  #define MOTOR5_IN_A -1
+  #define MOTOR5_IN_B -1 
+
+  #define MOTOR6_PWM 7
+  #define MOTOR6_IN_A -1 
+  #define MOTOR6_IN_B -1 
+
+  //using riorand esc calibration values
+
+  #define PWM_MAX 400
+  #define PWM_MIN -PWM_MAX
+#endif
+
 
 #define AGENT_IP { 192, 168, 1, 100 }  // eg IP of the desktop computer
 #define AGENT_PORT 8888

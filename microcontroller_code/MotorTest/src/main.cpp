@@ -30,11 +30,17 @@ void loop() {
   // Calculate and display motor speed every 500ms
   unsigned long currentTime = millis();
   
+  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN)); // Toggle built-in LED for visual feedback
+
   if (currentTime - lastTime >= 500) {
     long currentPulseCount = readMotorPulses(FRONT_LEFT_MOTOR);
     long pulseDiff = currentPulseCount - lastPulseCount;
     float timeInterval = (currentTime - lastTime) / 1000.0; // Convert to seconds
     
+
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN)); // Toggle built-in LED for visual feedback
+
+
     // Calculate pulses per second (Hz)
 
 
@@ -43,7 +49,7 @@ void loop() {
     // Note: Using RISING interrupt, so multiply by 2 for actual pulse rate
     float rpm = (pulsesPerSecond * 2.0 * 60.0) / PULSES_PER_REVOLUTION;
 
-    bool slowDown = !digitalRead(52);  // Changed to GPIO 24 for Teensy
+    bool slowDown = !digitalRead(18);  // Changed to GPIO 24 for Teensy
     
     // DEBUG: Read encoder pin state directly
     // int encoderPinState = digitalRead(MOTOR_ESC_SPEED_PINS[0]);

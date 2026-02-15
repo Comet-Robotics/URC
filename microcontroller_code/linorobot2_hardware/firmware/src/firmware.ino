@@ -67,6 +67,8 @@ unsigned long long time_offset = 0;
 unsigned long prev_cmd_time = 0;
 unsigned long prev_odom_update = 0;
 
+bool debugLedState = LOW;
+
 enum states 
 {
   WAITING_AGENT,
@@ -117,6 +119,8 @@ MAG mag;
 void setup() 
 {
     pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
+    debugLedState = HIGH;
     Serial.begin(BAUDRATE);
     pinMode(LEFT_DIRECTION, OUTPUT);
     pinMode(RIGHT_DIRECTION, OUTPUT);
@@ -133,15 +137,15 @@ void setup()
     BOARD_INIT
 #endif
 
-    bool imu_ok = imu.init();
-    if(!imu_ok)
-    {
-        while(1)
-        {
-            flashLED(3);
-        }
-    }
-    mag.init();
+    // bool imu_ok = imu.init();
+    // if(!imu_ok)
+    // {
+    //     // while(1)
+    //     // {
+    //     //     flashLED(3);
+    //     // }
+    // }
+    // mag.init();
 
 #ifdef MICRO_ROS_TRANSPORT_ARDUINO_WIFI
     set_microros_wifi_transports(WIFI_SSID, WIFI_PASSWORD, AGENT_IP, AGENT_PORT);
@@ -197,7 +201,8 @@ void controlCallback(rcl_timer_t * timer, int64_t last_call_time)
 
 void twistCallback(const void * msgin) 
 {
-    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    digitalWrite(LED_PIN, !debugLedState);
+    debugLedState = !debugLedState;
     
     geometry_msgs__msg__Twist * msg = (geometry_msgs__msg__Twist *)msgin;
     twist_msg = *msg;
@@ -267,6 +272,7 @@ bool createEntities()
     // synchronize time with the agent
     syncTime();
     digitalWrite(LED_PIN, HIGH);
+    debugLedState = HIGH;
 
     return true;
 }
@@ -302,6 +308,8 @@ void fullStop()
     motor2_controller.brake();
     motor3_controller.brake();
     motor4_controller.brake();
+    motor5_controller.brake();
+    motor6_controller.brake();
 }
 
 void moveBase()
@@ -309,11 +317,19 @@ void moveBase()
     // brake if there's no command received, or when it's only the first command sent
     if(((millis() - prev_cmd_time) >= 200)) 
     {
-        twist_msg.linear.x = 0.0;
-        twist_msg.linear.y = 0.0;
-        twist_msg.angular.z = 0.0;
+        fullStop();
+        // Reset PID controllers to prevent windup
+        motor1_pid.reset();
+        motor2_pid.reset();
+        motor3_pid.reset();
+        motor4_pid.reset();
+        motor5_pid.reset();
+        motor6_pid.reset();
 
         digitalWrite(LED_PIN, HIGH);
+        debugLedState = HIGH;
+        return;
+
     }
     // get the required rpm for each motor based on required velocities, and base used
     Kinematics::rpm req_rpm = kinematics.getRPM(
@@ -322,6 +338,21 @@ void moveBase()
         twist_msg.angular.z
     );
 
+
+    // Check for zero velocity command first
+    if(twist_msg.linear.x == 0.0 && twist_msg.linear.y == 0.0 && twist_msg.angular.z == 0.0)
+    {
+        fullStop();
+        // Reset PID controllers to prevent integral windup from noisy encoders
+        motor1_pid.reset();
+        motor2_pid.reset();
+        motor3_pid.reset();
+        motor4_pid.reset();
+        motor5_pid.reset();
+        motor6_pid.reset();
+        return;
+    }
+
     // get the current speed of each motor
     float current_rpm1 = motor1_encoder.getRPM();
     float current_rpm2 = motor2_encoder.getRPM();
@@ -329,6 +360,15 @@ void moveBase()
     float current_rpm4 = motor4_encoder.getRPM();
     float current_rpm5 = motor5_encoder.getRPM();
     float current_rpm6 = motor6_encoder.getRPM();
+
+    // Clamp encoder readings to prevent issues from floating pins during testing
+    const float MAX_VALID_RPM = MOTOR_MAX_RPM * 2.0;  // 2x max as safety margin
+    current_rpm1 = constrain(current_rpm1, -MAX_VALID_RPM, MAX_VALID_RPM);
+    current_rpm2 = constrain(current_rpm2, -MAX_VALID_RPM, MAX_VALID_RPM);
+    current_rpm3 = constrain(current_rpm3, -MAX_VALID_RPM, MAX_VALID_RPM);
+    current_rpm4 = constrain(current_rpm4, -MAX_VALID_RPM, MAX_VALID_RPM);
+    current_rpm5 = constrain(current_rpm5, -MAX_VALID_RPM, MAX_VALID_RPM);
+    current_rpm6 = constrain(current_rpm6, -MAX_VALID_RPM, MAX_VALID_RPM);
 
     // the required rpm is capped at -/+ MAX_RPM to prevent the PID from having too much error
     // the PWM value sent to the motor driver is the calculated PID based on required RPM vs measured RPM
@@ -446,5 +486,6 @@ void flashLED(int n_times)
         digitalWrite(LED_PIN, LOW);
         delay(150);
     }
+    debugLedState = LOW;
     delay(1000);
 }

@@ -23,6 +23,7 @@ class PID
         PID(float min_val, float max_val, float kp, float ki, float kd);
         double compute(float setpoint, float measured_value);
         void updateConstants(float kp, float ki, float kd);
+        void reset();
 
     private:
         float min_val_;

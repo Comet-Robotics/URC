@@ -77,8 +77,6 @@ public:
 	        encoder_.setCount(p);
 	}
 };
-#elif defined(PICO)
-#include <pio_encoder.h>
 
 class Encoder
 {
@@ -160,10 +158,10 @@ public:
 // The assembly code uses auto-incrementing addressing modes, so the struct
 // must remain in exactly this order.
 typedef struct {
-	volatile IO_REG_TYPE * pin1_register;
-	volatile IO_REG_TYPE * pin2_register;
-	IO_REG_TYPE            pin1_bitmask;
-	IO_REG_TYPE            pin2_bitmask;
+	volatile int * pin1;
+	volatile int * pin2;
+	// IO_REG_TYPE            pin1_bitmask;
+	// IO_REG_TYPE            pin2_bitmask;
 	uint8_t                state;
 	int32_t                position;
 } Encoder_internal_state_t;
@@ -171,6 +169,7 @@ typedef struct {
 class Encoder
 {
 public:
+	//pin2 is from og code that we stole, scared to delete it, and not used
 	Encoder(uint8_t pin1, uint8_t pin2, int counts_per_rev, bool invert=false) {
 		// RioRand ESC: pin1 = speed pulse pin
 		// pin2 is ignored - direction set via setDirection() method
@@ -183,14 +182,18 @@ public:
 
 		counts_per_rev_ = counts_per_rev;	
 
-		encoder.pin1_register = PIN_TO_BASEREG(pin1);
-		encoder.pin1_bitmask = PIN_TO_BITMASK(pin1);
-		encoder.pin2_register = nullptr;  // Not used
-		encoder.pin2_bitmask = 0;          // Not used
+
+		pinMode(pin1, INPUT);
+
 		encoder.position = 0;
 		// State bits: bit 0 = invert flag, bit 1 = direction (0=forward, 1=backward)
 		encoder.state = (invert ? 1 : 0);  // Default: forward direction
 		
+
+		// encoder.pin1_register = PIN_TO_BASEREG(pin1);
+		// encoder.pin1_bitmask = PIN_TO_BITMASK(pin1);
+		// encoder.pin2_register = nullptr;  // Not used
+		// encoder.pin2_bitmask = 0;          // Not used
 		// Small delay for signal stabilization
 		delayMicroseconds(100);
 		
@@ -278,54 +281,7 @@ private:
 	uint8_t interrupts_in_use;
 #endif
 public:
-	static Encoder_internal_state_t * interruptArgs[ENCODER_ARGLIST_SIZE];
-
-//                           _______         _______       
-//               Pin1 ______|       |_______|       |______ Pin1
-// negative <---         _______         _______         __      --> positive
-//               Pin2 __|       |_______|       |_______|   Pin2
-
-		//	new	new	old	old
-		//	pin2	pin1	pin2	pin1	Result
-		//	----	----	----	----	------
-		//	0	0	0	0	no movement
-		//	0	0	0	1	+1
-		//	0	0	1	0	-1
-		//	0	0	1	1	+2  (assume pin1 edges only)
-		//	0	1	0	0	-1
-		//	0	1	0	1	no movement
-		//	0	1	1	0	-2  (assume pin1 edges only)
-		//	0	1	1	1	+1
-		//	1	0	0	0	+1
-		//	1	0	0	1	-2  (assume pin1 edges only)
-		//	1	0	1	0	no movement
-		//	1	0	1	1	-1
-		//	1	1	0	0	+2  (assume pin1 edges only)
-		//	1	1	0	1	-1
-		//	1	1	1	0	+1
-		//	1	1	1	1	no movement
-/*
-	// Simple, easy-to-read "documentation" version :-)
-	//
-	void update(void) {
-		uint8_t s = state & 3;
-		if (digitalRead(pin1)) s |= 4;
-		if (digitalRead(pin2)) s |= 8;
-		switch (s) {
-			case 0: case 5: case 10: case 15:
-				break;
-			case 1: case 7: case 8: case 14:
-				position++; break;
-			case 2: case 4: case 11: case 13:
-				position--; break;
-			case 3: case 12:
-				position += 2; break;
-			default:
-				position -= 2; break;
-		}
-		state = (s >> 2);
-	}
-*/
+	static Encoder_internal_state_t* interruptArgs[ENCODER_ARGLIST_SIZE];
 
 public:
 	// update() is not meant to be called from outside Encoder,

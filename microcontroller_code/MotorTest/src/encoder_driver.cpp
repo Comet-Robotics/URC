@@ -40,20 +40,22 @@ void initMotorSpeedReader() {
   for(int i = 0; i < MOTOR_COUNT; i++) {
     pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT);
   }
-  if (forward)
-    for (int i = 0; i < MOTOR_COUNT; i++) {
-      attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[i]), ++motor_pulse_count[i], CHANGE); // Try RISING instead of CHANGE
-    }
-  else
-    for (int i = 0; i < MOTOR_COUNT; i++) {
-      attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[i]), --motor_pulse_count[i], CHANGE); // Try RISING instead of CHANGE
-    }
-  // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, CHANGE);  // Try RISING instead of CHANGE
-  // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[1]), motorSpeedISR2, CHANGE);
-  // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[2]), motorSpeedISR3, CHANGE);
-  // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[3]), motorSpeedISR4, CHANGE);
-  // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[4]), motorSpeedISR5, CHANGE);
-  // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[5]), motorSpeedISR6, CHANGE);
+
+  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, CHANGE);  // Try RISING instead of CHANGE
+  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[1]), motorSpeedISR2, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[2]), motorSpeedISR3, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[3]), motorSpeedISR4, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[4]), motorSpeedISR5, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[5]), motorSpeedISR6, CHANGE);
+
+    // if (forward)
+  //   for (int i = 0; i < MOTOR_COUNT; i++) {
+  //     attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[i]), ++motor_pulse_count[i], CHANGE); // Try RISING instead of CHANGE
+  //   }
+  // else
+  //   for (int i = 0; i < MOTOR_COUNT; i++) {
+  //     attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[i]), --motor_pulse_count[i], CHANGE); // Try RISING instead of CHANGE
+  //   }
 }
 
 long readMotorPulses(MotorID motor) {

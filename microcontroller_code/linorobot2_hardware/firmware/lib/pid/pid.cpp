@@ -20,7 +20,10 @@ PID::PID(float min_val, float max_val, float kp, float ki, float kd):
     max_val_(max_val),
     kp_(kp),
     ki_(ki),
-    kd_(kd)
+    kd_(kd),
+    integral_(0),
+    derivative_(0),
+    prev_error_(0)
 {
 }
 
@@ -51,4 +54,11 @@ void PID::updateConstants(float kp, float ki, float kd)
     kp_ = kp;
     ki_ = ki;
     kd_ = kd;
+}
+
+void PID::reset()
+{
+    integral_ = 0;
+    derivative_ = 0;
+    prev_error_ = 0;
 }
