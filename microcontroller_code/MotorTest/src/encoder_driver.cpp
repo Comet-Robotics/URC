@@ -2,7 +2,7 @@
 #include "constants.h"
 #include "encoder_driver.h"
 
-
+bool forward = true;
 volatile long motor_pulse_count[6] = {0L};
 
 //todo: update to handle all 6 motor interrupts 
@@ -36,11 +36,19 @@ void motorSpeedISR6() {
 }
 
 void initMotorSpeedReader() {
-  pinMode(MOTOR_ESC_SPEED_PINS[0], INPUT);  // No pull-up for direct connection test
-  // for(int i = 0; i < MOTOR_COUNT; i++) {
-  //   pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT);
-  // }
-  attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, CHANGE);  // Try RISING instead of CHANGE
+  //pinMode(MOTOR_ESC_SPEED_PINS[0], INPUT);  // No pull-up for direct connection test
+  for(int i = 0; i < MOTOR_COUNT; i++) {
+    pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT);
+  }
+  if (forward)
+    for (int i = 0; i < MOTOR_COUNT; i++) {
+      attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[i]), ++motor_pulse_count[i], CHANGE); // Try RISING instead of CHANGE
+    }
+  else
+    for (int i = 0; i < MOTOR_COUNT; i++) {
+      attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[i]), --motor_pulse_count[i], CHANGE); // Try RISING instead of CHANGE
+    }
+  // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, CHANGE);  // Try RISING instead of CHANGE
   // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[1]), motorSpeedISR2, CHANGE);
   // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[2]), motorSpeedISR3, CHANGE);
   // attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[3]), motorSpeedISR4, CHANGE);

@@ -9,6 +9,9 @@ void setMotorPWM(MotorID motor, int pwmValue) {
   if (motor < FRONT_LEFT_MOTOR || motor > REAR_RIGHT_MOTOR) {
         return;
   }
+
   int pwmPin = MOTOR_PWM_PINS[motor];
+  if (pwmValue > PWM_MAX_VALUE)
+    pwmValue = PWM_MAX_VALUE;
   analogWrite(pwmPin, pwmValue);
 }

@@ -120,6 +120,15 @@ void setup()
     Serial.begin(BAUDRATE);
     pinMode(LEFT_DIRECTION, OUTPUT);
     pinMode(RIGHT_DIRECTION, OUTPUT);
+    
+    // Initialize twist_msg to zero to prevent random motor movement on startup
+    twist_msg.linear.x = 0.0;
+    twist_msg.linear.y = 0.0;
+    twist_msg.linear.z = 0.0;
+    twist_msg.angular.x = 0.0;
+    twist_msg.angular.y = 0.0;
+    twist_msg.angular.z = 0.0;
+    
 #ifdef BOARD_INIT // board specific setup
     BOARD_INIT
 #endif
@@ -189,6 +198,9 @@ void controlCallback(rcl_timer_t * timer, int64_t last_call_time)
 void twistCallback(const void * msgin) 
 {
     digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    
+    geometry_msgs__msg__Twist * msg = (geometry_msgs__msg__Twist *)msgin;
+    twist_msg = *msg;
 
     prev_cmd_time = millis();
 }

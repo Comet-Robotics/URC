@@ -107,7 +107,7 @@ Kinematics::rpm Kinematics::getRPM(float linear_x, float linear_y, float angular
         linear_y = 0;
     }
 
-    return calculateRPM(linear_x, linear_y, angular_z);;
+    return calculateRPM(linear_x, linear_y, angular_z);
 }
 
 Kinematics::velocities Kinematics::getVelocities(float rpm1, float rpm2, float rpm3, float rpm4, float rpm5, float rpm6)
