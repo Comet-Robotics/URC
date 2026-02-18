@@ -2,6 +2,9 @@
 #include "encoder_driver.h"
 #include "pwm_driver.h"
 
+#define LED 8
+#define SLOWDOWN 26
+
 // Variables for speed calculation
 unsigned long lastTime = 0;
 long lastPulseCount = 0;
@@ -14,13 +17,13 @@ void setup() {
   // Initialize the motor speed reader
   initMotorSpeedReader();
   
-  pinMode(52, INPUT_PULLUP);  // Changed to GPIO 24 for Teensy
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(SLOWDOWN, INPUT_PULLUP);  // Changed to GPIO 24 for Teensy
+  pinMode(LED, OUTPUT);
   Serial.println("Brushless Motor ESC Speed Reader Initialized (Teensy  )");
   Serial.println("Connect ESC speed signal to GPIO 2");
   
   lastTime = millis();
-  digitalWrite(LED_BUILTIN, LOW); // Turn on built-in LED
+  digitalWrite(LED, LOW); // Turn on built-in LED
 }
 
 //testing program
@@ -30,7 +33,7 @@ void loop() {
   // Calculate and display motor speed every 500ms
   unsigned long currentTime = millis();
   
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN)); // Toggle built-in LED for visual feedback
+  digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
 
   if (currentTime - lastTime >= 500) {
     long currentPulseCount = readMotorPulses(FRONT_LEFT_MOTOR);
@@ -38,7 +41,7 @@ void loop() {
     float timeInterval = (currentTime - lastTime) / 1000.0; // Convert to seconds
     
 
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN)); // Toggle built-in LED for visual feedback
+    digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
 
 
     // Calculate pulses per second (Hz)
@@ -49,7 +52,7 @@ void loop() {
     // Note: Using RISING interrupt, so multiply by 2 for actual pulse rate
     float rpm = (pulsesPerSecond * 2.0 * 60.0) / PULSES_PER_REVOLUTION;
 
-    bool slowDown = !digitalRead(18);  // Changed to GPIO 24 for Teensy
+    bool slowDown = !digitalRead(SLOWDOWN);  // Changed to GPIO 24 for Teensy
     
     // DEBUG: Read encoder pin state directly
     // int encoderPinState = digitalRead(MOTOR_ESC_SPEED_PINS[0]);
@@ -62,8 +65,13 @@ void loop() {
     // Serial.print(rpm);
     // Serial.print(" | Total rotations: ");
     // Serial.print(currentPulseCount / PULSES_PER_REVOLUTION);
-    // Serial.print(" | Encoder pin state: ");
-    // Serial.println(encoderPinState);
+    for int (i = 0; i < MOTOR_COUNT; i++) {
+      int encoderPinState = digitalRead(MOTOR_ESC_SPEED_PINS[i]);
+      Serial.print(" | Encoder pin ");
+      Serial.print(i + 1);
+      Serial.print(" state: ")
+      Serial.println(encoderPinState);
+    }
     
     lastPulseCount = currentPulseCount;
     lastTime = currentTime;
@@ -76,12 +84,12 @@ void loop() {
     if(pwmValue < PWM_MAX_VALUE && !slowDown) {
       pwmValue+=3;
       Serial.print(" Speeding Up ");
-      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(LED, HIGH);
     }
     else if(pwmValue > 0 && slowDown) {
       pwmValue-=3;
       Serial.print(" Slowing Down ");
-      digitalWrite(LED_BUILTIN, LOW);
+      digitalWrite(LED, LOW);
     }
     Serial.println(" | PWM Value Set To: " + String(pwmValue));
   }
