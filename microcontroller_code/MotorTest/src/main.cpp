@@ -65,11 +65,11 @@ void loop() {
     // Serial.print(rpm);
     // Serial.print(" | Total rotations: ");
     // Serial.print(currentPulseCount / PULSES_PER_REVOLUTION);
-    for int (i = 0; i < MOTOR_COUNT; i++) {
-      int encoderPinState = digitalRead(MOTOR_ESC_SPEED_PINS[i]);
+    for (int i = 0; i < MOTOR_COUNT; i++) {
+      int encoderPinState = readMotorPulses(static_cast<MotorID>(i));
       Serial.print(" | Encoder pin ");
       Serial.print(i + 1);
-      Serial.print(" state: ")
+      Serial.print(" state: ");
       Serial.println(encoderPinState);
     }
     
