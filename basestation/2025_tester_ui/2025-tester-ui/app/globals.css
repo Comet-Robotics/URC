@@ -69,6 +69,12 @@ nav{
   font: black;
 }
 
+.nav-links{
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
 p{
   font-family: "Stack Sans Headline", sans-serif;
   font: black;
@@ -115,20 +121,27 @@ p{
   font: black;
 }
 
+.dataBlock{
+  height: 15vh;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px
+}
+
+.dataHolder{
+  width: 20%;
+  justify-content: center;
+}
+
 .footer{
   position: fixed;
   bottom: 0;
   width: 100%;
   height: 50px;
-  background-color: #fbfdff;
+  background-color: white;
   text-align: center;
-  font-family: "Space Grotesk", sans-serif;
-}
-
-.footer-text{
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 17;
-  color: #010018;
 }
 
 .header{
@@ -158,12 +171,6 @@ p{
   transition: opacity 0.2s;
 }
 
-.nav-links{
-  display: flex;
-  gap: 40px;
-  align-items: center;
-}
-
 .navItems:hover{
   opacity: 0.8;
 }
@@ -175,10 +182,10 @@ p{
   right: 0;
   top: 65px;
   width: 400px;
-  height: calc(100vh - 65px - 61.5px);
+  height: calc(100vh - 65px - 50px);
   overflow-y: auto;
   z-index: 999;
-  box-shadow: -2px 0 12px rgba(6, 35, 92, 0.409);
+  box-shadow: -2px 0 12px rgba(0,0,0,0.1);
   border-left: 1px solid rgba(0,0,0,0.08);
   font: black;
   padding: 20px;
@@ -224,6 +231,10 @@ p{
   align-content: center;
   align-self: center;
   text-align: center;
+}
+
+.scienceContainer{
+  display: inline;
 }
 
 .video-title{
