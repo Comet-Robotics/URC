@@ -1,28 +1,30 @@
 "use client"
 
 import { Nav } from "../components/nav";
+import { Footer } from "../components/footer";
+import GyroscopeVisualizer from "../components/gyroscopeVisualizer";
 
 export default function Page() {
   return (
-  <>
-  <Nav />
-  <hr/>
-  <div className = "header">
-    <h1 className = "homepage-header"> La Princesa Rover </h1>
-      <h2 className = "homepage-subheader"> Gyroscope </h2>
-  </div>
+    <>
+<Nav />
 
-  <div className="centering-block">
-      <div className = "block">
-        <p> La Princesa Rover </p>
+      <hr/>
+
+      <div className = "header">
+        <h1 className = "homepage-header"> La Princesa Rover </h1>
+          <h2 className = "homepage-subheader"> Solis Rover Project</h2>
       </div>
 
-      <div className = "block">
-        <p> La Princesa Rover 2</p>
-      </div>
-  </div>
-  
+      <h3 className="video-title">Gyroscope Visualization</h3>
 
-  </>
+      <div className = "stream-align">
+        <div className="hyperspec">
+          <GyroscopeVisualizer />
+        </div>
+      </div>
+
+      <Footer />
+    </>
 )
 }

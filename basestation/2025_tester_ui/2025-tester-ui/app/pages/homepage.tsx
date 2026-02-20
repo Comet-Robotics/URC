@@ -6,7 +6,7 @@ import HyperspectralVideoStream from "../components/hyperspectralVideoStream";
 
 // Video streams configuration - update these URLs to match your camera backend
 const CAMERA_STREAMS = {
-  camera1: process.env.NEXT_PUBLIC_CAMERA_1_URL || 'https://cdn.flowplayer.com/a30bd6bc-f98b-47bc-abf5-97633d4faea0/hls/de3f6ca7-2db3-4689-8160-0f574a5996ad/playlist.m3u8',
+  // camera1: process.env.NEXT_PUBLIC_CAMERA_1_URL || 'ws://localhost:8000/stream2''https://cdn.flowplayer.com/a30bd6bc-f98b-47bc-abf5-97633d4faea0/hls/de3f6ca7-2db3-4689-8160-0f574a5996ad/playlist.m3u8',
   camera2: process.env.NEXT_PUBLIC_CAMERA_2_URL || 'ws://localhost:8000/stream2',
 };
 
