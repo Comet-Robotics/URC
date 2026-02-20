@@ -1,1 +1,6 @@
 .pio
+micro-ROS-Agent
+micro_ros_msgs
+build
+install
+log
