@@ -2,6 +2,7 @@
 #include "constants.h"
 #include "encoder_driver.h"
 
+
 bool forward = true;
 volatile long motor_pulse_count[6] = {0L};
 
@@ -38,7 +39,7 @@ void motorSpeedISR6() {
 void initMotorSpeedReader() {
   //pinMode(MOTOR_ESC_SPEED_PINS[0], INPUT);  // No pull-up for direct connection test
   for(int i = 0; i < MOTOR_COUNT; i++) {
-    pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT);
+    pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT_PULLUP);  // Enable pull-up resistor for cleaner signal
   }
 
   attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, CHANGE);  // Try RISING instead of CHANGE

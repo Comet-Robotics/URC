@@ -1,6 +1,6 @@
 
 
-#include "../setup.cpp"
+// #include "../setup.cpp"
 
 #include <Arduino.h>
 #include "encoder_driver.h"
@@ -15,13 +15,17 @@
 
 #define LED 8
 #define SLOWDOWN 26
+#define CMD_VEL_TOPIC "/cmd_vel"
+#define RPM_TOPIC "/rpm"
+#define PWM_TOPIC "/pwm"
+#define CMD_VEL_TIMEOUT_MS 5000
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){while(1){digitalWrite(LED,!digitalRead(LED)); delay(100);}}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; }
 
 // Variables for speed calculation
 unsigned long lastTime = 0;
-long lastPulseCount = 0;
+long lastPulseCount[MOTOR_COUNT] = {0};
 int pwmValue = 0;
 int target_PWM = 0;
 bool leftDirection = true; // true for forward, false for reverse
@@ -30,6 +34,7 @@ bool rightDirection = true; // true for forward, false for reverse
 // Micro-ROS variables
 rcl_subscription_t cmd_vel_sub;
 rcl_publisher_t rpm_pub;
+rcl_publisher_t pwm_pub;
 rcl_node_t node;
 rcl_allocator_t allocator;
 rcl_timer_t timer;
@@ -41,8 +46,12 @@ rclc_executor_t executor;
 // Micro-ROS messages
 geometry_msgs__msg__Twist cmd_vel_msg; // Equates to geometry_msgs::msg::Twist
 std_msgs__msg__Float32MultiArray rpm_msg; // Equates to std_msgs::msg::Float32MultiArray
+std_msgs__msg__Float32MultiArray pwm_msg; // Equates to std_msgs::msg::Float32MultiArray
 
 const unsigned long RPM_PUB_INTERVAL = 100; // Publish RPM every 100ms
+
+unsigned long currentCMDVelTime = 0;
+unsigned long lastCMDVelTime = 0;
 
 // Function that is called when a new cmd_vel message is received
 void cmd_vel_callback(const void * msgin) {
@@ -79,35 +88,65 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
 
   // TODO: Adjust this to publish RPM for all motors
 
+  /*
+    ROBOT ORIENTATION
+          FRONT
+      MOTOR1  MOTOR2
+      MOTOR3  MOTOR4 
+      MOTOR5  MOTOR6  (6WD Ackermann Rover system)  
+          BACK
+  */
   // Calculate motor RPM
   unsigned long currentTime = millis();
-  long currentPulseCount = readMotorPulses(FRONT_LEFT_MOTOR);
 
-  long pulseDiff = currentPulseCount - lastPulseCount;
-  float timeInterval = (currentTime - lastTime) / 1000.0;
+  long currentPulseCount[MOTOR_COUNT];
+  long pulseDiff[MOTOR_COUNT];
 
-  float pulsesPerSecond = pulseDiff / timeInterval;
-  float rpm = (pulsesPerSecond * 2.0 * 60.0) / PULSES_PER_REVOLUTION;
+  float rpm[MOTOR_COUNT];
+  
+  for (int i = 0; i < MOTOR_COUNT; i++) {
+    currentPulseCount[i] = readMotorPulses(static_cast<MotorID>(i));
+    pulseDiff[i] = currentPulseCount[i] - lastPulseCount[i];
+    float timeInterval = (currentTime - lastTime) / 1000.0; // Convert to seconds
+    float pulsesPerSecond = pulseDiff[i] / timeInterval;
+    rpm[i] = (pulsesPerSecond * 2.0 * 60.0) / PULSES_PER_REVOLUTION;
+    lastPulseCount[i] = currentPulseCount[i];
+  }
+
+    // long pulseDiff = currentPulseCount - lastPulseCount;
+    // float timeInterval = (currentTime - lastTime) / 1000.0;
+
+    // float pulsesPerSecond = pulseDiff / timeInterval;
+    // float rpm = (pulsesPerSecond * 2.0 * 60.0) / PULSES_PER_REVOLUTION;
 
   // Publish RPM data
-  rpm_msg.data.data[0] = rpm;
+  for (int i = 0; i < MOTOR_COUNT; i++) {
+    rpm_msg.data.data[i] = rpm[i];
+  }
   rcl_publish(&rpm_pub, &rpm_msg, NULL);
 
-  lastPulseCount = currentPulseCount;
+
+
   lastTime = currentTime;
   
   // Gradually adjust PWM towards target_PWM
   if (pwmValue < target_PWM) {
-    pwmValue += 1; // Ramp up speed
+    pwmValue += 5; // Ramp up speed
     if (pwmValue > target_PWM) {
       pwmValue = target_PWM; // Don't exceed target
     }
   } else if (pwmValue > target_PWM) {
-    pwmValue -= 1; // Ramp down speed
+    pwmValue -= 5; // Ramp down speed
     if (pwmValue < target_PWM) {
       pwmValue = target_PWM; // Don't go below target
     }
   }
+
+  // Publish PWM data
+  for (int i = 0; i < MOTOR_COUNT; i++) {
+    pwm_msg.data.data[i] = pwmValue;
+  }
+  rcl_publish(&pwm_pub, &pwm_msg, NULL);
 
   // Set PWM for all motors
   for(int i = 0; i < MOTOR_COUNT; i++) {
@@ -127,6 +166,11 @@ void setup() {
 
   pinMode(LED, OUTPUT);
 
+  for(int i = 0; i < MOTOR_COUNT; i++) {
+    pinMode(MOTOR_PWM_PINS[i], OUTPUT);
+    analogWrite(MOTOR_PWM_PINS[i], 0); // Initialize to 0
+  }
+
   initMotorSpeedReader();
 
   // Initialize allocator 
@@ -141,14 +185,20 @@ void setup() {
       &cmd_vel_sub,
       &node,
       ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
-      "/cmd_vel"));
+      CMD_VEL_TOPIC));
 
   // Create rpm publisher
   RCCHECK(rclc_publisher_init_default(
       &rpm_pub,
       &node,
       ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
-      "/rpm"));
+      RPM_TOPIC));
+
+  RCCHECK(rclc_publisher_init_default(
+    &pwm_pub,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
+    PWM_TOPIC));
   
   // Create timer for publishing RPM
   RCCHECK(rclc_timer_init_default(
@@ -182,6 +232,11 @@ void setup() {
   rpm_msg.data.capacity = MOTOR_COUNT;
   rpm_msg.data.size = MOTOR_COUNT;
   rpm_msg.data.data = (float *)malloc(MOTOR_COUNT * sizeof(float));  
+
+  // Initialize PWM message
+  pwm_msg.data.capacity = MOTOR_COUNT;
+  pwm_msg.data.size = MOTOR_COUNT;
+  pwm_msg.data.data = (float *)malloc(MOTOR_COUNT * sizeof(float));  
 
   
   lastTime = millis();
