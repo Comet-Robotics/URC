@@ -15,3 +15,22 @@ void setMotorPWM(MotorID motor, int pwmValue) {
     pwmValue = PWM_MAX_VALUE;
   analogWrite(pwmPin, pwmValue);
 }
+
+void setGroupDirection(Group group, MotorDirection direction) {
+  // Set direction for all motors on the specified group
+  for(int i = 0; i < MOTOR_COUNT; i++) 
+  {
+    if ((group == LEFT && (i % 2 == 0)) || (group == RIGHT && (i % 2 == 1))) 
+    {
+      int dirPin = MOTOR_DIRECTION_PINS[i];
+      digitalWrite(dirPin, direction == FORWARD ? HIGH : LOW);
+    } 
+
+    else if (group == ALL) 
+    {
+      int dirPin = MOTOR_DIRECTION_PINS[i];
+      digitalWrite(dirPin, direction == FORWARD ? HIGH : LOW);
+    }
+
+  }
+}

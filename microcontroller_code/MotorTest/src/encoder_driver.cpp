@@ -2,6 +2,7 @@
 #include "constants.h"
 #include "encoder_driver.h"
 
+
 bool forward = true;
 volatile long motor_pulse_count[6] = {0L};
 
@@ -38,7 +39,7 @@ void motorSpeedISR6() {
 void initMotorSpeedReader() {
   //pinMode(MOTOR_ESC_SPEED_PINS[0], INPUT);  // No pull-up for direct connection test
   for(int i = 0; i < MOTOR_COUNT; i++) {
-    pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT);
+    pinMode(MOTOR_ESC_SPEED_PINS[i], INPUT_PULLUP);
   }
 
   attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[0]), motorSpeedISR1, CHANGE);  // Try RISING instead of CHANGE
@@ -56,6 +57,18 @@ void initMotorSpeedReader() {
   //   for (int i = 0; i < MOTOR_COUNT; i++) {
   //     attachInterrupt(digitalPinToInterrupt(MOTOR_ESC_SPEED_PINS[i]), --motor_pulse_count[i], CHANGE); // Try RISING instead of CHANGE
   //   }
+
+  // Direction pins
+  for(int i = 0; i < MOTOR_COUNT; i++) {
+    pinMode(MOTOR_DIRECTION_PINS[i], OUTPUT);
+    digitalWrite(MOTOR_DIRECTION_PINS[i], HIGH); // Set initial direction to forward
+  } 
+
+  // Setup brake pins
+  for(int i = 0; i < MOTOR_COUNT; i++) {
+    pinMode(MOTOR_BRAKE_PINS[i], OUTPUT);
+    digitalWrite(MOTOR_BRAKE_PINS[i], LOW); // Set initial brake state to off
+  }
 }
 
 long readMotorPulses(MotorID motor) {
