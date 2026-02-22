@@ -242,6 +242,14 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
 
   // TODO: Adjust this to publish RPM for all motors
 
+  /*
+    ROBOT ORIENTATION
+          FRONT
+      MOTOR1  MOTOR2
+      MOTOR3  MOTOR4 
+      MOTOR5  MOTOR6  (6WD Ackermann Rover system)  
+          BACK
+  */
   // Calculate motor RPM
   unsigned long currentTime = millis();
     long currentPulseCount[MOTOR_COUNT];

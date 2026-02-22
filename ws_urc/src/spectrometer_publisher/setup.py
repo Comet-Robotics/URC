@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'spectrometer_node = spectrometer_publisher.SpectrometerNode:main',
+            'raman_spectrometer_node = spectrometer_publisher.RamanSpectrometerNode:main',
         ],
     },
 )
