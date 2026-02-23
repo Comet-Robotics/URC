@@ -9,7 +9,7 @@
 #include <geometry_msgs/msg/twist.h>
 #include <std_msgs/msg/float32_multi_array.h>
 
-#define LED 8
+#define LED LED_BUILTIN
 #define SLOWDOWN 26
 
 #ifndef RAMP_STEP
@@ -17,7 +17,7 @@
 #endif
 
 #ifndef STOP_THRESHOLD
-#define STOP_THRESHOLD 15.0
+#define STOP_THRESHOLD 15.0 // RPM threshold to consider motor stopped
 #endif
 
 #define CMD_VEL_TOPIC "/cmd_vel"
