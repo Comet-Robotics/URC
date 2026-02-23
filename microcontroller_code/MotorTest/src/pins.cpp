@@ -16,5 +16,5 @@ ROBOT ORIENTATION
 // index starts at motor 1 to motor 6
 int MOTOR_ESC_SPEED_PINS[MOTOR_COUNT] = {21, 15, 20, 14, 17, 41}; //encoder pins (interrupt capable)
 int MOTOR_PWM_PINS[MOTOR_COUNT] = {2, 3, 4, 5, 6, 7}; // PWM capable pins
-int MOTOR_DIRECTION_PINS[MOTOR_COUNT] = {38, 37, 8, 9, 10, 11}; // Direction control pins (avoiding pin 8 conflict with LED)
+int MOTOR_DIRECTION_PINS[MOTOR_COUNT] = {38, 37, 38, 37, 38, 37}; // Direction control pins (avoiding pin 8 conflict with LED)
 int MOTOR_BRAKE_PINS[MOTOR_COUNT] = {34, 34, 34, 34, 34, 34}; // Brake control pins 
