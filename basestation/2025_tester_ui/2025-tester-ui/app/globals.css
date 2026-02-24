@@ -123,7 +123,7 @@ p{
 
 .dataBlock{
   height: 15vh;
-  background-color: white;
+  background-color: #F1F5FF;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -133,6 +133,16 @@ p{
 .dataHolder{
   width: 20%;
   justify-content: center;
+  background-color: rgb(241, 245, 255);
+  padding: 25px;
+  margin: 10px;
+  max-height: 300px;
+  max-width: 350px;
+  border-radius: 8px;
+  border-width: 0.75px;
+  border-color: #3b36b7;
+  font: black;
+
 }
 
 .footer{
