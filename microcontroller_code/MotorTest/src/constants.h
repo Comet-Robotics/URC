@@ -31,6 +31,13 @@ enum MotorState {
     CHANGING_DIRECTION
 };
 
+enum Heading {
+    FORWARD_DIR,
+    BACKWARD_DIR,
+    LEFT_DIR,
+    RIGHT_DIR
+};
+
 enum Group {
     LEFT,
     RIGHT,

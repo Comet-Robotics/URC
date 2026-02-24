@@ -199,8 +199,6 @@ bool motorStep(MotorState& state, float rpm[MOTOR_COUNT])
 // Function that is called when a new cmd_vel message is received
 void cmd_vel_callback(const void * msgin) {
   digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
-  delay(100);
-  digitalWrite(LED, !digitalRead(LED)); // Toggle back
 
 
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
@@ -210,6 +208,7 @@ void cmd_vel_callback(const void * msgin) {
   // Extract linear velocity (x) and map to PWM
   // Assuming x velocity in range [-1.0, 1.0] maps to PWM [0, 255]
   float linear_vel = msg->linear.x;
+  float angular_vel = msg->angular.z; // For future use when we implement turning
   
   // Clamp to [-1.0, 1.0] range
   if (linear_vel > 1.0f) linear_vel = 1.0f;

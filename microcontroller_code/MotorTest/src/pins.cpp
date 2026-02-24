@@ -12,7 +12,6 @@ ROBOT ORIENTATION
     MOTOR5  MOTOR6  (6WD Ackermann Rover system)  
          BACK
 */
-
 // index starts at motor 1 to motor 6
 int MOTOR_ESC_SPEED_PINS[MOTOR_COUNT] = {21, 15, 20, 14, 17, 41}; //encoder pins (interrupt capable)
 int MOTOR_PWM_PINS[MOTOR_COUNT] = {2, 3, 4, 5, 6, 7}; // PWM capable pins
