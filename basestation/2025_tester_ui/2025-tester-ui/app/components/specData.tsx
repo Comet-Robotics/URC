@@ -33,11 +33,15 @@ function visSpecData(stringData = ""){
 export function SpecData(){
     return(
         <div className="specData">
-            <h3>Ramen Spec Data</h3>
-            <p>Current Scan: {ramanSpecData(ramanString)}</p>
-            <hr></hr>
-            <h3>Vis Spec Data</h3>
-            <p>Current Scan: {visSpecData(visString)}</p>
+            <div className="ramanSpec">
+                <h3>Ramen Spec Data</h3>
+                <p>Current Scan: {ramanSpecData(ramanString)}</p>
+            </div>
+
+            <div className="visSpec">
+                <h3>Vis Spec Data</h3>
+                <p>Current Scan: {visSpecData(visString)}</p>
+            </div>
         </div>
     )
 }

@@ -127,7 +127,16 @@ p{
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 20px
+  padding: 20px;
+  margin-bottom: -50px;
+}
+
+.visSpec{
+  padding: 15px;
+}
+
+.ramanSpec{
+  padding: 15px;
 }
 
 .dataHolder{
