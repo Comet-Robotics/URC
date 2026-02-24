@@ -32,11 +32,11 @@
 // Variables for speed calculation
 unsigned long lastTime = 0;
 long lastPulseCount[MOTOR_COUNT] = {0};
-int pwmValue = 0;
-int target_PWM = 0;
+int pwmValue[MOTOR_COUNT] = {0};
+int target_PWM[MOTOR_COUNT] = {0};
 MotorDirection leftDirection = FORWARD; 
 MotorDirection rightDirection = FORWARD; 
-MotorState allMotorState = NEUTRAL;
+MotorState motorStates[MOTOR_COUNT] = {NEUTRAL, NEUTRAL, NEUTRAL, NEUTRAL, NEUTRAL, NEUTRAL};
 
 // Micro-ROS variables
 rcl_subscription_t cmd_vel_sub;
@@ -70,46 +70,49 @@ void setMotors(Group group, int PWM)
   }
 }
 
+void setBrake(MotorID motorID, int value)
+{
+  digitalWrite(MOTOR_BRAKE_PINS[motorID], value);
+}
+
 void setBrakes(Group group, int value)
 {
   // Set brake state for all motors in the specified group
   for(int i = 0; i < MOTOR_COUNT; i++) {
     if ((group == LEFT && (i % 2 == 0)) || (group == RIGHT && (i % 2 == 1)) || (group == ALL)) {
-      digitalWrite(MOTOR_BRAKE_PINS[i], value);
+      setBrake(static_cast<MotorID>(i), value);
     }
   }
 }
 
-void cmd_vel_timed_out()
-{
-  
-}
 
-// TODO: Adjust this to work individual or groups of motors instead of all at once
+
 // Function to handle the changing of pwm and direction
-bool motorStep(MotorState& state, float rpm[MOTOR_COUNT]) 
+bool motorStep(MotorID motorID, float rpm) 
 {
 
+  MotorState state = motorStates[motorID];
+  Group group = (motorID % 2 == 0) ? LEFT : RIGHT; // Determine group based on motor ID
   
-  switch(allMotorState) {
+  switch(state) {
 
     // Motor running normally
     case RUNNING:
     {
       // If we need to change direction, first transition to STOPPING state
-      if (pwmValue * target_PWM < 0) { 
-        allMotorState = STOPPING;
+      if (pwmValue[motorID] * target_PWM[motorID] < 0) { 
+        state = STOPPING;
       } 
       else{ // Otherwise, ramp towards target PWM
-        if (pwmValue < target_PWM) {
-          pwmValue += RAMP_STEP; // Ramp up speed
-          if (pwmValue > target_PWM) {
-            pwmValue = target_PWM; // Don't exceed target
+        if (pwmValue[motorID] < target_PWM[motorID]) {
+          pwmValue[motorID] += RAMP_STEP; // Ramp up speed
+          if (pwmValue[motorID] > target_PWM[motorID]) {
+            pwmValue[motorID] = target_PWM[motorID]; // Don't exceed target
           }
-        } else if (pwmValue > target_PWM) {
-          pwmValue -= RAMP_STEP; // Ramp down speed
-          if (pwmValue < target_PWM) {
-            pwmValue = target_PWM; // Don't go below target
+        } else if (pwmValue[motorID] > target_PWM[motorID]) {
+          pwmValue[motorID] -= RAMP_STEP; // Ramp down speed
+          if (pwmValue[motorID] < target_PWM[motorID]) {
+            pwmValue[motorID] = target_PWM[motorID]; // Don't go below target
           }
         }
       }
@@ -119,18 +122,18 @@ bool motorStep(MotorState& state, float rpm[MOTOR_COUNT])
     // Motor needs to stop
     case STOPPING:
     {
-      if (pwmValue != 0) {
-        if (pwmValue > 0) { // Ramp down if we're going forward
-          pwmValue -= RAMP_STEP;
-          if (pwmValue < 0) pwmValue = 0;
+      if (pwmValue[motorID] != 0) {
+        if (pwmValue[motorID] > 0) { // Ramp down if we're going forward
+          pwmValue[motorID] -= RAMP_STEP;
+          if (pwmValue[motorID] < 0) pwmValue[motorID] = 0;
         }
-        else if (pwmValue < 0) { // Ramp "up" if we're going reverse (still ramps to 0)
-          pwmValue += RAMP_STEP;
-          if (pwmValue > 0) pwmValue = 0;
+        else if (pwmValue[motorID] < 0) { // Ramp "up" if we're going reverse (still ramps to 0)
+          pwmValue[motorID] += RAMP_STEP;
+          if (pwmValue[motorID] > 0) pwmValue[motorID] = 0;
         }
       } else {
-        allMotorState = WAITING_FOR_STOP;
-        setBrakes(ALL, HIGH); // Engage brakes once we've ramped down to 0
+        state = WAITING_FOR_STOP;
+        setBrake(motorID, HIGH); // Engage brakes once we've ramped down to 0
       }
       break;
     }
@@ -138,26 +141,17 @@ bool motorStep(MotorState& state, float rpm[MOTOR_COUNT])
     // Wait and check if the motor has actually stopped
     case WAITING_FOR_STOP:
     {
-      if (pwmValue != 0) {
-        allMotorState = STOPPING;
+      if (pwmValue[motorID] != 0) {
+        state = STOPPING;
         break;
       }
-      // Check if motors have stopped
-      bool allStopped = true;
-      for(int i = 0; i < MOTOR_COUNT; i++) {
-        if (rpm[i] > STOP_THRESHOLD) {
-          allStopped = false;
-          break;
-        }
-      }
-    
-
-      if (allStopped) {
-        if(target_PWM == 0) {
-          allMotorState = NEUTRAL; // If we just needed to stop, go to NEUTRAL
+      // Check if the motor has stopped
+      if(fabs(rpm) < STOP_THRESHOLD) {
+        if (target_PWM[motorID] == 0) {
+          state = NEUTRAL; // If we just needed to stop, go to NEUTRAL
         }
         else {
-          allMotorState = CHANGING_DIRECTION;
+          state = CHANGING_DIRECTION; // If we need to change direction, go to CHANGING_DIRECTION
         }
       }
       break;
@@ -166,29 +160,28 @@ bool motorStep(MotorState& state, float rpm[MOTOR_COUNT])
     // Change direction after confirming motor has stopped
     case CHANGING_DIRECTION:
     {
-      if (target_PWM > 0) {
-        leftDirection = FORWARD;
-        rightDirection = FORWARD;
-      } else {
-        leftDirection = REVERSE;
-        rightDirection = REVERSE;
+      if(group == LEFT) {
+        setMotorDirection(motorID, leftDirection);
       }
-
-      setGroupDirection(LEFT, leftDirection);
-      setGroupDirection(RIGHT, rightDirection);
-      allMotorState = NEUTRAL; // Transition to NEUTRAL to allow ramping up in new direction
+      else {
+        setMotorDirection(motorID, rightDirection);
+      }
+      state = NEUTRAL; // Transition to NEUTRAL to allow ramping up in new direction
       break;
     }
     case NEUTRAL:
     {
-      if (target_PWM != 0) {
-        allMotorState = RUNNING; // If we have a non-zero target, start running
-        setBrakes(ALL, LOW); // Disengage brakes when we start running again
+      if (target_PWM[motorID] != 0) {
+        state = RUNNING; // If we have a non-zero target, start running
+        setBrake(motorID, LOW); // Disengage brake for this motor when we start running again
       }
       break;
     }
 
   }
+
+  motorStates[motorID] = state;
+
   if (state == RUNNING)
     return true;
   else
@@ -198,7 +191,7 @@ bool motorStep(MotorState& state, float rpm[MOTOR_COUNT])
 
 // Function that is called when a new cmd_vel message is received
 void cmd_vel_callback(const void * msgin) {
-  digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
+  // digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
 
 
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
@@ -208,19 +201,33 @@ void cmd_vel_callback(const void * msgin) {
   // Extract linear velocity (x) and map to PWM
   // Assuming x velocity in range [-1.0, 1.0] maps to PWM [0, 255]
   float linear_vel = msg->linear.x;
-  float angular_vel = msg->angular.z; // For future use when we implement turning
+  float angular_vel = msg->angular.z;
   
   // Clamp to [-1.0, 1.0] range
   if (linear_vel > 1.0f) linear_vel = 1.0f;
   if (linear_vel < -1.0f) linear_vel = -1.0f;
   
-  // TODO: Allow reversing
   // Map to PWM value
-  target_PWM = (int)(linear_vel * PWM_MAX_VALUE);
 
 
+  // Left = linear + angular
+  // Right = linear - angular
+
+  for(int i = 0; i < MOTOR_COUNT; i++) {
+    if (i % 2 == 0) { // Left side motors
+      target_PWM[i] = (int)((linear_vel + angular_vel) * PWM_MAX_VALUE);
+    }
+    else { // Right side motors
+      target_PWM[i] = (int)((linear_vel - angular_vel) * PWM_MAX_VALUE);
+    }
+
+    // Clamp to valid PWM range
+    if (target_PWM[i] > PWM_MAX_VALUE) target_PWM[i] = PWM_MAX_VALUE;
+    if (target_PWM[i] < -PWM_MAX_VALUE) target_PWM[i] = -PWM_MAX_VALUE;
+  }
   
   lastCMDVelTime = currentCMDVelTime;
+
   
 }
 
@@ -239,19 +246,9 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
           BACK
   */
 
-  // TODO: Adjust this to publish RPM for all motors
-
-  /*
-    ROBOT ORIENTATION
-          FRONT
-      MOTOR1  MOTOR2
-      MOTOR3  MOTOR4 
-      MOTOR5  MOTOR6  (6WD Ackermann Rover system)  
-          BACK
-  */
   // Calculate motor RPM
   unsigned long currentTime = millis();
-    long currentPulseCount[MOTOR_COUNT];
+  long currentPulseCount[MOTOR_COUNT];
   long pulseDiff[MOTOR_COUNT];
 
   float rpm[MOTOR_COUNT];
@@ -259,17 +256,14 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
   for (int i = 0; i < MOTOR_COUNT; i++) {
     currentPulseCount[i] = readMotorPulses(static_cast<MotorID>(i));
     pulseDiff[i] = currentPulseCount[i] - lastPulseCount[i];
+
     float timeInterval = (currentTime - lastTime) / 1000.0; // Convert to seconds
     float pulsesPerSecond = pulseDiff[i] / timeInterval;
+
     rpm[i] = (pulsesPerSecond * 2.0 * 60.0) / PULSES_PER_REVOLUTION;
+
     lastPulseCount[i] = currentPulseCount[i];
   }
-
-  // long pulseDiff = currentPulseCount - lastPulseCount;
-  // float timeInterval = (currentTime - lastTime) / 1000.0;
-
-  // float pulsesPerSecond = pulseDiff / timeInterval;
-  // float rpm = (pulsesPerSecond * 2.0 * 60.0) / PULSES_PER_REVOLUTION;
 
   // Publish RPM data
   for (int i = 0; i < MOTOR_COUNT; i++) {
@@ -280,31 +274,48 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
 
 
 
-  for(int i = 0; i < MOTOR_COUNT; i++) {
-    lastPulseCount[i] = currentPulseCount[i];
-  }
   lastTime = currentTime;
   
   // Check if cmd_vel message has timed out
   currentCMDVelTime = millis();
   if (currentCMDVelTime - lastCMDVelTime > CMD_VEL_TIMEOUT_MS) {
-    target_PWM = 0;
-    allMotorState = STOPPING; // Transition to stopping state to safely ramp down and stop motors
+    for(int i = 0; i < MOTOR_COUNT; i++) {
+      target_PWM[i] = 0;
+      motorStates[i] = STOPPING;
+    }
     
   } 
 
+  if (target_PWM[0] > 0) {
+    leftDirection = FORWARD;
+  }
+  else if (target_PWM[0] < 0) {
+    leftDirection = REVERSE;
+  }
+  if( target_PWM[1] > 0) {
+    rightDirection = FORWARD;
+  }
+  else if (target_PWM[1] < 0) {
+    rightDirection = REVERSE;
+  }
+
   // Conduct a step. Updates PWM and direction as necessary.
-  motorStep(allMotorState, rpm);
+  for(int i = 0; i < MOTOR_COUNT; i++) {
+    motorStep(static_cast<MotorID>(i), rpm[i]);
+  }
+
 
   // Publish PWM data
   for (int i = 0; i < MOTOR_COUNT; i++) {
-    pwm_msg.data.data[i] = pwmValue;
+    pwm_msg.data.data[i] = pwmValue[i];
   }
   rcl_publish(&pwm_pub, &pwm_msg, NULL);
 
 
-  setMotors(ALL, pwmValue);
-  
+  for(int i = 0; i < MOTOR_COUNT; i++) {
+    setMotorPWM(static_cast<MotorID>(i), pwmValue[i]);
+  }
+
 }
 
 
@@ -394,6 +405,7 @@ void setup() {
 
   
   lastTime = millis();
+  lastCMDVelTime = millis();
 
 }
 

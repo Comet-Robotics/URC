@@ -16,6 +16,16 @@ void setMotorPWM(MotorID motor, int pwmValue) {
   analogWrite(pwmPin, pwmValue);
 }
 
+void setMotorDirection(MotorID motorID, MotorDirection direction) {
+  int dirPin = MOTOR_DIRECTION_PINS[motorID];
+  if(static_cast<int>(motorID) % 2 == 0) { // Left motors
+    digitalWrite(dirPin, direction == FORWARD ? HIGH : LOW);
+  }
+  else { // Right motors
+    digitalWrite(dirPin, direction == FORWARD ? LOW : HIGH); // Invert direction for right motors
+  }
+}
+
 void setGroupDirection(Group group, MotorDirection direction) {
   // Set direction for all motors on the specified group
   if(group = ALL)
@@ -28,14 +38,12 @@ void setGroupDirection(Group group, MotorDirection direction) {
   {
     if ((group == LEFT && (i % 2 == 0))) 
     {
-      int dirPin = MOTOR_DIRECTION_PINS[i];
-      digitalWrite(dirPin, direction == FORWARD ? HIGH : LOW);
+      setMotorDirection(static_cast<MotorID>(i), direction);
     } 
 
     else if ((group == RIGHT && (i % 2 == 1))) 
     {
-      int dirPin = MOTOR_DIRECTION_PINS[i];
-      digitalWrite(dirPin, direction == FORWARD ? LOW : HIGH); // Invert direction for right side motors
+      setMotorDirection(static_cast<MotorID>(i), direction);
     }
 
     // else if (group == ALL) 

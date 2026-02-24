@@ -6,6 +6,7 @@
 
 
 void setMotorPWM(MotorID motor, int pwmValue);
+void setMotorDirection(MotorID motorID, MotorDirection direction);
 void setGroupDirection(Group group, MotorDirection direction);
 
 #endif
