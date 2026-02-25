@@ -9,7 +9,12 @@
 #include <geometry_msgs/msg/twist.h>
 #include <std_msgs/msg/float32_multi_array.h>
 
+#ifdef LED_BUILTIN
 #define LED LED_BUILTIN
+#else
+#define LED 8
+#endif
+
 #define SLOWDOWN 26
 
 #ifndef RAMP_STEP
@@ -191,8 +196,8 @@ bool motorStep(MotorID motorID, float rpm)
 
 // Function that is called when a new cmd_vel message is received
 void cmd_vel_callback(const void * msgin) {
-  // digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
-
+  digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
+  
 
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
   
