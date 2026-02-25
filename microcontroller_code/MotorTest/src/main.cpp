@@ -90,7 +90,22 @@ void setBrakes(Group group, int value)
   }
 }
 
-
+// Motor Step, but we don't change directions
+bool simpleMotorSetp(MotorID motorID, int targetPWM)
+{
+  if (pwmValue[motorID] < target_PWM[motorID]) {
+    pwmValue[motorID] += RAMP_STEP; // Ramp up speed
+    if (pwmValue[motorID] > target_PWM[motorID]) {
+      pwmValue[motorID] = target_PWM[motorID]; // Don't exceed target
+    }
+  } else if (pwmValue[motorID] > target_PWM[motorID]) {
+    pwmValue[motorID] -= RAMP_STEP; // Ramp down speed
+    if (pwmValue[motorID] < target_PWM[motorID]) {
+      pwmValue[motorID] = target_PWM[motorID]; // Don't go below target
+    }
+  }
+  return true;
+}
 
 // Function to handle the changing of pwm and direction
 bool motorStep(MotorID motorID, float rpm) 
@@ -229,6 +244,10 @@ void cmd_vel_callback(const void * msgin) {
     // Clamp to valid PWM range
     if (target_PWM[i] > PWM_MAX_VALUE) target_PWM[i] = PWM_MAX_VALUE;
     if (target_PWM[i] < -PWM_MAX_VALUE) target_PWM[i] = -PWM_MAX_VALUE;
+
+
+    // SAR ONLY: Clamp min to 0
+    if(target_PWM[i] < 0) target_PWM[i] = 0;
   }
   
   lastCMDVelTime = currentCMDVelTime;
@@ -306,7 +325,9 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
 
   // Conduct a step. Updates PWM and direction as necessary.
   for(int i = 0; i < MOTOR_COUNT; i++) {
-    motorStep(static_cast<MotorID>(i), rpm[i]);
+    // SAR ONLY: We don't need to go reverse ;)
+    // motorStep(static_cast<MotorID>(i), rpm[i]);
+    simpleMotorSetp(static_cast<MotorID>(i), target_PWM[i]);
   }
 
 
