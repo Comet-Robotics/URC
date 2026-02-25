@@ -1,18 +1,23 @@
 #include <Arduino.h>
-#include "encoder_driver.h"
-#include "pwm_driver.h"
+#include "DRV8825.h"
 
-#include <micro_ros_platformio.h>
-#include <rcl/rcl.h>
-#include <rclc/rclc.h>
-#include <rclc/executor.h>
-#include <geometry_msgs/msg/twist.h>
-#include <std_msgs/msg/float32_multi_array.h>
+DRV8825 frontLeftSteeringMotor;
+DRV8825 frontRightSteeringMotor;
+DRV8825 backLeftSteeringMotor;
+DRV8825 backRightSteeringMotor;
 
+// TODO: update pinouts
+#define UNUSED_PIN 255
 void setup() {
-  
+  frontLeftSteeringMotor.begin(1, 1, UNUSED_PIN, 1, 1);
+  frontRightSteeringMotor.begin(1, 1, UNUSED_PIN, 1, 1);
+  backLeftSteeringMotor.begin(1, 1, UNUSED_PIN, 1, 1);
+  backRightSteeringMotor.begin(1, 1, UNUSED_PIN, 1, 1);
 }
 
 void loop() {
-  
+  frontLeftSteeringMotor.step();
+  frontRightSteeringMotor.step();
+  backLeftSteeringMotor.step();
+  backRightSteeringMotor.step();
 }
