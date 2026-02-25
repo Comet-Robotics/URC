@@ -11,6 +11,8 @@ void setMotorPWM(MotorID motor, int pwmValue) {
   }
 
   int pwmPin = MOTOR_PWM_PINS[motor];
+  // Take absolute value since pwmValue can be negative for reverse direction
+  pwmValue = abs(pwmValue);
   if (pwmValue > PWM_MAX_VALUE)
     pwmValue = PWM_MAX_VALUE;
   analogWrite(pwmPin, pwmValue);
@@ -28,7 +30,7 @@ void setMotorDirection(MotorID motorID, MotorDirection direction) {
 
 void setGroupDirection(Group group, MotorDirection direction) {
   // Set direction for all motors on the specified group
-  if(group = ALL)
+  if(group == ALL)
   {
     setGroupDirection(LEFT, direction);
     setGroupDirection(RIGHT, direction);
