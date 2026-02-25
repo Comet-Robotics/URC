@@ -138,7 +138,7 @@ bool motorStep(MotorID motorID, float rpm)
         }
       } else {
         state = WAITING_FOR_STOP;
-        setBrake(motorID, HIGH); // Engage brakes once we've ramped down to 0
+        // setBrake(motorID, HIGH); // Engage brakes once we've ramped down to 0
       }
       break;
     }
@@ -178,7 +178,7 @@ bool motorStep(MotorID motorID, float rpm)
     {
       if (target_PWM[motorID] != 0) {
         state = RUNNING; // If we have a non-zero target, start running
-        setBrake(motorID, LOW); // Disengage brake for this motor when we start running again
+        // setBrake(motorID, LOW); // Disengage brake for this motor when we start running again
       }
       break;
     }
