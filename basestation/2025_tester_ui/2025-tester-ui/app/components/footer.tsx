@@ -4,6 +4,7 @@ let hrs = 0;
 let mins = 0;
 let secs = 0;
 let hrsString, minsString, secsString;
+let currentMission = "No Mission Selected";
 
 export function Footer(){
 
@@ -36,7 +37,7 @@ export function Footer(){
 
     return(
         <div className = "footer">
-            <p className="footer-text"><strong>Current Mission:</strong> [Insert Mission Here]</p>
+            <p className="footer-text"><strong>Current Mission:</strong> {currentMission}</p>
             <p className="footer-text"><strong>Time Remaining:</strong> {hrsString}:{minsString}:{secsString}</p>
             <div className="btnContain">
                 <button className="btnStart">Start</button>

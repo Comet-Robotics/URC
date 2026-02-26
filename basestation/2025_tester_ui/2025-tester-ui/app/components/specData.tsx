@@ -34,7 +34,7 @@ export function SpecData(){
     return(
         <div className="specData">
             <div className="ramanSpec">
-                <h3>Ramen Spec Data</h3>
+                <h3>Raman Spec Data</h3>
                 <p>Current Scan: {ramanSpecData(ramanString)}</p>
             </div>
 
