@@ -32,6 +32,21 @@
 			"${workspaceFolder}/ws_urc/install/action_drivetrain_interface/local/lib/python3.10/dist-packages",
 			"/opt/ros/jazzy/lib/python3.10/site-packages",
 			"/opt/ros/jazzy/local/lib/python3.10/dist-packages"
-		]
+		],
+		"files.associations": {
+			"__bit_reference": "cpp",
+			"__hash_table": "cpp",
+			"__split_buffer": "cpp",
+			"__tree": "cpp",
+			"array": "cpp",
+			"deque": "cpp",
+			"forward_list": "cpp",
+			"initializer_list": "cpp",
+			"map": "cpp",
+			"string": "cpp",
+			"string_view": "cpp",
+			"unordered_map": "cpp",
+			"vector": "cpp"
+		}
 	}
 }
