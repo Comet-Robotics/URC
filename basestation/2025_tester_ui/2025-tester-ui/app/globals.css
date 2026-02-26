@@ -158,9 +158,12 @@ p{
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: 50px;
-  background-color: white;
+  height: 75px;
+  background-color: #C2DAF1;
+  border-color: #6392cb;
+  border-top-width: 0.5px;
   text-align: center;
+  align-content: center;
 }
 
 .header{
