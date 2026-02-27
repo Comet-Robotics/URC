@@ -29,35 +29,66 @@ void setup() {
   // The motor to stepper driver assigments are probably wrong but the sets of pins for each stepper driver should be mostly correct (needs further testing).
   // So far we have only tested the back left steering motor, shich is connected to the first stepper driver.
   backLeftSteeringMotor.begin(2, 3, UNUSED_PIN, 18, 17);
-  // frontRightSteeringMotor.begin(4, 5, UNUSED_PIN, 14,15);
-  // frontLeftSteeringMotor.begin(6, 7, UNUSED_PIN, 12,13);
-  // backRightSteeringMotor.begin(8, 9, UNUSED_PIN, 18,17);
+  frontRightSteeringMotor.begin(4, 5, UNUSED_PIN, 14,15);
+  frontLeftSteeringMotor.begin(6, 7, UNUSED_PIN, 12,13);
+  backRightSteeringMotor.begin(8, 9, UNUSED_PIN, 18,17);
 
 
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop() {
-  frontLeftSteeringMotor.step();
-
   // the intention behind this was to make the LED blink but it doesn't work as expected yet and just stays on
   bool ledStatus = frontLeftSteeringMotor.getSteps() % 10000;
   digitalWrite(LED_BUILTIN, ledStatus < 100 ? HIGH : LOW);
+  
+  frontLeftSteeringMotor.step();
+  frontRightSteeringMotor.step();
+  backLeftSteeringMotor.step();
+  backRightSteeringMotor.step();
 
-  Serial.print(ledStatus);
-  Serial.print(",");
-
+  // Log front left steering motor
+  Serial.print("FL,");
   Serial.print(frontLeftSteeringMotor.getPosition());
   Serial.print(",");
-  
   Serial.print(frontLeftSteeringMotor.getSteps());
   Serial.print(",");
-
   Serial.print(frontLeftSteeringMotor.getStepPulseLength());
   Serial.print(",");
-
   Serial.print(frontLeftSteeringMotor.getStepsPerRotation());
+  Serial.println();
 
+  // Log front right steering motor
+  Serial.print("FR,");
+  Serial.print(frontRightSteeringMotor.getPosition());
+  Serial.print(",");
+  Serial.print(frontRightSteeringMotor.getSteps());
+  Serial.print(",");
+  Serial.print(frontRightSteeringMotor.getStepPulseLength());
+  Serial.print(",");
+  Serial.print(frontRightSteeringMotor.getStepsPerRotation());
+  Serial.println();
+
+  // Log back left steering motor
+  Serial.print("BL,");
+  Serial.print(backLeftSteeringMotor.getPosition());
+  Serial.print(",");
+  Serial.print(backLeftSteeringMotor.getSteps());
+  Serial.print(",");
+  Serial.print(backLeftSteeringMotor.getStepPulseLength());
+  Serial.print(",");
+  Serial.print(backLeftSteeringMotor.getStepsPerRotation());
+  Serial.println();
+
+  // Log back right steering motor
+  Serial.print("BR,");
+  Serial.print(backRightSteeringMotor.getPosition());
+  Serial.print(",");
+  Serial.print(backRightSteeringMotor.getSteps());
+  Serial.print(",");
+  Serial.print(backRightSteeringMotor.getStepPulseLength());
+  Serial.print(",");
+  Serial.print(backRightSteeringMotor.getStepsPerRotation());
   Serial.println();
 
   // one other interesting observation - stepper motor behavior changes based on whether I have the serial monitor open or not. 
