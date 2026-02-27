@@ -1,3 +1,5 @@
+// 2/27/202 Combined SteeringController into here since the teensy is now controlling the Steppers
+
 #include <Arduino.h>
 #include "encoder_driver.h"
 #include "pwm_driver.h"
@@ -15,6 +17,9 @@
 #define LED 8
 #endif
 
+#define WHEELBASE 0.83f      // meters (front to rear axle)
+#define TRACK_WIDTH 0.78f    // meters (left to right wheels; An approximation as each pair is a different distance apart)
+
 #define SLOWDOWN 26
 
 #ifndef RAMP_STEP
@@ -30,6 +35,10 @@
 #define PWM_TOPIC "/pwm"
 #define CMD_VEL_TIMEOUT_MS 5000
 
+#define STEERING_ANGLE_TOPIC "/steering_angles"
+#define STEERING_TIMEOUT_MS 5000
+#define TIME_BETWEEN_STEPS_MS 2
+
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){while(1){digitalWrite(LED,!digitalRead(LED)); delay(100);}}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; }
@@ -43,8 +52,14 @@ MotorDirection leftDirection = FORWARD;
 MotorDirection rightDirection = FORWARD; 
 MotorState motorStates[MOTOR_COUNT] = {NEUTRAL, NEUTRAL, NEUTRAL, NEUTRAL, NEUTRAL, NEUTRAL};
 
+
+unsigned long lastSteeringCmdTime = 0;
+
+SteeringMotor motors[MOTOR_COUNT];
+
 // Micro-ROS variables
 rcl_subscription_t cmd_vel_sub;
+rcl_subscription_t steering_sub;
 rcl_publisher_t rpm_pub;
 rcl_publisher_t pwm_pub;
 rcl_node_t node;
@@ -59,6 +74,7 @@ rclc_executor_t executor;
 geometry_msgs__msg__Twist cmd_vel_msg; // Equates to geometry_msgs::msg::Twist
 std_msgs__msg__Float32MultiArray rpm_msg; // Equates to std_msgs::msg::Float32MultiArray
 std_msgs__msg__Float32MultiArray pwm_msg;
+std_msgs__msg__Float32MultiArray steering_msg;
 
 const unsigned long RPM_PUB_INTERVAL = 100; // Publish RPM every 100ms
 
@@ -211,48 +227,72 @@ bool motorStep(MotorID motorID, float rpm)
 
 // Function that is called when a new cmd_vel message is received
 void cmd_vel_callback(const void * msgin) {
-  digitalWrite(LED, !digitalRead(LED)); // Toggle built-in LED for visual feedback
-  
+  digitalWrite(LED, !digitalRead(LED));
 
-  const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
-  
-  // TODO: Support turning
+  const geometry_msgs__msg__Twist * msg = 
+      (const geometry_msgs__msg__Twist *)msgin;
 
-  // Extract linear velocity (x) and map to PWM
-  // Assuming x velocity in range [-1.0, 1.0] maps to PWM [0, 255]
-  float linear_vel = msg->linear.x;
-  float angular_vel = msg->angular.z;
-  
-  // Clamp to [-1.0, 1.0] range
-  if (linear_vel > 1.0f) linear_vel = 1.0f;
-  if (linear_vel < -1.0f) linear_vel = -1.0f;
-  
-  // Map to PWM value
+  float v = msg->linear.x;     // m/s (normalized -1 to 1)
+  float w = msg->angular.z;    // rad/s
 
+  // Clamp
+  if (v > 1.0f) v = 1.0f;
+  if (v < -1.0f) v = -1.0f;
 
-  // Left = linear + angular
-  // Right = linear - angular
+  float steering_left = 0.0f;
+  float steering_right = 0.0f;
 
-  for(int i = 0; i < MOTOR_COUNT; i++) {
-    if (i % 2 == 0) { // Left side motors
-      target_PWM[i] = (int)((linear_vel + angular_vel) * PWM_MAX_VALUE);
-    }
-    else { // Right side motors
-      target_PWM[i] = (int)((linear_vel - angular_vel) * PWM_MAX_VALUE);
-    }
+  // Straight line case
+  if (fabs(w) < 0.001f) {
+    steering_left  = 0.0f;
+    steering_right = 0.0f;
+  } 
+  else {
+    float R = v / w;
 
-    // Clamp to valid PWM range
-    if (target_PWM[i] > PWM_MAX_VALUE) target_PWM[i] = PWM_MAX_VALUE;
-    if (target_PWM[i] < -PWM_MAX_VALUE) target_PWM[i] = -PWM_MAX_VALUE;
+    float R_left  = R - (TRACK_WIDTH / 2.0f);
+    float R_right = R + (TRACK_WIDTH / 2.0f);
 
-
-    // SAR ONLY: Clamp min to 0
-    if(target_PWM[i] < 0) target_PWM[i] = 0;
+    steering_left  = atan(WHEELBASE / R_left);
+    steering_right = atan(WHEELBASE / R_right);
   }
-  
-  lastCMDVelTime = currentCMDVelTime;
 
-  
+  // Convert to degrees
+  steering_left  *= 180.0f / PI;
+  steering_right *= 180.0f / PI;
+
+  // Apply to steering motors
+  motors[0].setDeg(steering_left);   // Front Left
+  motors[1].setDeg(steering_right);  // Front Right
+  motors[2].setDeg(-steering_left);  // Rear Left
+  motors[3].setDeg(-steering_right); // Rear Right
+
+  // Now compute wheel speeds
+  float left_speed  = v;
+  float right_speed = v;
+
+  if (fabs(w) > 0.001f) {
+    float R = v / w;
+    float R_left  = R - (TRACK_WIDTH / 2.0f);
+    float R_right = R + (TRACK_WIDTH / 2.0f);
+
+    left_speed  = w * R_left;
+    right_speed = w * R_right;
+  }
+
+  // Normalize speeds to PWM
+  int left_pwm  = (int)(left_speed  * PWM_MAX_VALUE);
+  int right_pwm = (int)(right_speed * PWM_MAX_VALUE);
+
+  // Apply to all driven wheels
+  for (int i = 0; i < MOTOR_COUNT; i++) {
+    if (i % 2 == 0)
+      target_PWM[i] = left_pwm;
+    else
+      target_PWM[i] = right_pwm;
+  }
+
+  lastCMDVelTime = millis();
 }
 
 // Function that is called every RPM_PUB_INTERVAL milliseconds to publish the current RPM
@@ -344,13 +384,29 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time) {
 
 }
 
+void steering_callback(const void * msgin) {
+    digitalWrite(LED, !digitalRead(LED));
+
+    unsigned long now = millis();
+    lastSteeringCmdTime = now;
+
+    const std_msgs__msg__Float32MultiArray* msg =
+        (const std_msgs__msg__Float32MultiArray*) msgin;
+
+    if (msg->data.size < MOTOR_COUNT) return;
+
+    for(int i = 0; i < MOTOR_COUNT; i++) {
+        motors[i].setDeg(msg->data.data[i]);
+    }
+}
 
 void setup() {
 
   Serial.begin(115200);
-  delay(2000); // Wait for serial to initialize
+  while (!Serial && millis() < 5000) {}
+  delay(1000);
   set_microros_serial_transports(Serial);
-  delay(2000);
+
 
 
 
@@ -360,6 +416,12 @@ void setup() {
     pinMode(MOTOR_PWM_PINS[i], OUTPUT);
     analogWrite(MOTOR_PWM_PINS[i], 0); // Initialize to 0
   }
+
+  // Setup Steering motors
+    for(int i = 0; i < MOTOR_COUNT; i++) {
+        motors[i] = SteeringMotor(STEERING_MOTOR_PINS[i][0], STEERING_MOTOR_PINS[i][1], STEERING_MOTOR_PINS[i][2], STEERING_MOTOR_PINS[i][3], STEERING_MOTOR_PINS[i][4]);
+        motors[i].setup();
+    }
 
   initMotorSpeedReader();
 
@@ -376,6 +438,13 @@ void setup() {
       &node,
       ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
       CMD_VEL_TOPIC));
+
+  // Create subscriber for steering angles
+  /* RCCHECK(rclc_subscription_init_default(
+      &steering_sub,
+      &node,
+      ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
+      STEERING_ANGLE_TOPIC)); */
 
   // Create rpm publisher
   RCCHECK(rclc_publisher_init_default(
@@ -403,16 +472,32 @@ void setup() {
   // Create executor
   executor = rclc_executor_get_zero_initialized_executor();
   // vvvvvvvvvvvv THIS MUST MATCH THE NUMBER OF THINGS THE EXECUTOR NEEDS TO KEEP TRACK OF (subscriptions, timers, etc.)
-  int num_handles = 2; // 1 for cmd_vel subscription, 1 for timer
+  int num_handles = 3; // 1 for cmd_vel subscription, 1 for steering subscription, 1 for timer
   RCCHECK(rclc_executor_init(&executor, &support.context, num_handles, &allocator));
 
-  // Add subscription to executor
+  // Add cmd_vel subscription to executor
   RCCHECK(rclc_executor_add_subscription(
       &executor, 
       &cmd_vel_sub, 
       &cmd_vel_msg,
       &cmd_vel_callback, 
       ON_NEW_DATA));  
+
+  /* // Initialze steering message
+  steering_msg.data.data = (float*) malloc(sizeof(float) * MOTOR_COUNT);
+  steering_msg.data.size = 0;
+  steering_msg.data.capacity = MOTOR_COUNT;
+
+  for(int i = 0; i < MOTOR_COUNT; i++)
+      steering_msg.data.data[i] = 0.0f;
+
+  // Add steering subscription to executor
+  RCCHECK(rclc_executor_add_subscription(
+      &executor,
+      &steering_sub,
+      &steering_msg,
+      &steering_callback,
+      ON_NEW_DATA)); */
   
   // Add timer to executor
   RCCHECK(rclc_executor_add_timer(
@@ -432,6 +517,7 @@ void setup() {
   
   lastTime = millis();
   lastCMDVelTime = millis();
+  lastSteeringCmdTime = millis();
 
 }
 
@@ -439,5 +525,20 @@ void loop() {
 
   // Spin the executor to handle incoming messages and timer events
   rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10));
+
+  // Steering
+  // Check for steering command timeout
+    if (millis() - lastSteeringCmdTime > STEERING_TIMEOUT_MS) {
+        // if no command has arrived recently, force targets to zero
+        for(int i = 0; i < MOTOR_COUNT; i++) {
+            motors[i].setDeg(0);
+        }
+    }
+    if(millis() - lastTime >= TIME_BETWEEN_STEPS_MS) {
+        for(int i = 0; i < MOTOR_COUNT; i++) {
+            motors[i].takeStep();
+        }
+        lastTime = millis();
+    }
   
 }
