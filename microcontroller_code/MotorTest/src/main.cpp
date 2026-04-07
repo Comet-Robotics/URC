@@ -54,6 +54,7 @@ MotorState motorStates[MOTOR_COUNT] = {NEUTRAL, NEUTRAL, NEUTRAL, NEUTRAL, NEUTR
 
 
 unsigned long lastSteeringCmdTime = 0;
+unsigned long lastSteerStepTime = 0;
 
 SteeringMotor motors[MOTOR_COUNT];
 
@@ -226,6 +227,7 @@ bool motorStep(MotorID motorID, float rpm)
 }
 
 // Function that is called when a new cmd_vel message is received
+// FIXME: if linear is 0 m/s, we do not get a radius, and so any angular velocity will produce the same angle as any other angular velocity
 void cmd_vel_callback(const void * msgin) {
   digitalWrite(LED, !digitalRead(LED));
 
@@ -262,10 +264,11 @@ void cmd_vel_callback(const void * msgin) {
   steering_right *= 180.0f / PI;
 
   // Apply to steering motors
-  motors[0].setDeg(steering_left);   // Front Left
-  motors[1].setDeg(steering_right);  // Front Right
-  motors[2].setDeg(-steering_left);  // Rear Left
-  motors[3].setDeg(-steering_right); // Rear Right
+  // FIXME: The order of the motors in the motor list appear to be wrong. This caused motor 1 to turn.
+  motors[0].setDeg(steering_left);   // Front Left [Unknown]
+  motors[1].setDeg(steering_right);  // Front Right [Unknown]
+  motors[2].setDeg(-steering_left);  // Rear Left [Unknown]
+  motors[3].setDeg(-steering_right); // Rear Right [Right now, Motor 1] (For debugging, we are just turning this one)
 
   // Now compute wheel speeds
   float left_speed  = v;
@@ -276,9 +279,19 @@ void cmd_vel_callback(const void * msgin) {
     float R_left  = R - (TRACK_WIDTH / 2.0f);
     float R_right = R + (TRACK_WIDTH / 2.0f);
 
+    
     left_speed  = w * R_left;
     right_speed = w * R_right;
+
+    // DEBUG: Prevents the rover from driving without linear vel
+    if(v <= 0.01)
+    {
+      left_speed = 0;
+      right_speed = 0;
+    }
   }
+
+
 
   // Normalize speeds to PWM
   int left_pwm  = (int)(left_speed  * PWM_MAX_VALUE);
@@ -293,6 +306,7 @@ void cmd_vel_callback(const void * msgin) {
   }
 
   lastCMDVelTime = millis();
+  lastSteeringCmdTime = millis();
 }
 
 // Function that is called every RPM_PUB_INTERVAL milliseconds to publish the current RPM
@@ -534,11 +548,11 @@ void loop() {
             motors[i].setDeg(0);
         }
     }
-    if(millis() - lastTime >= TIME_BETWEEN_STEPS_MS) {
+    if(millis() - lastSteerStepTime >= TIME_BETWEEN_STEPS_MS) {
         for(int i = 0; i < MOTOR_COUNT; i++) {
             motors[i].takeStep();
         }
-        lastTime = millis();
+        lastSteerStepTime = millis();
     }
   
 }

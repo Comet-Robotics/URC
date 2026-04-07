@@ -72,16 +72,17 @@ struct SteeringMotor{
 
     void takeStep()
     {
-        if (stepsTaken < targetStep) {
+        // FIXME: This more or less worked, but double check that this is correct
+        if (stepsTaken > targetStep) {
             // moving forward
             step = (step + 1) % 4;
             setStep(step);
-            stepsTaken++;
-        } else if (stepsTaken > targetStep) {
+            stepsTaken--;
+        } else if (stepsTaken < targetStep) {
             // moving backward
             step = (step - 1 + 4) % 4;
             setStep(step);
-            stepsTaken -= 1;
+            stepsTaken++;
         }
     }
 

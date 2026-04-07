@@ -33,10 +33,10 @@ Motor 3         Motor 4
 */
 
 // {AIN1, AIN2, BIN1, BIN2, sleepPin}
-// TODO: update pin assignments for each motor
+// TODO: Pin assignments do not behave as though they are correct. Double check these.
 int STEERING_MOTOR_PINS[STEERING_MOTOR_COUNT][5] = {
-    {36, 35, 34, 33, 25},   // SteeringMotor 1
-    {7, 8, 9, 10, 11}, // SteeringMotor 2
-    {12, 13, 14, 15, 16}, // SteeringMotor 3
-    {17, 18, 19, 20, 21} // SteeringMotor 4
+    {27, 26, 24, 38, 25},   // SteeringMotor 1
+    {12, 11, 9, 8, 10}, // SteeringMotor 2
+    {32, 31, 29, 28, 30}, // SteeringMotor 3
+    {33, 34, 36, 37, 35} // SteeringMotor 4
 };
