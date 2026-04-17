@@ -33,6 +33,7 @@
 // Micro-ROS variables
 rcl_subscription_t cmd_vel_sub;
 rcl_publisher_t rpm_pub;
+rcl_publisher_t pwm_pub;
 rcl_node_t node;
 rcl_allocator_t allocator;
 rcl_timer_t timer;
@@ -43,6 +44,7 @@ rclc_executor_t executor;
 // Micro-ROS messages
 geometry_msgs__msg__Twist cmd_vel_msg; // Equates to geometry_msgs::msg::Twist
 std_msgs__msg__Float32MultiArray rpm_msg; // Equates to std_msgs::msg::Float32MultiArray
+std_msgs__msg__Float32MultiArray pwm_msg;
 
 unsigned long lastCMDVelTime = 0;
 unsigned long RPM_PUB_INTERVAL = 100; // Publish RPM every 100ms
@@ -55,35 +57,40 @@ struct Motor{
     int targetPWM = 0;
     int currentPWM = 0;
 
+    int fakeRPM = 0; // For testing without encoders, remove when encoders are working
+
     bool forward = true;
     bool targetForward = true;
 
     int lastPulseCount = 0;
 
-    Motor(MotorID motorID) : {id = motorID;}
+    Motor(MotorID motorID) {id = motorID;}
 
     // Ramp towards target PWM, return true if we are at target
     bool step() { 
-        if(targetPWM == currentPWM) {
-            return true; // We are at target
-        }
-
+        // Debug:
+        fakeRPM = currentPWM;
         if(forward != targetForward) {
             if(currentPWM > 0) {
                 currentPWM -= RAMP_STEP; // Ramp down to 0 before changing direction
                 if(currentPWM < 0) currentPWM = 0;
             } 
             // Switching the direction of the motor will be handled in the main logic loop after checking rpm is 0
+            return false;
         }
-        else {
-            if(currentPWM < targetPWM) {
-                currentPWM += RAMP_STEP; // Ramp up speed
-                if(currentPWM > targetPWM) currentPWM = targetPWM;
-            } else {
-                currentPWM -= RAMP_STEP; // Ramp down speed
-                if(currentPWM < targetPWM) currentPWM = targetPWM;
-            }
+        
+        if(targetPWM == currentPWM) {
+            return true; // We are at target
         }
+
+        if(currentPWM < targetPWM) {
+            currentPWM += RAMP_STEP; // Ramp up speed
+            if(currentPWM > targetPWM) currentPWM = targetPWM;
+        } else {
+            currentPWM -= RAMP_STEP; // Ramp down speed
+            if(currentPWM < targetPWM) currentPWM = targetPWM;
+        }
+    
 
         return false;
     } 
@@ -105,6 +112,9 @@ struct Motor{
 
         lastPulseTime = currentTime;
         return rpm;
+
+        // Debug
+        // return fakeRPM;
     }
 
     int getPWM() {
@@ -206,6 +216,20 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
         }
     }
 
+    // Publish PWM data
+    for(int i = 0; i < MOTOR_COUNT; i++) {
+        pwm_msg.data.data[i] = motors[i].getPWM() * (motors[i].isForward() ? 1 : -1); // Publish negative PWM for reverse direction for easier debugging
+    }
+    rcl_publish(&pwm_pub, &pwm_msg, NULL);
+
+    // Debug, set the LED to on if the left motors are reversing --  FIXME: Doesn't work for some reason
+    if(motors[0].isForward() == false) {
+        digitalWrite(LED, HIGH);
+    }
+    else {
+        digitalWrite(LED, LOW);
+    }
+
     
 }
 
@@ -249,6 +273,13 @@ void setup() {
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
         RPM_TOPIC));
 
+    // Create pwm publisher
+    RCCHECK(rclc_publisher_init_default(
+        &pwm_pub,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32MultiArray),
+        "/pwm"));
+
     // Create timer for publishing RPM
     RCCHECK(rclc_timer_init_default(
         &timer,
@@ -280,6 +311,11 @@ void setup() {
     rpm_msg.data.capacity = MOTOR_COUNT;
     rpm_msg.data.size = MOTOR_COUNT;
     rpm_msg.data.data = (float *)malloc(MOTOR_COUNT * sizeof(float));
+
+    // Initialize PWM message
+    pwm_msg.data.capacity = MOTOR_COUNT;
+    pwm_msg.data.size = MOTOR_COUNT;
+    pwm_msg.data.data = (float *)malloc(MOTOR_COUNT * sizeof(float));
 
     lastCMDVelTime = millis();
 
