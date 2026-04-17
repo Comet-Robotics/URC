@@ -23,7 +23,7 @@
 #define RAMP_STEP 1
 #define STOP_THRESHOLD 1.0 // RPM threshold to consider motor stopped
 
-#define CMD_VEL_TOPOIC "/cmd_vel"
+#define CMD_VEL_TOPIC "/cmd_vel"
 #define RPM_TOPIC "/rpm"
 
 #define CMD_VEL_TIMEOUT_MS 5000
@@ -47,7 +47,6 @@ std_msgs__msg__Float32MultiArray rpm_msg; // Equates to std_msgs::msg::Float32Mu
 unsigned long lastCMDVelTime = 0;
 unsigned long RPM_PUB_INTERVAL = 100; // Publish RPM every 100ms
 
-Motor motors[MOTOR_COUNT] = {Motor(FRONT_LEFT_MOTOR), Motor(FRONT_RIGHT_MOTOR), Motor(REAR_LEFT_MOTOR), Motor(REAR_RIGHT_MOTOR)};
 
 struct Motor{
     MotorID id;
@@ -61,7 +60,7 @@ struct Motor{
 
     int lastPulseCount = 0;
 
-    Motor(MotorID motorID) : {id = motorID;};
+    Motor(MotorID motorID) : {id = motorID;}
 
     // Ramp towards target PWM, return true if we are at target
     bool step() { 
@@ -117,6 +116,9 @@ struct Motor{
 
     
 };
+
+Motor motors[MOTOR_COUNT] = {Motor(FRONT_LEFT_MOTOR), Motor(FRONT_RIGHT_MOTOR), Motor(REAR_LEFT_MOTOR), Motor(REAR_RIGHT_MOTOR)};
+
 
 // Function that handles incoming cmd_vel messages
 void cmd_vel_callback(const void * msgin)
