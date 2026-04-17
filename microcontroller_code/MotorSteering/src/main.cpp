@@ -20,7 +20,7 @@
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; }
 
 #define LOOP_STEP_MS 10
-#define RAMP_STEP 1
+#define RAMP_STEP 3
 #define STOP_THRESHOLD 1.0 // RPM threshold to consider motor stopped
 
 #define CMD_VEL_TOPIC "/cmd_vel"
@@ -67,12 +67,12 @@ struct Motor{
     Motor(MotorID motorID) {id = motorID;}
 
     // Ramp towards target PWM, return true if we are at target
-    bool step() { 
+    bool step(int rampStep) { 
         // Debug:
         fakeRPM = currentPWM;
         if(forward != targetForward) {
             if(currentPWM > 0) {
-                currentPWM -= RAMP_STEP; // Ramp down to 0 before changing direction
+                currentPWM -= rampStep; // Ramp down to 0 before changing direction
                 if(currentPWM < 0) currentPWM = 0;
             } 
             // Switching the direction of the motor will be handled in the main logic loop after checking rpm is 0
@@ -84,10 +84,10 @@ struct Motor{
         }
 
         if(currentPWM < targetPWM) {
-            currentPWM += RAMP_STEP; // Ramp up speed
+            currentPWM += rampStep; // Ramp up speed
             if(currentPWM > targetPWM) currentPWM = targetPWM;
         } else {
-            currentPWM -= RAMP_STEP; // Ramp down speed
+            currentPWM -= rampStep; // Ramp down speed
             if(currentPWM < targetPWM) currentPWM = targetPWM;
         }
     
@@ -180,6 +180,29 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
         return;
     }
 
+    // Find the error of each motor so that we can scale their ramp step so that they reach their target at the same time
+    int errors[MOTOR_COUNT] = {0};
+    for(int i = 0; i < MOTOR_COUNT; i++) {
+        // Find error such that
+        // - If the motor is in the correct direction, error is just the difference in PWM
+        // - If the motor is in the wrong direction, error is the sum of the current PWM 
+        //   and target PWM since we need to ramp down to 0 before ramping up in the other direction
+        if(motors[i].isForward() == motors[i].targetForward) {
+            errors[i] = abs(motors[i].targetPWM - motors[i].currentPWM);
+        }
+        else {
+            errors[i] = motors[i].targetPWM + motors[i].currentPWM;
+        }
+    }
+
+    // Determine the maximum error, which we will scale against
+    int maxError = 0;
+    for(int i = 0; i < MOTOR_COUNT; i++) {
+        if(errors[i] > maxError) {
+            maxError = errors[i];
+        }
+    }
+
     // Handle each motor
     for(int i = 0; i < MOTOR_COUNT; i++) {
         
@@ -199,7 +222,9 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 
 
         // Handle PWM
-        if(!motors[i].step()) { // Change PWM if we are not at target
+        float scale = maxError > 0 ? ((float)errors[i] / maxError) : 0; // Scale ramp step based on error, if maxError is 0 then all motors are at target so scale doesn't matter
+
+        if(!motors[i].step(RAMP_STEP * scale)) { // Change PWM if we are not at target
             setMotorPWM(motors[i].id, motors[i].getPWM());
         }
     }
