@@ -211,7 +211,7 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 
         // Check if we need to change direction
         if(motors[i].forward != motors[i].targetForward) {
-            if(fabs(rpm) < STOP_THRESHOLD) { // Check if RPM is considered stopped
+            if(fabs(rpm) < STOP_THRESHOLD && motors[i].currentPWM == 0) { // Check if RPM is considered stopped (As a safety check, ensure PWM is 0, in case of failure of the encoder)
                 motors[i].forward = motors[i].targetForward;
                 setMotorDirection(motors[i].id, motors[i].forward ? FORWARD : REVERSE);
             }

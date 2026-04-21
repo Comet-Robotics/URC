@@ -1,5 +1,9 @@
 #include "constants.h"
 
+// Updated 4/20/2026 - Pins for Pico 2W
+//    - Motor PWM pins: 2, 3, 4, 5
+//    - Motor direction pins: 6, 8, 10, 12
+
 
 //pins go from front left wheel to rear right wheel left to right
 // Updated for teensy 4.1 pins as of 2/26/2026
@@ -18,7 +22,7 @@ ROBOT ORIENTATION
 // TODO: Check if encoder pins are correct
 int MOTOR_ESC_SPEED_PINS[MOTOR_COUNT] = {15, 21, 17, 40}; //encoder pins (interrupt capable)
 int MOTOR_PWM_PINS[MOTOR_COUNT] = {2, 3, 4, 5}; // PWM capable pins
-int MOTOR_DIRECTION_PINS[MOTOR_COUNT] = {38, 37, 38, 37}; // Direction control pins 
+int MOTOR_DIRECTION_PINS[MOTOR_COUNT] = {6, 8, 10, 12}; // Direction control pins 
 int MOTOR_BRAKE_PINS[MOTOR_COUNT] = {34, 34, 34, 34}; // Brake control pins  | UNUSED RN
 
 
