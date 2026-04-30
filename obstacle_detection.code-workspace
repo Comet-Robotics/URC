@@ -5,27 +5,48 @@
 		},
 		{
 			"path": "ws_urc/src"
+		},
+		{
+			"path": "microcontroller_code/MotorTest"
+		},
+		{
+			"path": "microcontroller_code/drivetrain_steering_node"
 		}
 	],
 	"settings": {
-		"ros.distro": "humble",
+		"ros.distro": "jazzy",
 		"python.autoComplete.extraPaths": [
-			"/home/therion/dev/school/URC/ws_urc/install/video_streamer/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/obstacle_detection/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/drivetrain/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/depth_image_viewer/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/action_drivetrain_interface/local/lib/python3.10/dist-packages",
-			"/opt/ros/humble/lib/python3.10/site-packages",
-			"/opt/ros/humble/local/lib/python3.10/dist-packages"
+			"${workspaceFolder}/ws_urc/install/video_streamer/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/obstacle_detection/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/drivetrain/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/depth_image_viewer/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/action_drivetrain_interface/local/lib/python3.10/dist-packages",
+			"/opt/ros/jazzy/lib/python3.10/site-packages",
+			"${workspaceFolder}/opt/ros/jazzy/local/lib/python3.10/dist-packages"
 		],
 		"python.analysis.extraPaths": [
-			"/home/therion/dev/school/URC/ws_urc/install/video_streamer/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/obstacle_detection/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/drivetrain/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/depth_image_viewer/lib/python3.10/site-packages",
-			"/home/therion/dev/school/URC/ws_urc/install/action_drivetrain_interface/local/lib/python3.10/dist-packages",
-			"/opt/ros/humble/lib/python3.10/site-packages",
-			"/opt/ros/humble/local/lib/python3.10/dist-packages"
-		]
+			"${workspaceFolder}/ws_urc/install/video_streamer/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/obstacle_detection/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/drivetrain/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/depth_image_viewer/lib/python3.10/site-packages",
+			"${workspaceFolder}/ws_urc/install/action_drivetrain_interface/local/lib/python3.10/dist-packages",
+			"/opt/ros/jazzy/lib/python3.10/site-packages",
+			"/opt/ros/jazzy/local/lib/python3.10/dist-packages"
+		],
+		"files.associations": {
+			"__bit_reference": "cpp",
+			"__hash_table": "cpp",
+			"__split_buffer": "cpp",
+			"__tree": "cpp",
+			"array": "cpp",
+			"deque": "cpp",
+			"forward_list": "cpp",
+			"initializer_list": "cpp",
+			"map": "cpp",
+			"string": "cpp",
+			"string_view": "cpp",
+			"unordered_map": "cpp",
+			"vector": "cpp"
+		}
 	}
 }
