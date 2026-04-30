@@ -1,0 +1,203 @@
+<sdf version="1.11">
+  <model name="arm_urdf">
+    <link name="base_link">
+      <inertial>
+        <pose>4.9824236204698598e-05 0.081680579169570902 -0.038016360028676303 0 0 0</pose>
+        <mass>2.1929829608571798</mass>
+        <inertia>
+          <ixx>0.00922640294136781</ixx>
+          <ixy>-1.37268938555797e-07</ixy>
+          <ixz>-5.7155735719632903e-08</ixz>
+          <iyy>0.0109619015537567</iyy>
+          <iyz>0.00074351232009181199</iyz>
+          <izz>0.0095474551652531808</izz>
+        </inertia>
+      </inertial>
+      <collision name="base_link_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/base_link.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="base_link_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/base_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.784313738 0.784313738 0.784313738 1</diffuse>
+          <ambient>0.784313738 0.784313738 0.784313738 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name="hoverboard_joint" type="revolute">
+      <pose relative_to="base_link">0.0001 0.13553999999999999 -0.00040000000000000002 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>hoverboard_link</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-inf</lower>
+          <upper>inf</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="hoverboard_link">
+      <pose relative_to="hoverboard_joint">0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0097849415667125 0.101094981356846 -0.018403899507515101 0 0 0</pose>
+        <mass>2.61402056342027</mass>
+        <inertia>
+          <ixx>0.0063833603705682699</ixx>
+          <ixy>-2.07932471723523e-05</ixy>
+          <ixz>2.82262760280865e-05</ixz>
+          <iyy>0.0108581628230145</iyy>
+          <iyz>-5.4078106840120197e-06</iyz>
+          <izz>0.0065500310568481698</izz>
+        </inertia>
+      </inertial>
+      <collision name="hoverboard_link_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/hoverboard_link.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="hoverboard_link_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/hoverboard_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.941176474 0.941176474 0.941176474 1</diffuse>
+          <ambient>0.941176474 0.941176474 0.941176474 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name="upper_arm_joint" type="revolute">
+      <pose relative_to="hoverboard_link">-0.11409999999999999 0.19184999999999999 0 0.15707999999999997 0 0</pose>
+      <parent>hoverboard_link</parent>
+      <child>upper_arm_link</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+          <effort>50</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="upper_arm_link">
+      <pose relative_to="upper_arm_joint">0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.11236223975585299 0.26434198276572202 -0.020364985841522 0 0 0</pose>
+        <mass>4.6720706477095897</mass>
+        <inertia>
+          <ixx>0.12111811619122501</ixx>
+          <ixy>2.83254442325837e-08</ixy>
+          <ixz>2.01256114036877e-09</ixz>
+          <iyy>0.0044821082932896003</iyy>
+          <iyz>0.00439334976275115</iyz>
+          <izz>0.118393299755141</izz>
+        </inertia>
+      </inertial>
+      <collision name="upper_arm_link_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/upper_arm_link.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="upper_arm_link_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/upper_arm_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.941176474 0.941176474 0.941176474 1</diffuse>
+          <ambient>0.941176474 0.941176474 0.941176474 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name="forearm_joint" type="revolute">
+      <pose relative_to="upper_arm_link">0.040000000000000001 0.55820000000000003 -0.0097414000000000008 0.89012000000000013 0 0</pose>
+      <parent>upper_arm_link</parent>
+      <child>forearm_link</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-3.1415000000000002</lower>
+          <upper>3.1415000000000002</upper>
+          <effort>50</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="forearm_link">
+      <pose relative_to="forearm_joint">0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.074581295118011801 0.266414133553321 0.0123912838392038 0 0 0</pose>
+        <mass>2.19916126180676</mass>
+        <inertia>
+          <ixx>0.080967409214102198</ixx>
+          <ixy>3.0392474144659401e-08</ixy>
+          <ixz>-2.4777025209689502e-09</ixz>
+          <iyy>0.00111728909293996</iyy>
+          <iyz>-0.0047588890930734999</iyz>
+          <izz>0.080082352140925295</izz>
+        </inertia>
+      </inertial>
+      <collision name="forearm_link_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/forearm_link.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="forearm_link_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://arm_urdf/meshes/visual/forearm_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.990196109 1 1 1</diffuse>
+          <ambient>0.990196109 1 1 1</ambient>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

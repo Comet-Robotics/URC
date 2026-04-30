@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.1-13-g25da24a-dirty  Build Version: 1.6.9585.36744
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="arm_urdf">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="4.98242362046986E-05 0.0816805791695709 -0.0380163600286763"
+        rpy="0 0 0" />
+      <mass
+        value="2.19298296085718" />
+      <inertia
+        ixx="0.00922640294136781"
+        ixy="-1.37268938555797E-07"
+        ixz="-5.71557357196329E-08"
+        iyy="0.0109619015537567"
+        iyz="0.000743512320091812"
+        izz="0.00954745516525318" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5708 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.627450980392157 0.627450980392157 0.627450980392157 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="hoverboard_link">
+    <inertial>
+      <origin
+        xyz="0.0097849415667125 0.101094981356846 -0.0184038995075151"
+        rpy="0 0 0" />
+      <mass
+        value="2.61402056342027" />
+      <inertia
+        ixx="0.00638336037056827"
+        ixy="-2.07932471723523E-05"
+        ixz="2.82262760280865E-05"
+        iyy="0.0108581628230145"
+        iyz="-5.40781068401202E-06"
+        izz="0.00655003105684817" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/hoverboard_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/hoverboard_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hoverboard_joint"
+    type="continuous">
+    <origin
+      xyz="0.0001 0 0.136"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="hoverboard_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="upper_arm_link">
+    <inertial>
+      <origin
+        xyz="0.112362239755853 0.264341982765722 -0.020364985841522"
+        rpy="0 0 0" />
+      <mass
+        value="4.67207064770959" />
+      <inertia
+        ixx="0.121118116191225"
+        ixy="2.83254442325837E-08"
+        ixz="2.01256114036877E-09"
+        iyy="0.0044821082932896"
+        iyz="0.00439334976275115"
+        izz="0.118393299755141" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/upper_arm_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/upper_arm_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="upper_arm_joint"
+    type="revolute">
+    <origin
+      xyz="-0.1141 0.19185 0"
+      rpy="0.15708 0 0" />
+    <parent
+      link="hoverboard_link" />
+    <child
+      link="upper_arm_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-0.3370"
+      upper="1.4160"
+      effort="50.0"
+      velocity="1.0" />
+  </joint>
+  <link
+    name="forearm_link">
+    <inertial>
+      <origin
+        xyz="0.0745812951180118 0.266414133553321 0.0123912838392038"
+        rpy="0 0 0" />
+      <mass
+        value="2.19916126180676" />
+      <inertia
+        ixx="0.0809674092141022"
+        ixy="3.03924741446594E-08"
+        ixz="-2.47770252096895E-09"
+        iyy="0.00111728909293996"
+        iyz="-0.0047588890930735"
+        izz="0.0800823521409253" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/forearm_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://arm_urdf/meshes/visual/forearm_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="forearm_joint"
+    type="revolute">
+    <origin
+      xyz="0.04 0.5582 -0.0097414"
+      rpy="0.89012 0 0" />
+    <parent
+      link="upper_arm_link" />
+    <child
+      link="forearm_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="0.000"
+      upper="1.960"
+      effort="50.0"
+      velocity="1.0" />
+  </joint>
+</robot>
