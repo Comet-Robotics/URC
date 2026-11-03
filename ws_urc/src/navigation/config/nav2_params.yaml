@@ -2,7 +2,7 @@ bt_navigator:
   ros__parameters:
     global_frame: map
     robot_base_frame: base_link
-    odom_topic: odom
+    odom_topic: /odometry/local
     bt_loop_duration: 10
     default_server_timeout: 20
     wait_for_service_timeout: 1000
@@ -178,7 +178,7 @@ local_costmap:
           #   * User chosen topic is `scan`.
           #   * Topic will be remapped to `/tb4/scan` without `local_costmap`.
           #   * Use global topic `/scan` if you do not wish the node namespace to apply
-          topic: pointcloud
+          topic: /camera/depth/color/points
           min_obstacle_height: 0.2
           max_obstacle_height: 2.0
           clearing: True
@@ -215,7 +215,7 @@ global_costmap:
           #   * User chosen topic is `scan`.
           #   * Topic will be remapped to `/tb4/scan` without `global_costmap`.
           #   * Use global topic `/scan` if you do not wish the node namespace to apply
-          topic: pointcloud
+          topic: /camera/depth/color/points
           min_obstacle_height: 0.2
           max_obstacle_height: 2.0
           clearing: False
@@ -314,7 +314,7 @@ velocity_smoother:
     min_velocity: [-0.5, 0.0, -2.0]
     max_accel: [2.5, 0.0, 3.2]
     max_decel: [-2.5, 0.0, -3.2]
-    odom_topic: "odom"
+    odom_topic: "/odometry/local"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
@@ -342,13 +342,21 @@ collision_monitor:
       min_points: 6
       visualize: False
       enabled: True
+    # Might be helpful to use lidar for colision monitoring for 360 view
     observation_sources: ["depth_scan"]
     depth_scan:
       type: "PointCloud2"
-      topic: "pointcloud"
+      topic: "/camera/depth/color/points"
       min_height: 0.15
       max_height: 2.0
       enabled: True
+    # observation_sources: ["lidar_scan"]
+    # lidar_scan:
+    #   type: "LaserScan"
+    #   topic: "scan"
+    #   min_height: 0.0
+    #   max_height: 1.5
+    #   enabled: True
 
 loopback_simulator:
   ros__parameters:

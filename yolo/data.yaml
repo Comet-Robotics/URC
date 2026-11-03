@@ -1,0 +1,13 @@
+train: ./train/images
+val: ./valid/images
+test: ./test/images
+
+nc: 3
+names: ['bottle', 'mallet', 'pick']
+
+roboflow:
+  workspace: mrover-zudlj
+  project: sar-8etcq
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/mrover-zudlj/sar-8etcq/dataset/1

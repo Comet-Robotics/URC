@@ -1,0 +1,27 @@
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="imu">
+    <link name="imu_link"/>
+    
+    <joint name="imu_to_base_link" type="fixed">
+      <parent link="base_link"/>
+      <child link="imu_link"/>
+      <!-- Might be error here if imu heading doesn't align with base_link -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- we assume the robot is equipped with an IMU that can accurately measure absolute orientation following the ENU convention, meaning it will output zero yaw when facing east and +90 degrees when facing north. -->
+    </joint>
+  
+    <gazebo>
+      <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu">
+      </plugin>
+    </gazebo>
+
+    <gazebo reference="imu_link">
+      <sensor name="imu_sensor" type="imu">
+        <topic>imu/data</topic>
+        <update_rate>50</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+      </sensor>
+    </gazebo> 
+  </xacro:macro>
+</robot>

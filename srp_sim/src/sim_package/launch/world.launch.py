@@ -11,24 +11,30 @@ from launch.substitutions import PathJoinSubstitution, Command, LaunchConfigurat
 import logging
 
 def generate_launch_description():
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+    
     pkg_share = get_package_share_directory('sim_package')
     default_rviz_config_path = os.path.join(pkg_share, 'config', 'urdf_config.rviz')
     models_dir = os.path.join(pkg_share, 'models')
     rover_model = os.path.join(models_dir, 'rover/model.xacro')
+
+    ros_gz_parameter_bridge_path = os.path.join(pkg_share, 'config', 'ros_gz_bridge.yaml')
  
     print(models_dir)
+
     # Set GAZEBO_MODEL_PATH environment variable
     set_gazebo_model_path = SetEnvironmentVariable(
-        name='IGN_GAZEBO_RESOURCE_PATH',
-        value=os.pathsep.join([models_dir, os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')])
+        name='GZ_SIM_RESOURCE_PATH',
+        value=os.pathsep.join([models_dir, os.environ.get('GZ_SIM_RESOURCE_PATH', '')])
     )
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    
     # Define the world file to load into Gazebo
     world_file_path = os.path.join(
         pkg_share, 'worlds', 'world.sdf'
     )
     
-
+    #unused world_server?
     world_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
@@ -48,7 +54,7 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         parameters=[{
-            'config_file': os.path.join(pkg_share, 'config', 'ros_gz_bridge.yaml'),
+            'config_file': ros_gz_parameter_bridge_path,
         }],
         output='screen'
     )
@@ -84,6 +90,7 @@ def generate_launch_description():
                                             description='Absolute path to rviz config file'),
         set_gazebo_model_path, 
         world_client,
+        rviz_node,
         bridge,
         spawn,
         joint_state_publisher_node,

@@ -29,7 +29,7 @@
 
 // This is required to register the plugin. Make sure the interfaces match
 // what's in the header.
-IGNITION_ADD_PLUGIN(
+GZ_ADD_PLUGIN(
     sim_package::BasicSystem,
     gz::sim::System,
     sim_package::BasicSystem::ISystemPostUpdate)
@@ -42,7 +42,7 @@ void BasicSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
 {
   if (!_info.paused && _info.iterations % 1000 == 0)
   {
-    igndbg << "sim_package::BasicSystem::PostUpdate" << std::endl;
+    gzdbg << "sim_package::BasicSystem::PostUpdate" << std::endl;
   }
 }
 
