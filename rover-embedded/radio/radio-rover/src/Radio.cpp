@@ -1,0 +1,52 @@
+#include "Radio.hpp"
+#include "Frame.hpp"
+
+void Radio::log(const char *msg) {
+    m_debugSerial->print(msg);
+}
+
+void Radio::log(int16_t msg) {
+    m_debugSerial->print(msg);
+}
+
+/**
+ * To set up the radio. Ensure that Serial.begin() is called on the debug serial passed, but SPI is not configured
+ */
+Radio::Radio(HardwareSerial *debugSerialOut, uint32_t chipSelectPin, uint32_t irqPin, uint32_t rstPin, SPIClassRP2040 &spi, pin_size_t sckPin, pin_size_t misoPin, pin_size_t mosiPin, char *callsign, bool isMaster = true) {
+    
+    // For printing debug messages
+    m_debugSerial = debugSerialOut;
+
+    m_radio = new Module(chipSelectPin, irqPin, rstPin, RADIOLIB_NC, spi);
+
+    // Configure SPI0 pins (omit SPI.setCS so RadioLib controls pin 17)
+	spi.setSCK(sckPin);
+	spi.setMISO(misoPin);
+	spi.setMOSI(mosiPin);
+	spi.begin();
+
+}
+
+bool Radio::init() {
+    int16_t state = m_radio.begin(
+		434.0f, // frequency (MHz)
+		125.0f	// bandwidth (kHz)
+	);
+	if(state != RADIOLIB_ERR_NONE) {
+		log("Radio init failed: ");
+		log(state);
+		return false;
+	}
+
+	m_radio.setGain(0); // Automatic Gain Control
+    return true;
+}
+
+/**
+ * Encapsulates data into Frames and sends over radio
+ */
+bool Radio::sendData(uint8_t *data, size_t size) {
+    // break data up into frames
+    //int frameCount = size / sizeof(Frame);
+    return false;
+}

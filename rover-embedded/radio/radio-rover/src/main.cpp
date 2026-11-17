@@ -7,6 +7,11 @@
  *          https://jgromes.github.io/RadioLib/class_s_x127x.html
  */
 
+// NOTE: REPLACE WITH YOUR CALLSIGN!!! IT IS AGAINST FEDERAL LAW TO TRANSMIT UNDER ANOTHER USER'S CALLSIGN
+#define CALLSIGN K5UTD
+
+#include <Frame.hpp>
+
 #include <Arduino.h>
 #include <RadioLib.h>
 #include <SPI.h>
@@ -16,15 +21,6 @@ static constexpr uint32_t PIN_IRQ = 1;
 static constexpr uint32_t PIN_RST = 0;
 
 static constexpr bool IS_MASTER = true;
-
-#pragma pack(push, 1)
-struct Frame {
-	const char *callsign = "KM7AYC";
-	uint8_t controlFlags = 0;
-	uint8_t data[255 - sizeof(callsign) - sizeof(controlFlags)] = { 0 };
-};
-#pragma pack(pop)
-static_assert(sizeof(Frame) == 255);
 
 static Module loraMod(PIN_CHIP_SEL, PIN_IRQ, PIN_RST, RADIOLIB_NC, SPI);
 static SX1276 radio(&loraMod);
@@ -66,12 +62,13 @@ void setup() {
 			Serial.print("Handshake timeout/err: ");
 			Serial.println(rxState);
 		}
+	} else {
+
 	}
 }
 
 void loop() {
 	Frame transmit = Frame();
-	transmit.data[0] = 5;
 	int16_t txState = radio.transmit("KM7AYC: module transmit");
 	if (txState == RADIOLIB_ERR_NONE) {
 		Serial.println("TX OK");
