@@ -1,3 +1,10 @@
+/**
+ * Copyright 2026 Comet Robotics - Wow, so professional
+ * Author: Hudson Green
+ * Contributors: N/A
+ * Summary: Abstraction of the radio module to make it easier to work with
+ */
+
 #ifndef RADIO_HPP
 #define RADIO_HPP
 

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2026 Comet Robotics - Wow, so professional
+ * Author: Hudson Green
+ * Contributors: N/A
+ * Summary: Abstraction of the radio module to make it easier to work with
+ */
+
 #include "Radio.hpp"
 #include "Frame.hpp"
 
@@ -46,7 +53,35 @@ bool Radio::init() {
  * Encapsulates data into Frames and sends over radio
  */
 bool Radio::sendData(uint8_t *data, size_t size) {
-    // break data up into frames
-    //int frameCount = size / sizeof(Frame);
-    return false;
+
+    /* break data up into frames */
+
+    int frameCount = static_cast<int>(ceil(static_cast<double>(size) / FRAME_PAYLOAD_SIZE));
+
+    Frame frames[frameCount];
+
+    // load data into each frame and transmit it over the radio
+    for(int i = 0; i < frameCount; ++i) {
+        int dataOffset = i * FRAME_PAYLOAD_SIZE;
+        size_t remainingBytes = size - dataOffset;
+
+        // the size of the data we are putting into the frame
+        int chunkSize = std::min(remainingBytes, FRAME_PAYLOAD_SIZE);
+
+        // make a frame for the data
+        Frame frame;
+        frame.setPayload(data + dataOffset, chunkSize);
+
+        // send it over the radio
+        int16_t radioTransmitState = m_radio.transmit(frame.toBytestream(), FRAME_PAYLOAD_SIZE);
+        if (radioTransmitState == RADIOLIB_ERR_NONE) {
+            // packet was sent fine
+        } else {
+            log("TX err: ");
+            log(radioTransmitState);
+            return false;
+        }
+    }
+
+    return true;
 }
