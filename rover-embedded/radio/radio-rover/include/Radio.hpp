@@ -29,11 +29,20 @@ private:
     void log(int16_t msg);
 
 public:
-    Radio(HardwareSerial *debugOut, uint32_t chipSelectPin, uint32_t irqPin, uint32_t rstPin, SPIClassRP2040 &spi, pin_size_t sckPin, pin_size_t misoPin, pin_size_t mosiPin, char *callsign, bool isMaster = true);
+    Radio(HardwareSerial *debugSerialOut, uint32_t chipSelectPin, uint32_t irqPin, uint32_t rstPin, SPIClassRP2040 &spi, pin_size_t sckPin, pin_size_t misoPin, pin_size_t mosiPin, char *callsign, bool isMaster);
 
     bool init();
 
+    /**
+     * Encapsulates data into Frames and sends over radio
+     */
     bool sendData(uint8_t *data, size_t size);
+    bool sendData(const char *msg);
+
+    /**
+     * Gets frames and assembles them back into a bytestream
+     */
+    uint8_t *receiveData(size_t size);
 };
 
 #endif

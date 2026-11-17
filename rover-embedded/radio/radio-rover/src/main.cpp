@@ -7,14 +7,8 @@
  *          https://jgromes.github.io/RadioLib/class_s_x127x.html
  */
 
-// NOTE: REPLACE WITH YOUR CALLSIGN!!! IT IS AGAINST FEDERAL LAW TO TRANSMIT UNDER ANOTHER USER'S CALLSIGN
-#define CALLSIGN K5UTD
-
-#include <Frame.hpp>
-
-#include <Arduino.h>
-#include <RadioLib.h>
-#include <SPI.h>
+#include <memory>
+#include <Radio.hpp>
 
 static constexpr uint32_t PIN_CHIP_SEL = 17;
 static constexpr uint32_t PIN_IRQ = 1;
@@ -22,60 +16,19 @@ static constexpr uint32_t PIN_RST = 0;
 
 static constexpr bool IS_MASTER = true;
 
-static Module loraMod(PIN_CHIP_SEL, PIN_IRQ, PIN_RST, RADIOLIB_NC, SPI);
-static SX1276 radio(&loraMod);
+static Radio *radio;
 
 void setup() {
 	Serial.begin(115200);
 	while(!Serial && millis() < 2000);
-
-	// Configure SPI0 pins (omit SPI.setCS so RadioLib controls pin 17)
-	SPI.setSCK(18);
-	SPI.setMISO(16);
-	SPI.setMOSI(19);
-	SPI.begin();
-
-	int16_t state = radio.begin(
-		434.0f, // frequency (MHz)
-		125.0f	// bandwidth (kHz)
-	);
-	if(state != RADIOLIB_ERR_NONE) {
-		Serial.print("Radio init failed: ");
-		Serial.println(state);
-		while(true) {
-			delay(100);
-		}
-	}
-
-	radio.setGain(0); // Automatic Gain Control
-
-	// Handshake
-	if(IS_MASTER) {
-		radio.transmit("KM7AYC: ping");
-
-		Frame response{};
-		int16_t rxState = radio.receive(reinterpret_cast<uint8_t *>(&response), sizeof(Frame));
-		if(rxState == RADIOLIB_ERR_NONE) {
-			size_t len = radio.getPacketLength();
-			Serial.write(reinterpret_cast<uint8_t *>(&response), len);
-		} else {
-			Serial.print("Handshake timeout/err: ");
-			Serial.println(rxState);
-		}
-	} else {
-
-	}
+	
+	radio = new Radio(nullptr, PIN_CHIP_SEL, PIN_IRQ, PIN_RST, SPI, 18, 16, 19, "K5UTD ", IS_MASTER);
+	radio->init();
+	
 }
 
 void loop() {
-	Frame transmit = Frame();
-	int16_t txState = radio.transmit("KM7AYC: module transmit");
-	if (txState == RADIOLIB_ERR_NONE) {
-		Serial.println("TX OK");
-	} else {
-		Serial.print("TX err: ");
-		Serial.println(txState);
-	}
+	radio->sendData("transmit data");
 
 	delay(20); // Prevent 100% duty cycle / PA overheating
 }

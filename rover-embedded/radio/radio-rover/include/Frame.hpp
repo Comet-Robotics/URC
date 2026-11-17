@@ -11,7 +11,7 @@
 #define FRAME_SIZE 255
 #define FRAME_PAYLOAD_SIZE 255 - sizeof(uint16_t)
 
-#include <string.h>
+#include <array>
 
 class Frame {
 private:
@@ -49,8 +49,8 @@ public:
         m_payloadSize = size;
     }
 
-    uint8_t *toBytestream() {
-        uint8_t out[255];
+    std::array<uint8_t, FRAME_SIZE> toBytestream() {
+        std::array<uint8_t, FRAME_SIZE> out;
 
         // header info
         out[0] = m_frameNo;
@@ -65,9 +65,9 @@ public:
         return out;
     }
 
-    void fromBytestream(uint8_t *data, size_t size) {
+    /*void fromBytestream(uint8_t *data, size_t size) {
         //TODO: get data and load it into frame
-    }
+    }*/
 
 };
 
