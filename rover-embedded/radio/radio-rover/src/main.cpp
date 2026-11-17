@@ -3,8 +3,6 @@
  * Author: Hudson Green
  * Contributors: N/A
  * Summary: Main entry point for the rover radio
- *          https://github.com/jgromes/RadioLib/wiki/Basics
- *          https://jgromes.github.io/RadioLib/class_s_x127x.html
  */
 
 #include <memory>
@@ -22,7 +20,7 @@ void setup() {
 	Serial.begin(115200);
 	while(!Serial && millis() < 2000);
 	
-	radio = new Radio(nullptr, PIN_CHIP_SEL, PIN_IRQ, PIN_RST, SPI, 18, 16, 19, "K5UTD ", IS_MASTER);
+	radio = new Radio(PIN_CHIP_SEL, PIN_IRQ, PIN_RST, SPI, 18, 16, 19, "K5UTD ", IS_MASTER);
 	radio->init();
 	
 }

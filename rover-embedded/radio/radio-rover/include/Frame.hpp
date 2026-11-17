@@ -15,16 +15,20 @@
 
 class Frame {
 private:
-    uint8_t m_frameNo = 0;
+    uint8_t m_blockNo = 0;
     uint8_t m_payloadSize = 0;
     char m_data[FRAME_PAYLOAD_SIZE];
-    static_assert(sizeof(m_frameNo) + sizeof(m_payloadSize) + sizeof(m_data) == FRAME_SIZE);
+    static_assert(sizeof(m_blockNo) + sizeof(m_payloadSize) + sizeof(m_data) == FRAME_SIZE);
     
 public:
     Frame() {}
 
     Frame(const char *payload) {
         setPayload(payload);
+    }
+
+    void setFrameNo(uint8_t frameNo) {
+        m_blockNo = frameNo;
     }
 
     void setPayload(const char *payload) {
@@ -53,7 +57,7 @@ public:
         std::array<uint8_t, FRAME_SIZE> out;
 
         // header info
-        out[0] = m_frameNo;
+        out[0] = m_blockNo;
         out[1] = m_payloadSize;
         const int PAYLOAD_START_BYTE = 2;
 

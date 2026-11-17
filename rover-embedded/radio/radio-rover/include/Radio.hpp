@@ -3,6 +3,8 @@
  * Author: Hudson Green
  * Contributors: N/A
  * Summary: Abstraction of the radio module to make it easier to work with
+ *          https://github.com/jgromes/RadioLib/wiki/Basics
+ *          https://jgromes.github.io/RadioLib/class_s_x127x.html
  */
 
 #ifndef RADIO_HPP
@@ -19,17 +21,15 @@ private:
     uint32_t m_pinIRQ = 1;
     uint32_t m_pinRST = 0;
 
-    bool m_isMaster = true;
+    // Incremented every time sendData is run (useful for reassembly of data from multiple frames)
+    uint8_t m_currBlockNo = 0;
 
-    HardwareSerial *m_debugSerial;
+    bool m_isMaster = true;
 
     SX1276 m_radio;
 
-    void log(const char *msg);
-    void log(int16_t msg);
-
 public:
-    Radio(HardwareSerial *debugSerialOut, uint32_t chipSelectPin, uint32_t irqPin, uint32_t rstPin, SPIClassRP2040 &spi, pin_size_t sckPin, pin_size_t misoPin, pin_size_t mosiPin, char *callsign, bool isMaster);
+    Radio(uint32_t chipSelectPin, uint32_t irqPin, uint32_t rstPin, SPIClassRP2040 &spi, pin_size_t sckPin, pin_size_t misoPin, pin_size_t mosiPin, const char *callsign, bool isMaster);
 
     bool init();
 
