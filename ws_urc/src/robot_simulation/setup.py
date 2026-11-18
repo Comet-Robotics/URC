@@ -19,7 +19,8 @@ setup(
         (os.path.join('share', package_name, 'hook'), glob('hook/*.sh')),
         *[(os.path.join('share', package_name, os.path.dirname(file_path)), [file_path]) 
           for file_path in glob(os.path.join('models', '**/*'), recursive=True) 
-          if os.path.isfile(file_path)],        
+          if os.path.isfile(file_path)], 
+        (os.path.join('share', package_name, 'examples'), glob(os.path.join('examples', '*.sdf*'))),       
     ],
     install_requires=['setuptools'],
     zip_safe=True,
