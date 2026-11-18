@@ -13,8 +13,8 @@
   <test_depend>python3-pytest</test_depend>
 
   <depend>rclpy</depend>
-  <depend>opencv-python</depend>
-  <depend>numpy</depend>
+  <depend>python3-opencv</depend>
+  <depend>python3-numpy</depend>
   <depend>custom_interfaces</depend>
 
 
