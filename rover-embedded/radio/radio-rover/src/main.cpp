@@ -5,7 +5,6 @@
  * Summary: Main entry point for the rover radio
  */
 
-#include <memory>
 #include <Radio.hpp>
 
 static constexpr uint32_t PIN_CHIP_SEL = 17;

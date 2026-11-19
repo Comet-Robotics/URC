@@ -45,8 +45,6 @@ bool Radio::sendData(uint8_t *data, size_t size) {
 
     int frameCount = static_cast<int>(ceil(static_cast<double>(size) / FRAME_PAYLOAD_SIZE));
 
-    Frame frames[frameCount];
-
     // load data into each frame and transmit it over the radio
     for(int i = 0; i < frameCount; ++i) {
         int dataOffset = i * FRAME_PAYLOAD_SIZE;
@@ -57,7 +55,8 @@ bool Radio::sendData(uint8_t *data, size_t size) {
 
         // make a frame for the data
         Frame frame;
-        frame.setFrameNo(m_currBlockNo);
+        frame.setBlockNo(m_currBlockNo);                // the current block # associated w/our data transfer
+        frame.setFrameCount(frameCount - i);            // how many frames left that make up our block
         frame.setPayload(data + dataOffset, chunkSize);
 
         // send it over the radio
@@ -71,16 +70,59 @@ bool Radio::sendData(uint8_t *data, size_t size) {
         }
     }
 
+    // Every time we successfully transmit a payload, we increment the block number
     ++m_currBlockNo;
 
     return true;
 }
 
 bool Radio::sendData(const char *msg) {
-    // this cast might be UB lol
+    // this cast might be UB lol, just compile both modules with the same computer at the same time to avoid compiler optimizations that might break stuff
     return this->sendData(reinterpret_cast<uint8_t *>(&msg), strlen(msg));
 }
 
-uint8_t *Radio::receiveData(size_t size) {
-    return nullptr;
+std::vector<uint8_t> Radio::receiveData() {
+
+    std::vector<uint8_t> out;
+
+    // ensure we have enough data in buffer to read at least one packet
+
+    // read in a packet, extract its blockNo, and the number of expected packets (frameCount), and then put its payload into the out vector buffer
+    Frame currFrame;
+    int blockNo = -1;
+
+    // loop thru until we consume enough packets to meet the number of expected packets
+    do {
+        // read in raw data from radio
+        uint8_t buff[FRAME_SIZE];
+        uint16_t receiveStatus = m_radio.receive(buff, FRAME_SIZE);
+
+        //TODO: check receive status to verify data
+        //if(receiveStatus == ____) ...
+
+        // load that raw data into a frame
+        currFrame = Frame();
+        currFrame.fromBytestream(buff, FRAME_SIZE);
+
+        // load block no if it hasnt been loaded in yet (first frame received)
+        if(blockNo == -1)
+            blockNo = currFrame.getBlockNo();
+        
+        // check if received frame's block no doesn't match
+        if(currFrame.getBlockNo() != blockNo) {
+            // error: we received a packet that wasn't intended for this session
+            Serial.println("Error: unexpected block number received - data invalid");
+            return out;
+        }
+
+        // load in payload into output
+        std::array<uint8_t, FRAME_PAYLOAD_SIZE> data = currFrame.getPayload();
+        for(uint8_t c : data) {
+            out.push_back(c);
+        }
+
+    } while(currFrame.getFrameCount() != 0);
+
+    return out;
+
 }

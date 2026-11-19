@@ -12,13 +12,14 @@
 #define FRAME_PAYLOAD_SIZE 255 - sizeof(uint16_t)
 
 #include <array>
+#include <cstring>
 
 class Frame {
 private:
-    uint8_t m_blockNo = 0;
-    uint8_t m_payloadSize = 0;
+    uint8_t m_blockNo = 0;          // the number associated with the data being transmitted
+    uint8_t m_frameCount = 0;       // how many frames left associated with this block no
     char m_data[FRAME_PAYLOAD_SIZE];
-    static_assert(sizeof(m_blockNo) + sizeof(m_payloadSize) + sizeof(m_data) == FRAME_SIZE);
+    static_assert(sizeof(m_blockNo) + sizeof(m_frameCount) + sizeof(m_data) == FRAME_SIZE);
     
 public:
     Frame() {}
@@ -27,8 +28,12 @@ public:
         setPayload(payload);
     }
 
-    void setFrameNo(uint8_t frameNo) {
+    void setBlockNo(uint8_t frameNo) {
         m_blockNo = frameNo;
+    }
+
+    void setFrameCount(uint8_t frameCt) {
+        m_frameCount = frameCt;
     }
 
     void setPayload(const char *payload) {
@@ -40,7 +45,6 @@ public:
         for(int i = size; i < FRAME_PAYLOAD_SIZE; ++i) {
             m_data[i] = 0;
         }
-        m_payloadSize = size;
     }
 
     void setPayload(uint8_t *payload, size_t size) {
@@ -50,7 +54,20 @@ public:
         for(int i = size; i < FRAME_PAYLOAD_SIZE; ++i) {
             m_data[i] = 0;
         }
-        m_payloadSize = size;
+    }
+
+    uint8_t getBlockNo() {
+        return m_blockNo;
+    }
+
+    uint8_t getFrameCount() {
+        return m_frameCount;
+    }
+
+    std::array<uint8_t, FRAME_PAYLOAD_SIZE> getPayload() {
+        std::array<uint8_t, FRAME_PAYLOAD_SIZE> out;
+        std::memcpy(out.data(), m_data, FRAME_PAYLOAD_SIZE);
+        return out;
     }
 
     std::array<uint8_t, FRAME_SIZE> toBytestream() {
@@ -58,7 +75,7 @@ public:
 
         // header info
         out[0] = m_blockNo;
-        out[1] = m_payloadSize;
+        out[1] = m_frameCount;
         const int PAYLOAD_START_BYTE = 2;
 
         // payload
@@ -69,9 +86,21 @@ public:
         return out;
     }
 
-    /*void fromBytestream(uint8_t *data, size_t size) {
-        //TODO: get data and load it into frame
-    }*/
+    void fromBytestream(uint8_t *data, size_t size) {
+        if(size != FRAME_SIZE) {
+            Serial.println("Error: Invalid size specified. Must be equal to FRAME_SIZE (typically 255 bytes)");
+            return;
+        }
+        // get data and load it into frame
+        this->m_blockNo = data[0];
+        this->m_frameCount = data[1];
+        const int PAYLOAD_START_BYTE = 2;
+
+        // load in payload
+        for(int i = PAYLOAD_START_BYTE; i < FRAME_SIZE; ++i) {
+            this->m_data[i - PAYLOAD_START_BYTE] = data[i];
+        }
+    }
 
 };
 

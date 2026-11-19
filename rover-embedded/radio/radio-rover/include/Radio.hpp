@@ -13,6 +13,7 @@
 #include <Arduino.h>
 #include <RadioLib.h>
 #include <SPI.h>
+#include <vector>
 
 class Radio {
 
@@ -42,7 +43,7 @@ public:
     /**
      * Gets frames and assembles them back into a bytestream
      */
-    uint8_t *receiveData(size_t size);
+    std::vector<uint8_t> receiveData();
 };
 
 #endif
