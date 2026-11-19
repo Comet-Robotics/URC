@@ -25,7 +25,17 @@ void setup() {
 }
 
 void loop() {
-	radio->sendData("transmit data");
-
-	delay(20); // Prevent 100% duty cycle / PA overheating
+	if(IS_MASTER) {
+		radio->sendData("transmit data");
+		delay(20); // Prevent 100% duty cycle / PA overheating
+	} else {
+		std::vector<uint8_t> data = radio->receiveData();
+		
+		// print out data
+		Serial.print("Received Data: ");
+		for(uint8_t c : data) {
+			Serial.printf("%c", c);
+		}
+		Serial.println();
+	}
 }
